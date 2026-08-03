@@ -1,14 +1,21 @@
 <?php
 
 return [
-    'classic' => [
-        'key' => 'classic',
-        'label' => 'Classic Horizon',
-        'description' => 'Warm editorial layout with soft cards and generous spacing.',
+    'leadatlas' => [
+        'key' => 'leadatlas',
+        'label' => 'LeadAtlas',
+        'description' => 'The default LeadAtlas marketing theme — map-driven lead discovery, AI scoring, and CRM pipeline messaging.',
         'preview_image' => null,
         'default_enabled' => true,
-        'view_namespace' => 'frontend.themes.classic',
-        'supported_section_types' => ['hero', 'feature_grid', 'cta', 'faq', 'testimonial_grid', 'rich_content', 'footer'],
+        'view_namespace' => 'frontend.themes.leadatlas',
+        'supported_section_types' => [
+            'hero', 'feature_grid', 'cta', 'faq', 'testimonial_grid', 'rich_content', 'footer',
+            'homepage_hero', 'homepage_stages', 'homepage_features', 'homepage_voices', 'homepage_pricing', 'homepage_faq', 'homepage_blog', 'homepage_cta',
+            'featurespage_hero', 'featurespage_discover', 'featurespage_layer', 'featurespage_act', 'featurespage_cta',
+            'pricingpage_unit', 'pricingpage_plans', 'pricingpage_rollover', 'pricingpage_compare', 'pricingpage_faq',
+            'contactpage_form',
+            'blogpage_grid',
+        ],
         'page_layouts' => [
             'default' => [
                 'label' => 'Default',
@@ -20,88 +27,35 @@ return [
                 'view' => 'layouts.landing',
             ],
         ],
-        'fallback_renderer' => 'frontend.shared.sections.unsupported',
+        'fallback_renderer' => 'frontend.themes.leadatlas.sections.unsupported',
         'theme_settings_schema' => [
             'branding' => [
                 'label' => 'Branding',
-                'icon' => 'ph ph-palette',
+                'icon' => 'ph ph-map-trifold',
                 'description' => 'Theme-specific branding and hero presentation.',
                 'settings' => [
                     'logo_text' => [
                         'type' => 'text',
                         'label' => 'Logo Text',
-                        'default' => 'Classic Horizon',
+                        'default' => 'LeadAtlas',
                         'rules' => 'nullable|string|max:100',
                     ],
                     'primary_color' => [
                         'type' => 'color',
                         'label' => 'Primary Color',
-                        'default' => '#D97706',
+                        'default' => '#4F39F6',
                         'rules' => 'nullable|string|regex:/^#[0-9A-Fa-f]{6}$/',
                     ],
                     'accent_color' => [
                         'type' => 'color',
                         'label' => 'Accent Color',
-                        'default' => '#1F2937',
+                        'default' => '#0F172A',
                         'rules' => 'nullable|string|regex:/^#[0-9A-Fa-f]{6}$/',
                     ],
                     'show_hero_kicker' => [
                         'type' => 'feature',
                         'label' => 'Show Hero Kicker',
                         'default' => true,
-                    ],
-                ],
-            ],
-        ],
-    ],
-    'studio' => [
-        'key' => 'studio',
-        'label' => 'Studio Pulse',
-        'description' => 'Bold contemporary layout with bright contrast and cleaner grids.',
-        'preview_image' => null,
-        'default_enabled' => true,
-        'view_namespace' => 'frontend.themes.studio',
-        'supported_section_types' => ['hero', 'feature_grid', 'cta', 'faq', 'testimonial_grid', 'rich_content', 'footer'],
-        'page_layouts' => [
-            'default' => [
-                'label' => 'Default',
-                'view' => 'layouts.page',
-                'is_default' => true,
-            ],
-            'landing' => [
-                'label' => 'Landing',
-                'view' => 'layouts.landing',
-            ],
-        ],
-        'fallback_renderer' => 'frontend.shared.sections.unsupported',
-        'theme_settings_schema' => [
-            'branding' => [
-                'label' => 'Branding',
-                'icon' => 'ph ph-sparkle',
-                'description' => 'Color system and editorial tone for this theme.',
-                'settings' => [
-                    'logo_text' => [
-                        'type' => 'text',
-                        'label' => 'Logo Text',
-                        'default' => 'Studio Pulse',
-                        'rules' => 'nullable|string|max:100',
-                    ],
-                    'primary_color' => [
-                        'type' => 'color',
-                        'label' => 'Primary Color',
-                        'default' => '#0F766E',
-                        'rules' => 'nullable|string|regex:/^#[0-9A-Fa-f]{6}$/',
-                    ],
-                    'accent_color' => [
-                        'type' => 'color',
-                        'label' => 'Accent Color',
-                        'default' => '#111827',
-                        'rules' => 'nullable|string|regex:/^#[0-9A-Fa-f]{6}$/',
-                    ],
-                    'uppercase_headings' => [
-                        'type' => 'feature',
-                        'label' => 'Uppercase Headings',
-                        'default' => false,
                     ],
                 ],
             ],

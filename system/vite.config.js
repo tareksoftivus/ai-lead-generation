@@ -45,8 +45,10 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
+                'resources/css/leadatlas.css',
                 'resources/js/app.js',
                 'resources/js/components/frontend-menu-builder.js',
+                'resources/js/leadatlas.js',
                 ...moduleAssetInputs,
             ],
             // App runs root-based: the web root is one level above /system,

@@ -1,0 +1,4694 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap");
+
+@import "@phosphor-icons/web/regular";
+@import "@phosphor-icons/web/fill";
+
+/* Lenis smooth-scroll base styles */
+@import "lenis/dist/lenis.css";
+
+@import "leaflet/dist/leaflet.css";
+
+@import "tailwindcss";
+
+/* Design tokens */
+@theme {
+  --font-title: "Space Grotesk", "Trebuchet MS", sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* --- Brand --- */
+  --color-primary: #4f39f6;
+  --color-primary-dark: #4326cc;
+  --color-primary-light: #7c6bf9;
+
+  --color-discover: #4f39f6;
+  --color-discover-soft: #edebfe;
+  --color-discover-deep: #4632d8;
+
+  /* --- AI: generated output --- */
+  --color-ai: #7c3aed;
+  --color-ai-soft: #f5f3ff;
+  --color-ai-deep: #6d28d9;
+
+  --color-accent: #f97316;
+  --color-accent-hover: #fb923c;
+  --color-accent-soft: #fff7ed;
+  --color-accent-dark: #b23a0a;
+
+  /* --- Text --- */
+  --color-title: #0f172a;
+  --color-body: #475569;
+
+  /* --- Semantic --- */
+  --color-success: #047857;
+  /* For success ink on a success tint — see .status--done. */
+  --color-success-deep: #065f46;
+  --color-warning: #b45309;
+  --color-error: #d42121;
+  --color-info: #2563eb;
+
+  /* --- Neutral scale (cool slate) --- */
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f8fafc;
+  --color-neutral-100: #f1f5f9;
+  --color-neutral-200: #e2e8f0;
+  /* borders */
+  --color-neutral-300: #cbd5e1;
+  --color-neutral-400: #94a3b8;
+  --color-neutral-500: #64748b;
+  --color-neutral-600: #475569;
+  --color-neutral-700: #334155;
+  --color-neutral-800: #1e293b;
+  --color-neutral-900: #0f172a;
+  --color-neutral-950: #020617;
+
+  --breakpoint-xsm: 400px;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+  --breakpoint-2xl: 1400px;
+  --breakpoint-3xl: 1600px;
+}
+
+/* Base — page defaults */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5.5rem;
+  }
+
+  body {
+    @apply bg-neutral-0 font-body text-body antialiased;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    @apply cursor-pointer;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-title text-title;
+  }
+
+  ::selection {
+    @apply bg-ai/25 text-title;
+  }
+
+  html {
+    scrollbar-color: var(--color-neutral-300) transparent;
+    scrollbar-width: thin;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-neutral-300);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-neutral-400);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
+
+/* Layout utilities */
+@utility container {
+  @apply mx-auto w-full max-w-[1600px] px-5 sm:px-8 lg:px-12 xl:px-20;
+}
+
+@utility container-xl {
+  @apply mx-auto w-full max-w-[1760px] px-5 sm:px-8 lg:px-12 xl:px-20;
+}
+
+@utility container-narrow {
+  @apply mx-auto w-full max-w-[1120px] px-5 sm:px-8 lg:px-12;
+}
+
+@utility container-prose {
+  @apply mx-auto w-full max-w-3xl;
+}
+
+@utility f-center {
+  @apply flex items-center justify-center;
+}
+
+@utility f-between {
+  @apply flex items-center justify-between;
+}
+
+@utility f-start {
+  @apply flex items-center justify-start;
+}
+
+@utility spy-section {
+  @apply py-14 md:py-20 xl:py-28;
+}
+
+@utility spt-section {
+  @apply pt-14 md:pt-20 xl:pt-28;
+}
+
+@utility spb-section {
+  @apply pb-14 md:pb-20 xl:pb-28;
+}
+
+/* Typography utilities (responsive built-in) */
+@utility display-1 {
+  @apply font-title text-[2.25rem] leading-[1.08] font-bold tracking-[-0.02em] md:text-[3.25rem] xl:text-[4rem];
+}
+
+@utility display-2 {
+  @apply font-title text-[1.875rem] leading-[1.1] font-bold tracking-[-0.02em] md:text-[2.5rem] xl:text-[3rem];
+}
+
+@utility heading-1 {
+  @apply font-title text-[1.75rem] leading-[1.15] font-bold tracking-[-0.015em] md:text-[2.25rem] xl:text-[2.5rem];
+}
+
+@utility heading-2 {
+  @apply font-title text-[1.5rem] leading-[1.2] font-bold tracking-[-0.015em] md:text-[1.875rem] xl:text-[2.25rem];
+}
+
+@utility heading-3 {
+  @apply font-title text-[1.25rem] leading-[1.25] font-semibold md:text-[1.5rem];
+}
+
+@utility heading-4 {
+  @apply font-title text-[1.0625rem] leading-[1.3] font-semibold md:text-[1.25rem];
+}
+
+@utility lead-text {
+  @apply text-[1rem] leading-[1.6] md:text-[1.125rem];
+}
+
+@utility l-text {
+  @apply text-[1rem] leading-[1.6];
+}
+
+@utility m-text {
+  @apply text-[0.9375rem] leading-[1.55];
+}
+
+@utility s-text {
+  @apply text-[0.8125rem] leading-[1.5];
+}
+
+@utility numeric {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+@utility eyebrow {
+  @apply text-[0.75rem] font-semibold tracking-[0.12em] uppercase;
+}
+
+/* Components — buttons, badges, cards */
+@utility btn {
+  @apply inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full py-1.5 pr-1.5 pl-6 text-[0.9375rem] font-semibold whitespace-nowrap transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:pointer-events-none disabled:opacity-55;
+}
+
+.btn > i {
+  @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-neutral-0 text-[1.0625rem] transition-transform duration-200;
+}
+
+.btn-accent > i {
+  @apply text-accent-dark;
+}
+
+.btn-primary > i {
+  @apply text-primary;
+}
+
+.btn-ai > i {
+  @apply text-ai;
+}
+
+.btn-discover > i {
+  @apply text-discover-deep;
+}
+
+.btn-danger > i {
+  @apply text-error;
+}
+
+.btn-outline > i,
+.btn-ghost > i {
+  @apply bg-[#f6f5ff] text-title;
+}
+
+.btn:hover > i {
+  @apply translate-x-0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn > i {
+    @apply transition-none;
+  }
+  .btn:hover > i {
+    @apply translate-x-0;
+  }
+}
+
+.btn:not(:has(> i)) {
+  @apply px-6;
+}
+
+@utility btn-sm {
+  @apply min-h-9 gap-2 py-1 pr-1 pl-4 text-[0.875rem];
+}
+
+.btn-sm > i {
+  @apply h-7 w-7 text-[0.9375rem];
+}
+
+.btn-sm:not(:has(> i)) {
+  @apply px-4;
+}
+
+.btn--collapse {
+  @apply max-sm:aspect-square max-sm:gap-0 max-sm:p-0;
+}
+
+/* Collapsed, the icon loses its white disc and sits straight on the button
+   fill — so it must inherit that button's ink, not assume white. On amber,
+   white would be 2.80:1. */
+.btn--collapse > i {
+  @apply max-sm:h-auto max-sm:w-auto max-sm:bg-transparent max-sm:text-[1.25rem] max-sm:text-current;
+}
+
+.btn--collapse .btn__label {
+  @apply max-sm:absolute max-sm:h-px max-sm:w-px max-sm:overflow-hidden max-sm:whitespace-nowrap;
+  @variant max-sm {
+    clip-path: inset(50%);
+  }
+}
+
+.btn__label {
+  @apply relative block overflow-hidden;
+}
+
+.btn__label > span {
+  @apply block transition-transform duration-300 ease-out;
+}
+
+/* The duplicate waits exactly one line-height below. */
+.btn__label > span + span {
+  @apply absolute inset-x-0 top-full;
+}
+
+.btn:hover .btn__label > span {
+  @apply -translate-y-full;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn__label > span {
+    @apply transition-none;
+  }
+  .btn__label > span + span {
+    @apply hidden;
+  }
+  .btn:hover .btn__label > span {
+    @apply translate-y-0;
+  }
+}
+
+@utility btn-primary {
+  @apply bg-primary text-neutral-0 hover:bg-primary-dark;
+}
+
+@utility btn-accent {
+  @apply bg-accent text-neutral-0;
+}
+
+@utility btn-discover {
+  @apply bg-discover-deep text-neutral-0 hover:brightness-110;
+}
+
+@utility btn-ai {
+  @apply bg-ai text-neutral-0 hover:bg-ai-deep;
+}
+
+@utility btn-outline {
+  @apply border border-neutral-200 bg-neutral-0 text-title hover:border-neutral-300 hover:bg-neutral-50;
+}
+
+@utility btn-ghost {
+  @apply text-title hover:bg-neutral-100;
+}
+
+@utility btn-danger {
+  @apply bg-error text-neutral-0 hover:brightness-90;
+}
+
+@utility badge {
+  @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[0.75rem] font-semibold;
+}
+
+@utility badge-soft {
+  @apply bg-neutral-100 text-body;
+}
+
+@utility badge-primary {
+  @apply bg-primary/10 text-primary;
+}
+
+@utility badge-accent {
+  @apply bg-accent/12 text-accent-dark;
+}
+
+@utility badge-discover {
+  @apply bg-discover-soft text-discover-deep;
+}
+
+@utility badge-ai {
+  @apply bg-ai-soft text-ai-deep;
+}
+
+@utility card {
+  @apply rounded-2xl border border-neutral-200 bg-neutral-0;
+}
+
+/* Forms — submit-ready markup */
+@utility form-label {
+  @apply mb-1.5 block text-[0.8125rem] font-semibold text-title;
+}
+
+@utility form-input {
+  @apply w-full rounded-xl border border-neutral-200 bg-neutral-0 px-4 py-3 text-[0.9375rem] text-title transition-colors duration-200 placeholder:text-neutral-400 focus:border-primary focus:outline-none disabled:bg-neutral-50 disabled:text-neutral-400;
+}
+
+select.form-input {
+  @apply cursor-pointer appearance-none bg-[length:1.25rem] bg-[right_0.75rem_center] bg-no-repeat pr-10;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23949cb0' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+.form-check {
+  @apply relative h-[1.125rem] w-[1.125rem] shrink-0 cursor-pointer appearance-none rounded-[0.3rem] border border-neutral-300 bg-neutral-0 transition-colors duration-200;
+}
+
+.form-check:checked {
+  @apply border-primary bg-primary;
+}
+
+.form-check:checked::after {
+  @apply absolute top-1/2 left-1/2 block h-[0.5rem] w-[0.28rem] -translate-x-1/2 -translate-y-[60%] rotate-45 border-r-2 border-b-2 border-neutral-0;
+  content: "";
+}
+
+.form-check:focus-visible {
+  @apply outline-2 outline-offset-2 outline-primary;
+}
+
+.form-check:disabled {
+  @apply cursor-not-allowed bg-neutral-100 opacity-60;
+}
+
+.form-check:checked:disabled {
+  @apply border-primary bg-primary;
+}
+
+.password-field {
+  @apply relative;
+}
+
+.password-field .form-input {
+  @apply pr-12;
+}
+
+.password-field__toggle {
+  @apply absolute top-1/2 right-3 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-neutral-500 transition-colors hover:text-title;
+}
+
+.password-field__toggle .ph-eye-slash {
+  @apply hidden;
+}
+
+.password-field.is-visible .password-field__toggle .ph-eye {
+  @apply hidden;
+}
+
+.password-field.is-visible .password-field__toggle .ph-eye-slash {
+  @apply block;
+}
+
+.auth-divider {
+  @apply flex items-center gap-4 text-[0.8125rem] text-neutral-500;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  @apply h-px flex-1 bg-neutral-200;
+  content: "";
+}
+
+.is-locked {
+  @apply overflow-hidden;
+}
+
+/* Public site header */
+.site-header {
+  @apply fixed inset-x-0 top-0 z-50 border-b border-transparent transition-colors duration-300;
+}
+
+.site-header.is-stuck {
+  @apply border-neutral-200 bg-neutral-0/90 backdrop-blur-sm;
+}
+
+.nav-link {
+  @apply rounded-lg px-3 py-2 text-[0.9375rem] font-medium text-body transition-colors hover:text-title;
+}
+
+.nav-link.is-active {
+  @apply text-title;
+}
+
+.site-header__burger {
+  @apply text-title;
+}
+
+/* Mobile off-canvas nav */
+.mobile-nav {
+  @apply invisible fixed inset-y-0 right-0 z-70 w-[min(20rem,85vw)] translate-x-full overflow-y-auto border-l border-neutral-200 bg-neutral-0 p-6 opacity-0 transition duration-300;
+}
+
+.mobile-nav.is-open {
+  @apply visible translate-x-0 opacity-100;
+}
+
+.mobile-nav__backdrop {
+  @apply invisible fixed inset-0 z-60 bg-neutral-950/40 opacity-0 transition-opacity duration-300;
+}
+
+.mobile-nav__backdrop.is-open {
+  @apply visible opacity-100;
+}
+
+.menu {
+  @apply relative;
+}
+
+.menu__panel {
+  @apply invisible fixed top-0 left-0 z-80 min-w-[12rem] rounded-xl border border-neutral-200 bg-neutral-0 p-1.5 opacity-0 shadow-lg transition-opacity duration-150;
+}
+
+.menu.is-open .menu__panel {
+  @apply visible opacity-100;
+}
+
+.menu__item {
+  @apply flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-[0.875rem] text-body transition-colors hover:bg-neutral-100 hover:text-title;
+}
+
+/* Rules off a destructive action from the ordinary ones above it. */
+.menu__sep {
+  @apply my-1.5 h-px bg-neutral-100;
+}
+
+.menu__item--danger {
+  @apply text-error hover:bg-error/8 hover:text-error;
+}
+
+.menu__item--danger i {
+  @apply text-[1rem];
+}
+
+/* Modal */
+.modal {
+  @apply invisible fixed inset-0 z-90 flex items-center justify-center p-4 opacity-0 transition-opacity duration-200;
+}
+
+.modal.is-open {
+  @apply visible opacity-100;
+}
+
+.modal__backdrop {
+  @apply absolute inset-0 bg-neutral-950/50;
+}
+
+.modal__panel {
+  @apply @container relative max-h-[90vh] w-full max-w-lg translate-y-2 overflow-y-auto rounded-2xl border border-neutral-200 bg-neutral-0 transition-transform duration-200;
+}
+
+.modal.is-open .modal__panel {
+  @apply translate-y-0;
+}
+
+.confirm-accept {
+  @apply bg-primary text-neutral-0 hover:bg-primary-dark;
+}
+
+.modal.is-destructive .confirm-accept {
+  @apply bg-error text-neutral-0 hover:brightness-90;
+}
+
+/* Scroll reveal — the resting state before GSAP takes over. */
+[data-anim]:not(:has([data-anim-item])),
+[data-anim-item] {
+  @apply opacity-0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-anim],
+  [data-anim-item] {
+    @apply opacity-100;
+  }
+}
+
+/* App shell — dashboard and admin */
+.app-sidebar {
+  @apply invisible fixed inset-y-0 left-0 z-70 flex w-[17rem] -translate-x-full flex-col bg-primary opacity-0 transition duration-300 lg:visible lg:translate-x-0 lg:opacity-100;
+}
+
+.app-sidebar.is-open {
+  @apply visible translate-x-0 opacity-100;
+}
+
+.app-sidebar__backdrop {
+  @apply invisible fixed inset-0 z-60 bg-neutral-950/50 opacity-0 transition-opacity duration-300 lg:hidden;
+}
+
+.app-sidebar__backdrop.is-open {
+  @apply visible opacity-100;
+}
+
+.sidebar-group {
+  @apply mt-5 mb-1.5 px-3 text-[0.6875rem] font-semibold tracking-[0.12em] uppercase text-neutral-0/80;
+}
+
+.sidebar-link {
+  @apply flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[0.875rem] font-medium text-neutral-0/85 transition-colors hover:bg-neutral-0/10 hover:text-neutral-0;
+}
+
+.sidebar-link i {
+  @apply text-[1.125rem];
+}
+
+.sidebar-link.is-active {
+  @apply bg-neutral-0/15 text-neutral-0;
+}
+
+.app-main {
+  @apply min-h-screen lg:pl-[17rem];
+}
+
+.app-content {
+  @apply @container mx-auto w-full max-w-[1600px] px-4 py-5 sm:px-6 lg:px-8;
+}
+
+.app-content .grid > *,
+.app-content .flex > * {
+  min-width: 0;
+}
+
+.app-content canvas {
+  @apply max-w-full;
+}
+
+.app-content {
+  overflow-wrap: break-word;
+}
+
+.hero__grid {
+  @apply absolute inset-0;
+  background-image:
+    linear-gradient(to right, var(--color-neutral-200) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-neutral-200) 1px, transparent 1px);
+  background-size: 110px 110px;
+  opacity: 0.62;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 12%,
+    #000 42%,
+    #000 92%,
+    transparent 100%
+  );
+}
+
+.hero__glow {
+  @apply absolute inset-x-0 top-0;
+  height: 100%;
+  background:
+    radial-gradient(
+      ellipse 62% 30% at 50% 88%,
+      color-mix(in oklab, var(--color-discover-soft) 92%, transparent) 0%,
+      color-mix(in oklab, var(--color-discover-soft) 40%, transparent) 42%,
+      transparent 74%
+    ),
+    radial-gradient(
+      ellipse 44% 30% at 50% 30%,
+      var(--color-neutral-0) 0%,
+      color-mix(in oklab, var(--color-neutral-0) 72%, transparent) 40%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 46% 34% at 6% 84%,
+      color-mix(in oklab, var(--color-ai-soft) 95%, transparent) 0%,
+      transparent 66%
+    ),
+    radial-gradient(
+      ellipse 48% 40% at 92% 22%,
+      color-mix(in oklab, var(--color-ai-soft) 80%, transparent) 0%,
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 44% 38% at 4% 24%,
+      color-mix(in oklab, var(--color-discover-soft) 85%, transparent) 0%,
+      transparent 66%
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(
+          in oklab,
+          var(--color-discover-soft) 80%,
+          var(--color-neutral-0)
+        )
+        0%,
+      var(--color-neutral-0) 46%,
+      var(--color-neutral-50) 72%,
+      color-mix(in oklab, var(--color-ai-soft) 55%, var(--color-neutral-0)) 100%
+    );
+}
+
+.hero__proof {
+  @apply mx-auto mt-7 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-neutral-0/70 py-1.5 pr-4 pl-3 text-[0.8125rem] text-body backdrop-blur-sm;
+}
+
+.hero__proof i {
+  @apply shrink-0 text-[1rem] text-discover-deep;
+}
+
+.hero__proof .numeric {
+  @apply font-semibold text-title;
+  font-family: inherit;
+}
+
+.hero__sweep {
+  @apply pointer-events-none absolute inset-0 opacity-0;
+  background: linear-gradient(
+    100deg,
+    transparent 42%,
+    color-mix(in oklab, var(--color-discover) 12%, transparent) 50%,
+    transparent 58%
+  );
+}
+
+.hero__sweep.is-running {
+  animation: hero-sweep 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes hero-sweep {
+  from {
+    opacity: 0;
+    transform: translateX(-45%);
+  }
+  40% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translateX(45%);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-anim-load] {
+    animation: hero-rise 0.75s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__sweep {
+    @apply hidden;
+  }
+}
+
+.pin {
+  @apply pointer-events-none absolute z-30 hidden items-center gap-1.5 rounded-full border bg-neutral-0 py-1.5 pr-3.5 pl-3 text-[0.75rem] font-semibold whitespace-nowrap xl:inline-flex;
+  box-shadow: 0 6px 20px -8px
+    color-mix(in oklab, var(--color-primary) 28%, transparent);
+}
+
+.pin i {
+  @apply text-[0.9375rem];
+}
+
+.pin::after {
+  @apply absolute h-2.5 w-2.5 rotate-45 border-r border-b bg-neutral-0 content-[''];
+  border-color: inherit;
+}
+
+.pin--find {
+  @apply border-discover/30 text-discover-deep;
+  top: -0.75rem;
+  left: max(0.5rem, calc(50% - 34rem + 1.5rem));
+}
+
+.pin--find::after {
+  @apply border-discover/30;
+  bottom: -0.3125rem;
+  left: 1.75rem;
+}
+
+.pin--ai {
+  @apply border-ai/30 text-ai-deep;
+  top: -0.75rem;
+  right: max(0.5rem, calc(50% - 34rem + 2rem));
+}
+
+.pin--ai::after {
+  @apply border-ai/30;
+  bottom: -0.3125rem;
+  right: 2.25rem;
+}
+
+.shot__frame {
+  @apply relative mx-auto max-w-[68rem] rounded-t-2xl border border-b-0 border-neutral-200 bg-[#f6f5ff] p-1.5 pb-0;
+  box-shadow:
+    0 1px 0 0 var(--color-neutral-0) inset,
+    0 -8px 60px -20px
+      color-mix(in oklab, var(--color-discover) 22%, transparent),
+    0 24px 70px -32px color-mix(in oklab, var(--color-primary) 30%, transparent);
+}
+
+/* A screenshot cannot reflow the way the markup mockup it replaced could.
+   Scaled to fit 320px the whole 1913x955 dashboard is ~133px tall and not a
+   single value on it is readable. So below lg it is cropped to its left edge
+   rather than shrunk whole. The tall aspect box is what does it: object-cover
+   scales to the LARGER ratio, so height drives the fit and the source renders
+   ~1.8x the box width (480px of source across a 266px box at 320px viewport),
+   putting the sidebar, greeting and KPI figures at a legible size and letting
+   the rest run past the crop. Full, uncropped shot from lg up. */
+.shot__img {
+  @apply block aspect-[10/9] w-full rounded-t-xl border border-b-0 border-neutral-200 bg-neutral-0 object-cover object-left-top;
+}
+
+@media (min-width: 992px) {
+  .shot__img {
+    @apply aspect-auto h-auto object-fill;
+  }
+}
+
+/* The shot is a full-height screenshot, so it ends on a hard horizontal edge.
+   This dissolves that edge into the page instead of cropping it. */
+.shot__fade {
+  @apply pointer-events-none absolute inset-x-0 bottom-0 z-10 h-28 md:h-36;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--color-neutral-0) 92%
+  );
+}
+
+.lead-card {
+  @apply relative z-20 mx-auto mt-4 w-full max-w-sm rounded-2xl border border-neutral-200 bg-neutral-0 p-4 xl:absolute xl:bottom-14 xl:-left-28 xl:mt-0 xl:max-w-[15.5rem] 2xl:-left-36 hidden 2xl:block;
+  box-shadow:
+    0 2px 4px -2px color-mix(in oklab, var(--color-primary) 12%, transparent),
+    0 20px 50px -22px color-mix(in oklab, var(--color-ai) 42%, transparent);
+}
+
+/* Discover, not AI: a found inbox is data we retrieved, not something the
+   model wrote. The score beside it is the violet one. */
+.lead-card__mail {
+  @apply ml-auto inline-flex shrink-0 items-center gap-1 rounded-full bg-discover-soft px-2 py-1 text-[0.625rem] font-semibold text-discover-deep;
+}
+
+.lead-card__mail i {
+  @apply text-[0.75rem];
+}
+
+.sec-head {
+  @apply max-w-[42rem];
+}
+
+.sec-eyebrow {
+  @apply text-[0.75rem] font-semibold tracking-[0.14em] text-discover-deep uppercase;
+}
+
+.sec-title {
+  @apply mt-3 font-title text-[1.75rem] leading-[1.1] font-bold tracking-[-0.03em] text-balance text-title md:text-[2.25rem] xl:text-[2.5rem];
+}
+
+.sec-lead {
+  @apply mt-4 max-w-[52ch] text-[1rem] leading-[1.6] md:text-[1.0625rem];
+}
+
+.run {
+  @apply relative isolate overflow-hidden;
+}
+
+.rstage {
+  @apply relative;
+}
+
+.rstage:not(:first-child) {
+  @apply lg:border-l lg:border-neutral-200 lg:pl-10;
+}
+
+.rstage__count {
+  @apply text-[3rem] leading-none font-bold tracking-[-0.04em] md:text-[3.5rem];
+}
+
+.rstage--find .rstage__count {
+  @apply text-discover-deep;
+}
+
+.rstage--ai .rstage__count {
+  @apply text-ai-deep;
+}
+
+.rstage--act .rstage__count {
+  @apply text-accent-dark;
+}
+
+.rstage__meter {
+  @apply mt-5 h-[3px] w-full overflow-hidden rounded-full;
+  background-color: var(--color-neutral-200);
+}
+
+.rstage__bar--1 {
+  @apply w-full bg-discover-deep;
+}
+
+.rstage__bar--2 {
+  @apply w-[73%] bg-discover-deep;
+}
+
+.rstage__bar--3 {
+  @apply w-[24%] bg-ai;
+}
+
+.rstage__bar--4 {
+  @apply w-[9%] bg-accent;
+}
+
+/* Azure: the data came off the map. */
+.feat__icon--find {
+  @apply bg-discover-soft text-discover-deep;
+}
+
+/* Violet: the AI made this. */
+.feat__icon--ai {
+  @apply bg-ai-soft text-ai-deep;
+}
+
+/* Amber: this is where you act. */
+.feat__icon--act {
+  @apply bg-accent-soft text-accent-dark;
+}
+
+.feat__meta--ai {
+  @apply text-ai-deep;
+}
+
+.sec-head--center {
+  @apply mx-auto text-center;
+}
+
+.sec-head--center .sec-lead {
+  @apply mx-auto;
+}
+
+.voices {
+  @apply relative mt-12 px-5 pt-2 pb-6 sm:px-8 md:mt-16 lg:px-12 xl:px-20;
+  --voices-fade: 1.25rem;
+  overflow: clip;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--voices-fade),
+    #000 calc(100% - var(--voices-fade)),
+    transparent 100%
+  );
+}
+
+.voices:focus-visible {
+  @apply outline-2 outline-offset-4 outline-primary;
+}
+
+.voices .swiper-wrapper {
+  transition-timing-function: linear;
+  align-items: stretch;
+}
+
+.voice {
+  @apply relative flex flex-col rounded-2xl border border-neutral-200 bg-neutral-0 p-6;
+}
+
+.voice.swiper-slide {
+  @apply flex flex-col;
+  height: auto;
+  width: 85%;
+}
+
+@media (min-width: 576px) {
+  .voice.swiper-slide {
+    width: 22rem;
+  }
+}
+
+.voice__stage--find {
+  @apply text-discover-deep;
+}
+
+.voice__stage--ai {
+  @apply text-ai-deep;
+}
+
+.voice__stage--act {
+  @apply text-accent-dark;
+}
+
+.voice__mark {
+  @apply -mt-3 -mb-2 block font-title text-6xl leading-none font-extrabold text-primary/15 select-none;
+}
+
+.voice__mark::before {
+  content: "\201C";
+}
+
+.plans {
+  @apply grid gap-5 @[56rem]:grid-cols-3 @[56rem]:items-start;
+}
+
+.plan {
+  @apply relative flex flex-col rounded-2xl border border-neutral-200 bg-neutral-0 p-6 md:p-7;
+}
+
+.plan--featured {
+  @apply border-primary;
+  box-shadow: 0 12px 32px -12px
+    color-mix(in oklab, var(--color-primary) 22%, transparent);
+}
+
+.plan__name {
+  @apply font-title text-[0.9375rem] font-bold text-title;
+}
+
+.plan__price {
+  @apply mt-3 flex items-baseline gap-1.5;
+}
+
+.plan__amount {
+  @apply font-title text-[2.25rem] leading-none font-bold tracking-[-0.02em] text-title;
+}
+
+.plan__per {
+  @apply text-[0.875rem] text-body;
+}
+
+.plan__credits {
+  @apply mt-4 flex items-center gap-2 border-t border-neutral-100 pt-4 text-[0.875rem] font-medium text-title;
+}
+
+.plan__credits i {
+  @apply shrink-0 text-[1.125rem] text-accent-dark;
+}
+
+.plan__credits span {
+  font-family: inherit;
+}
+
+.plan__list {
+  @apply mt-6 flex flex-1 flex-col gap-3;
+}
+
+.plan__item {
+  @apply flex items-start gap-2.5 text-[0.875rem] leading-[1.5];
+}
+
+.plan__item i {
+  @apply mt-0.5 shrink-0 text-[1rem] text-success;
+}
+
+.plan__cta {
+  @apply mt-7 w-full;
+}
+
+.plans__note {
+  @apply mt-8 flex flex-col items-center justify-center gap-x-2 gap-y-1 text-center text-[0.875rem] text-body sm:flex-row;
+}
+
+.plans__note .numeric {
+  font-family: inherit;
+}
+
+.faq__item {
+  @apply rounded-xl border border-neutral-200 bg-neutral-0 px-5 transition-colors duration-200 md:px-6;
+}
+
+.faq__item + .faq__item {
+  @apply mt-3;
+}
+
+.faq__item:hover:not([open]) {
+  @apply border-neutral-300;
+}
+
+.faq__item[open] {
+  border-color: color-mix(in oklab, var(--color-discover) 35%, transparent);
+  background-color: color-mix(
+    in oklab,
+    var(--color-discover-soft) 45%,
+    var(--color-neutral-0)
+  );
+}
+
+.faq__q {
+  @apply flex cursor-pointer list-none items-center justify-between gap-6 py-5 font-title text-[1rem] font-bold text-title transition-colors select-none hover:text-primary md:text-[1.0625rem];
+}
+
+.faq__q::-webkit-details-marker {
+  display: none;
+}
+
+.faq__q:focus-visible {
+  @apply rounded-lg outline-2 outline-offset-2 outline-primary;
+}
+
+.faq__sign {
+  @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[1rem] text-body transition-all duration-200;
+  background-color: var(--color-neutral-100);
+}
+
+.faq__q:hover .faq__sign {
+  @apply text-title;
+}
+
+.faq__item[open] .faq__sign {
+  @apply rotate-45 text-neutral-0;
+  background-color: var(--color-discover-deep);
+}
+
+.faq__a {
+  @apply pt-4 pb-5 text-[0.9375rem] leading-[1.7];
+  border-top: 1px solid
+    color-mix(in oklab, var(--color-discover) 22%, transparent);
+}
+
+.faq__a p {
+  @apply max-w-[62ch];
+}
+
+.faq-lead {
+  @apply max-w-[64ch];
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq__sign {
+    @apply transition-none;
+  }
+}
+
+.cta {
+  @apply relative isolate overflow-hidden;
+}
+
+.cta__inner {
+  @apply mx-auto max-w-[46rem] text-center;
+}
+
+.cta__eyebrow {
+  @apply font-mono text-[0.75rem] font-medium tracking-[0.2em] text-discover-deep uppercase;
+}
+
+.cta__title {
+  @apply mt-4 font-title text-[1.875rem] leading-[1.1] font-bold tracking-[-0.03em] text-balance text-title md:text-[2.5rem] xl:text-[2.75rem];
+}
+
+.cta__form {
+  @apply mx-auto mt-9 flex max-w-[42rem] flex-col gap-px overflow-hidden rounded-2xl border border-neutral-200 p-0 text-left md:flex-row md:items-stretch;
+  background-color: var(--color-neutral-200);
+  box-shadow:
+    0 1px 0 0 var(--color-neutral-0) inset,
+    0 20px 50px -28px color-mix(in oklab, var(--color-primary) 32%, transparent);
+}
+
+.cta__field {
+  @apply flex min-w-0 flex-1 flex-col justify-center bg-neutral-0 px-5 py-3.5 transition-colors duration-200;
+}
+
+.cta__field:focus-within {
+  @apply relative;
+  background-color: color-mix(
+    in oklab,
+    var(--color-discover) 8%,
+    var(--color-neutral-0)
+  );
+}
+
+.cta__field:focus-within::before {
+  content: "";
+  @apply absolute inset-x-0 bottom-0 h-[3px] bg-discover-deep md:inset-y-0 md:right-auto md:left-0 md:h-auto md:w-[3px];
+}
+
+.ft__mark {
+  @apply block w-[clamp(13rem,42vw,20rem)] transition-opacity duration-200 hover:opacity-80;
+}
+
+.ft__mark img {
+  @apply h-auto w-full;
+}
+
+/* The ask, not a fourth column of links. */
+.ft__pitch {
+  @apply mt-5 max-w-[28ch] text-[0.9375rem];
+}
+
+.ft__pitch .numeric {
+  font-family: inherit;
+}
+
+/* Pricing page */
+
+.unit__item {
+  @apply flex items-center gap-3 border-b border-neutral-100 py-3 last:border-b-0 text-[0.9375rem];
+}
+
+.unit__item i {
+  @apply shrink-0 text-[1.0625rem];
+}
+
+.unit__item--find i {
+  @apply text-discover-deep;
+}
+
+.unit__item--ai i {
+  @apply text-ai-deep;
+}
+
+.unit__item--act i {
+  @apply text-accent-dark;
+}
+
+.out {
+  @apply border-t border-neutral-200 pt-5;
+}
+
+.cmp {
+  @apply w-full min-w-[40rem] border-separate border-spacing-0 text-left;
+}
+
+.cmp th,
+.cmp td {
+  @apply border-b border-neutral-200 px-4 py-3.5 text-[0.9375rem];
+}
+
+.cmp thead th {
+  @apply border-b-neutral-300 pb-3 text-[0.8125rem] font-semibold text-title;
+}
+
+.cmp tbody th {
+  @apply font-normal text-body;
+}
+
+.cmp td {
+  @apply text-center text-title;
+}
+
+.cmp thead th:not(.cmp__feat) {
+  @apply text-center;
+}
+
+.cmp__col--on {
+  background-color: color-mix(
+    in oklab,
+    var(--color-accent) 6%,
+    var(--color-neutral-0)
+  );
+}
+
+.cmp tbody tr:last-child th,
+.cmp tbody tr:last-child td {
+  @apply border-b-0;
+}
+
+.pricing-cta__btn {
+  @apply mt-8;
+}
+
+.auth {
+  @apply min-h-screen lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)] xl:grid-cols-2;
+}
+
+.auth__brand-field {
+  @apply pointer-events-none absolute inset-0 -z-10;
+  background:
+    radial-gradient(
+      ellipse 70% 50% at 15% 12%,
+      color-mix(in oklab, var(--color-discover-soft) 75%, transparent) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 60% 50% at 90% 88%,
+      color-mix(in oklab, var(--color-ai-soft) 60%, transparent) 0%,
+      transparent 68%
+    );
+}
+
+.auth__logo {
+  @apply inline-flex shrink-0 transition-opacity duration-200 hover:opacity-80;
+}
+
+.auth__logo--mobile {
+  @apply mb-8 lg:hidden;
+}
+
+/* --- Form column ------------------------------------------------------ */
+.auth__main {
+  @apply relative flex items-center justify-center px-5 py-12 md:px-8 lg:py-16;
+}
+
+.auth__main::before {
+  content: "";
+  @apply pointer-events-none absolute inset-x-0 top-0 h-64;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--color-discover-soft) 40%, transparent) 0%,
+    transparent 100%
+  );
+}
+
+.auth__panel {
+  @apply relative w-full max-w-[26rem];
+}
+
+.auth__step-dot {
+  @apply flex h-5 w-5 items-center justify-center rounded-full text-[0.625rem] font-bold text-neutral-0;
+  background-color: var(--color-discover-deep);
+}
+
+.auth__head {
+  @apply mb-7;
+}
+
+.field__control {
+  @apply relative;
+}
+
+.field__control .form-input {
+  @apply pl-11;
+}
+
+.field__icon {
+  @apply pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-[1.0625rem] text-neutral-500;
+}
+
+.auth__title {
+  @apply font-title text-[1.5rem] leading-[1.15] font-bold tracking-[-0.02em] text-title md:text-[1.75rem];
+}
+
+.auth__sub {
+  @apply mt-2.5 text-[0.9375rem] leading-[1.6];
+}
+
+.auth__form {
+  @apply flex flex-col gap-5;
+}
+
+.field__hint {
+  @apply mt-2 text-[0.8125rem];
+}
+
+.consent {
+  @apply flex cursor-pointer items-start gap-3;
+}
+
+.consent__link {
+  @apply font-medium text-title underline decoration-neutral-300 underline-offset-2 transition-colors hover:decoration-title;
+}
+
+.auth__row {
+  @apply flex flex-wrap items-center justify-between gap-x-4 gap-y-3;
+}
+
+.auth__row .consent {
+  @apply items-center;
+}
+
+.auth__submit {
+  @apply mt-1 w-full;
+}
+
+.auth-divider {
+  @apply my-6;
+}
+
+.auth__oauth {
+  @apply w-full;
+}
+
+.auth__oauth i {
+  @apply text-[1.125rem];
+}
+
+.auth__alt {
+  @apply mt-6 text-center text-[0.875rem];
+}
+
+.auth__alt-link {
+  @apply font-semibold text-title underline decoration-neutral-300 underline-offset-2 transition-colors hover:decoration-title;
+}
+
+.auth__sent {
+  @apply rounded-xl border p-5 text-center;
+  border-color: color-mix(in oklab, var(--color-success) 30%, transparent);
+  background-color: color-mix(
+    in oklab,
+    var(--color-success) 7%,
+    var(--color-neutral-0)
+  );
+}
+
+.auth__sent-mark {
+  @apply mx-auto flex h-11 w-11 items-center justify-center rounded-full text-[1.25rem] text-neutral-0;
+  background-color: var(--color-success);
+}
+
+/* --- Reassurances (brand panel) --------------------------------------- */
+.assure {
+  @apply mt-8 flex flex-col gap-3 border-t border-neutral-200 pt-6;
+}
+
+.assure__item {
+  @apply flex items-center gap-2.5 text-[0.875rem];
+}
+
+.assure__item i {
+  @apply shrink-0 text-[1.0625rem] text-success;
+}
+
+.phead__field {
+  @apply pointer-events-none absolute inset-0 -z-10;
+  background: radial-gradient(
+    ellipse 60% 70% at 10% 0%,
+    color-mix(in oklab, var(--color-discover-soft) 70%, transparent) 0%,
+    transparent 70%
+  );
+}
+
+.crumb__link {
+  @apply inline-flex items-center gap-1.5 text-[0.8125rem] font-medium text-body transition-colors duration-200 hover:text-title;
+}
+
+.crumb__link i {
+  @apply text-[0.9375rem];
+}
+
+/* --- Placeholder notice ----------------------------------------------- */
+.legal__notice {
+  @apply container-prose flex items-start gap-3 rounded-xl border p-4 text-[0.875rem] leading-[1.6];
+  border-color: color-mix(in oklab, var(--color-accent) 30%, transparent);
+  background-color: color-mix(
+    in oklab,
+    var(--color-accent) 6%,
+    var(--color-neutral-0)
+  );
+}
+
+.legal__notice i {
+  @apply shrink-0 text-[1.125rem] text-accent-dark;
+}
+
+.legal__notice strong {
+  @apply font-semibold text-title;
+}
+
+.legal {
+  @apply container-prose mt-12;
+}
+
+/* Each numbered clause is its own <section>, ruled off from the last. */
+.legal > section,
+.prose > section {
+  @apply mt-10 border-t border-neutral-200 pt-10 first:mt-0 first:border-t-0 first:pt-0;
+}
+
+.legal h2,
+.prose h2 {
+  @apply font-title text-[1.25rem] font-bold text-title md:text-[1.375rem];
+}
+
+.legal p,
+.prose p {
+  @apply mt-4 text-[0.9375rem] leading-[1.75];
+}
+
+.legal strong,
+.prose strong {
+  @apply font-semibold text-title;
+}
+
+.legal a,
+.prose a {
+  @apply font-medium text-title underline decoration-neutral-300 underline-offset-2 transition-colors hover:decoration-title;
+}
+
+.legal ul,
+.prose ul {
+  @apply mt-4 flex flex-col gap-3;
+}
+
+.legal li,
+.prose li {
+  @apply relative pl-5 text-[0.9375rem] leading-[1.75];
+}
+
+.legal li::before,
+.prose li::before {
+  content: "";
+  @apply absolute top-[0.6875rem] left-0 h-1.5 w-1.5 rounded-full;
+  background-color: color-mix(in oklab, var(--color-discover) 55%, transparent);
+}
+
+.contact__textarea {
+  @apply min-h-[10rem] leading-[1.6];
+  resize: vertical;
+}
+
+.contact__card-body {
+  @apply mt-3 text-[0.875rem] leading-[1.65];
+}
+
+.contact__card-body strong {
+  @apply font-semibold text-title;
+}
+
+.contact__time-when--fast {
+  @apply font-medium text-success;
+}
+
+/* --- Removal card ----------------------------------------------------- */
+.contact__card--removal {
+  border-color: color-mix(in oklab, var(--color-discover) 30%, transparent);
+  background-color: color-mix(
+    in oklab,
+    var(--color-discover-soft) 45%,
+    var(--color-neutral-0)
+  );
+}
+
+.contact__card-key--removal {
+  @apply flex items-center gap-2 text-discover-deep;
+}
+
+.contact__card-key--removal i {
+  @apply text-[1rem];
+}
+
+.contact__link {
+  @apply mt-4 inline-flex items-center gap-1.5 text-[0.875rem] font-semibold text-title transition-colors duration-200 hover:text-primary;
+}
+
+.contact__link i {
+  @apply text-[0.9375rem] text-accent-dark transition-transform duration-200;
+}
+
+.contact__link:hover i {
+  @apply translate-x-0.5;
+}
+
+.stage-head__key {
+  @apply inline-flex items-center gap-2 font-mono text-[0.6875rem] font-medium tracking-[0.16em] uppercase;
+}
+
+.stage-head__key i {
+  @apply text-[1rem];
+}
+
+.stage-head__key--find {
+  @apply text-discover-deep;
+}
+
+.stage-head__key--ai {
+  @apply text-ai-deep;
+}
+
+.stage-head__key--act {
+  @apply text-accent-dark;
+}
+
+.stage-head__lead {
+  @apply mt-4 text-[1rem] leading-[1.65] md:text-[1.0625rem];
+}
+
+.stage-head__lead em {
+  @apply font-medium text-title not-italic;
+}
+
+.fgrid--tight {
+  @apply mt-10 lg:grid-cols-3;
+}
+
+.fcard__icon--find {
+  @apply text-discover-deep;
+  background-color: color-mix(in oklab, var(--color-discover) 13%, transparent);
+}
+
+.fcard__icon--ai {
+  @apply text-ai-deep;
+  background-color: color-mix(in oklab, var(--color-ai) 13%, transparent);
+}
+
+.fcard__icon--act {
+  @apply text-accent-dark;
+  background-color: color-mix(in oklab, var(--color-accent) 13%, transparent);
+}
+
+.score-work {
+  @apply mt-12 grid gap-px overflow-hidden rounded-2xl border border-neutral-200 md:mt-14 lg:grid-cols-2;
+  background-color: var(--color-neutral-200);
+}
+
+.score-work__col--out {
+  background-color: color-mix(
+    in oklab,
+    var(--color-ai-soft) 50%,
+    var(--color-neutral-0)
+  );
+}
+
+.signals {
+  @apply mt-5 flex flex-col;
+}
+
+.verdict__bar {
+  @apply mt-2 h-1.5 w-full max-w-[14rem] overflow-hidden rounded-full;
+  background-color: color-mix(in oklab, var(--color-ai) 18%, transparent);
+}
+
+/* Quoted, so it reads as the model's output rather than our claim. */
+.verdict__why {
+  @apply mt-5 border-l-2 pl-4 text-[0.875rem] leading-[1.7] text-title italic;
+  border-color: color-mix(in oklab, var(--color-ai) 45%, transparent);
+}
+
+.verdict__note {
+  @apply mt-5 flex items-start gap-2.5 border-t pt-4 text-[0.8125rem] leading-[1.6];
+  border-color: color-mix(in oklab, var(--color-ai) 22%, transparent);
+}
+
+.verdict__note i {
+  @apply shrink-0 text-[1rem] text-ai-deep;
+}
+
+.topic {
+  @apply inline-flex min-h-9 items-center rounded-full border border-neutral-200 bg-neutral-0 px-4 text-[0.8125rem] font-medium text-body transition-colors duration-200 hover:border-neutral-300 hover:text-title;
+}
+
+.topic.is-active {
+  @apply border-primary bg-primary text-neutral-0;
+}
+
+/* --- Shared post pieces ----------------------------------------------- */
+.post__meta {
+  @apply flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.8125rem];
+}
+
+.post__dot {
+  @apply text-neutral-500;
+}
+
+.post__topic {
+  @apply inline-flex items-center rounded-md px-2.5 py-1 text-[0.75rem] font-semibold tracking-[0.04em] uppercase;
+}
+
+.post__topic--find {
+  @apply text-discover-deep;
+  background-color: color-mix(in oklab, var(--color-discover) 14%, transparent);
+}
+
+.post__topic--ai {
+  @apply text-ai-deep;
+  background-color: color-mix(in oklab, var(--color-ai) 14%, transparent);
+}
+
+.post__topic--act {
+  @apply bg-neutral-100 text-accent-dark;
+}
+
+.post__topic--legal {
+  @apply text-primary;
+  background-color: color-mix(in oklab, var(--color-primary) 10%, transparent);
+}
+
+.post__link {
+  @apply transition-colors duration-200 hover:text-primary;
+}
+
+.post__excerpt {
+  @apply mt-3 text-[0.9375rem] leading-[1.65];
+}
+
+.post__by {
+  @apply mt-5 flex items-center gap-2.5 text-[0.875rem] font-medium text-title;
+}
+
+.post__avatar {
+  @apply h-9 w-9 shrink-0 rounded-full border border-neutral-200 object-cover;
+}
+
+.posts {
+  @apply @container mt-6 grid gap-6 md:mt-8 sm:grid-cols-2 lg:grid-cols-3;
+}
+
+.posts--three {
+  @apply mt-10;
+}
+
+.post {
+  @apply relative flex flex-col overflow-hidden rounded-xl border border-neutral-200 bg-neutral-0 p-4 transition-colors duration-200 hover:border-neutral-300;
+}
+
+.post__media {
+  @apply relative block overflow-hidden rounded-lg;
+  aspect-ratio: 16 / 9;
+}
+
+.post__img {
+  @apply h-full w-full object-cover;
+}
+
+/* Overlaps the media's bottom-left corner, as the reference does. */
+.post__date {
+  @apply absolute bottom-0 left-0 flex h-16 w-16 flex-col items-center justify-center rounded-tr-lg bg-accent text-neutral-0;
+}
+
+.post__date-day {
+  @apply font-title text-[1.375rem] leading-none font-bold;
+}
+
+.post__date-mon {
+  @apply mt-1 text-[0.75rem] leading-none font-semibold uppercase;
+}
+
+/* --- Card body ---------------------------------------------------------- */
+.post__body {
+  @apply flex flex-1 flex-col pt-5;
+}
+
+.post__title {
+  @apply mt-3 font-title text-[1.0625rem] leading-[1.35] font-bold text-title;
+}
+
+.post__foot {
+  @apply mt-auto flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-neutral-100 pt-4;
+}
+
+.post__more {
+  @apply shrink-0;
+}
+
+.pager__step {
+  @apply inline-flex min-h-10 items-center gap-1.5 rounded-lg px-3 text-[0.875rem] font-medium text-title transition-colors duration-200 hover:bg-neutral-50;
+}
+
+.pager__step.is-disabled {
+  @apply pointer-events-none text-neutral-400;
+}
+
+.pager__num {
+  @apply flex h-10 min-w-10 items-center justify-center rounded-lg px-2 text-[0.875rem] font-medium text-body transition-colors duration-200 hover:bg-neutral-50 hover:text-title;
+}
+
+.pager__num.is-active {
+  @apply bg-primary text-neutral-0;
+}
+
+.scope {
+  @apply @container mt-10 md:mt-12;
+}
+
+.note {
+  @apply mx-auto mt-10 max-w-[46rem] rounded-2xl border border-accent/25 bg-neutral-0 p-6 md:mt-12 md:p-8;
+}
+
+/* --- Post page --------------------------------------------------------- */
+.byline {
+  @apply container-prose flex flex-wrap items-center gap-3 border-b border-neutral-200 pb-6;
+}
+
+.byline .post__avatar {
+  @apply h-12 w-12;
+}
+
+.byline__topic {
+  @apply shrink-0;
+}
+
+.prose {
+  @apply container-prose mt-10;
+}
+
+.prose h2 {
+  @apply mt-10;
+}
+
+.prose blockquote {
+  @apply my-8 border-l-2 pl-5 font-title text-[1.125rem] leading-[1.5] font-medium text-title italic;
+  border-color: color-mix(in oklab, var(--color-discover) 50%, transparent);
+}
+
+/* --- Post CTA ---------------------------------------------------------- */
+.post-cta {
+  @apply container-prose mt-12 rounded-xl border p-6 md:mt-14;
+  border-color: color-mix(in oklab, var(--color-accent) 28%, transparent);
+  background-color: color-mix(
+    in oklab,
+    var(--color-accent) 5%,
+    var(--color-neutral-0)
+  );
+}
+
+/* APP SHELL PATTERNS */
+
+.page-top {
+  @apply mb-5 flex flex-wrap items-center justify-between gap-3;
+}
+
+.kpis {
+  @apply grid gap-4 @xl:grid-cols-2 @5xl:grid-cols-4;
+}
+
+.kpi {
+  @apply rounded-xl border border-neutral-200 bg-neutral-0 p-4;
+}
+
+/* Violet only where a machine produced the number (rule 5). */
+.kpi--ai {
+  @apply border-ai/25;
+}
+
+.kpi__label {
+  @apply text-[0.75rem] font-medium tracking-[0.04em] text-body uppercase;
+}
+
+.kpi__value {
+  @apply mt-2 font-title text-[1.75rem] leading-none font-bold tracking-[-0.02em] text-title;
+}
+
+.kpi--ai .kpi__value {
+  @apply text-ai-deep;
+}
+
+.kpi__foot {
+  @apply mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-[0.8125rem];
+}
+
+.kpi__note {
+  @apply text-body;
+}
+
+.kpi__note--ai {
+  @apply flex items-center gap-1.5 text-ai-deep;
+}
+
+.kpi__link {
+  @apply font-medium text-accent-dark underline decoration-transparent underline-offset-2 transition-colors duration-200 hover:decoration-current;
+}
+
+.kpi__delta {
+  @apply flex items-center gap-1.5 font-medium;
+}
+
+.kpi__delta--up {
+  @apply text-success;
+}
+
+.kpi__delta--down {
+  @apply text-error;
+}
+
+.panel {
+  @apply mt-4 rounded-xl border border-neutral-200 bg-neutral-0;
+}
+
+.panel__head {
+  @apply flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-neutral-100 px-4 py-3;
+}
+
+.panel__title {
+  @apply flex items-center gap-2 font-title text-[0.9375rem] font-bold text-title;
+}
+
+.panel__meta {
+  @apply text-[0.8125rem] text-body;
+}
+
+.panel__link {
+  @apply inline-flex items-center gap-1.5 text-[0.8125rem] font-medium text-primary transition-colors duration-200 hover:text-primary-dark;
+}
+
+.panel__link i {
+  @apply text-[0.9375rem] transition-transform duration-200;
+}
+
+.panel__link:hover i {
+  @apply translate-x-0.5;
+}
+
+.panel__body {
+  @apply p-4;
+}
+
+.live-dot {
+  @apply relative flex h-2 w-2 shrink-0 rounded-full bg-discover-deep;
+}
+
+.live-dot::after {
+  content: "";
+  @apply absolute inset-0 rounded-full bg-discover-deep;
+  animation: live-pulse 2s ease-out infinite;
+}
+
+@keyframes live-pulse {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot::after {
+    animation: none;
+  }
+}
+
+.job + .job {
+  @apply mt-4 border-t border-neutral-100 pt-4;
+}
+
+.job__head {
+  @apply flex flex-wrap items-center justify-between gap-x-4 gap-y-1;
+}
+
+.job__what {
+  @apply flex min-w-0 items-center gap-2 text-[0.875rem] font-medium text-title;
+}
+
+.job__what i {
+  @apply shrink-0 text-discover-deep;
+}
+
+.job__fill {
+  --progress: 0%;
+  @apply block h-full rounded-full bg-discover-deep transition-[width] duration-500;
+  width: var(--progress);
+}
+
+.job__foot {
+  @apply mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[0.8125rem];
+}
+
+.dash-split {
+  @apply grid gap-4 @5xl:grid-cols-[1.6fr_1fr];
+}
+
+.dash-split > .panel {
+  @apply mt-4 @5xl:mt-4;
+}
+
+.tops {
+  @apply flex flex-col;
+}
+
+.top {
+  @apply flex items-center gap-3 py-2.5;
+}
+
+.top + .top {
+  @apply border-t border-neutral-100;
+}
+
+.top__score {
+  @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-title text-[0.875rem] font-bold;
+}
+
+.top__score--hi {
+  @apply bg-ai/12 text-ai-deep;
+}
+
+.top__score--mid {
+  @apply bg-ai/8 text-ai-deep;
+}
+
+.top__who {
+  @apply flex min-w-0 flex-col;
+}
+
+.tbl-wrap {
+  @apply relative overflow-x-auto;
+}
+
+/* Wraps a .d-table so a wide table scrolls sideways instead of stretching
+   its container. Used on 36, 31 and 37; it had never been defined here —
+   the name came over from the reference project. */
+.table-scroll {
+  @apply w-full overflow-x-auto;
+}
+
+/* Once the table restacks as cards it is no longer wide, and a scroller
+   would clip the cards instead of carrying them. Matches the container
+   query .d-table--cards restacks at. */
+@container (max-width: 57rem) {
+  .table-scroll:has(.d-table--cards) {
+    @apply overflow-visible;
+  }
+}
+
+.tbl {
+  @apply w-full min-w-[38rem] border-collapse text-[0.875rem];
+}
+
+.tbl th {
+  @apply border-b border-neutral-200 px-4 py-2.5 text-left text-[0.75rem] font-semibold tracking-[0.04em] text-body uppercase;
+}
+
+.tbl td {
+  @apply border-b border-neutral-100 px-4 py-3 text-body;
+}
+
+.tbl tbody tr:last-child td {
+  @apply border-b-0;
+}
+
+.tbl tbody tr:hover td {
+  @apply bg-neutral-50;
+}
+
+.tbl__key {
+  @apply font-medium text-title;
+}
+
+.tbl__num {
+  @apply text-right;
+}
+
+.tbl__act {
+  @apply text-right;
+}
+
+.tbl__link {
+  @apply font-medium text-primary transition-colors duration-200 hover:text-primary-dark;
+}
+
+.empty {
+  @apply flex flex-col items-center px-6 py-12 text-center md:py-16;
+}
+
+.empty__icon {
+  @apply mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-discover/10 text-[1.5rem] text-discover-deep;
+}
+
+.empty__title {
+  @apply font-title text-[1.125rem] font-bold text-title;
+}
+
+.empty__body {
+  @apply mt-2 mb-6 max-w-[42ch] text-[0.9375rem] leading-[1.6];
+}
+
+/* Screen 15 — every criterion in one rail, so the whole query is scannable
+   without scrolling past it. Container query, not viewport: the rail sits
+   beside the app sidebar, so the space it has is not the screen width. */
+/* The rail is a COLUMN, not a card: no radius, no fill, one hairline down
+   its right edge — it reads as part of the shell rather than a panel
+   floating in the content. Fixed 19rem so the filters never reflow as the
+   workspace beside them changes. */
+/* items-STRETCH, not start: with items-start the rail is only as tall as its
+   filters, so its right border stopped mid-page and left a ragged edge. The
+   divider has to run the full height of the split. Same trap as screen 20's
+   rail (§17) — alignment can only choose where a hole goes, not remove it. */
+.srch {
+  @apply grid items-stretch gap-0 @3xl:grid-cols-[18.75rem_minmax(0,1fr)];
+}
+
+/* The rail scrolls independently, like the reference's. Without this an
+   expanded filter grows the PAGE, so the rail's lower rows end up behind
+   the sticky save bar and the workspace slides away with them.
+   100dvh minus the 72px topbar, the 20px content padding and the ~61px
+   save bar. */
+/* The rail fills its grid cell so the divider runs the full height, and
+   scrolls INSIDE that box when the filters outgrow it — expanding one must
+   not grow the page and push the save bar away. */
+.srch__rail {
+  @apply min-w-0 @3xl:overflow-y-auto @3xl:overscroll-contain @3xl:border-r @3xl:border-neutral-200 @3xl:pr-6;
+
+  /* Its own scrollbar, quiet enough not to read as a second column edge. */
+  scrollbar-width: thin;
+}
+
+.srch__rail-head {
+  @apply flex items-center justify-between gap-2 px-1 pb-1 @3xl:pr-6;
+}
+
+.srch__rail-tools {
+  @apply flex shrink-0 items-center gap-1;
+}
+
+.srch__tool {
+  @apply flex h-8 w-8 items-center justify-center rounded-lg text-[1rem] text-neutral-500 transition-colors duration-200 hover:bg-neutral-100 hover:text-title;
+}
+
+/* Sentence case, not tracked caps — the reference labels this as a heading,
+   not an eyebrow. */
+.srch__rail-title {
+  @apply flex items-center gap-2 font-title text-[1rem] font-bold text-title;
+}
+
+/* Active-filter count, clearable in one click — the reference puts this
+   beside the word "Filters" rather than in a bar of its own. */
+.srch__rail-badge {
+  @apply inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[0.6875rem] font-semibold text-neutral-0 transition-colors duration-200 hover:bg-primary-dark;
+}
+
+.srch__rail-badge i {
+  @apply text-[0.75rem];
+}
+
+.srch__rail-badge:not(.is-active) {
+  @apply hidden;
+}
+
+/* The always-on switch above the filter list. */
+.srch__pref {
+  @apply flex items-center justify-between gap-3 px-1 py-3 @3xl:pr-5;
+}
+
+/* The trailing preference sits below the filter list, ruled off it. */
+.srch__pref--foot {
+  @apply mt-2 border-t border-neutral-100 pt-3;
+}
+
+.srch__pref-label {
+  @apply flex items-center gap-2 text-[0.8125rem] text-body;
+}
+
+.srch__pref-label i {
+  @apply text-[1rem] text-neutral-500;
+}
+
+.srch__rail .fcount {
+  @apply mt-3;
+}
+
+/* In the rail the fields are underlined, not boxed — a column of hairlines
+   reads as one list, where seven bordered boxes read as seven panels.
+   Scoped to the rail: .ffield stays boxed everywhere else it is used. */
+.srch__rail .ffield {
+  @apply rounded-none border-0 border-b border-neutral-200 px-0 pb-2;
+}
+
+.srch__rail .ffield:focus-within {
+  @apply border-b-primary;
+}
+
+/* The workspace: empty until a search runs. */
+/* The empty state sits about a third down, as the reference does — not
+   pinned to the top of the column. */
+.srch__work {
+  @apply flex min-w-0 flex-col items-center justify-start py-6 @3xl:overflow-y-auto @3xl:px-8 @3xl:pt-[12vh] @3xl:pb-10;
+}
+
+/* With the rail scrolling on its own, this page never scrolls as a whole —
+   so a sticky bar would park mid-viewport with dead space under it. Here it
+   is the last row of a full-height column instead, pinned to the bottom. */
+/* Fixed height, not min-height: the columns can only scroll inside
+   themselves if the page itself has a ceiling to push against. 7rem is the
+   72px topbar plus the 20px content padding top and bottom. */
+.srch-page {
+  @apply flex flex-col @3xl:h-[calc(100dvh-7rem)];
+}
+
+/* min-h-0 on both the grid and its children is what lets them scroll inside
+   their cells rather than growing the page — a grid item's default min-height
+   is auto, so without it the rail's content sets the floor. */
+.srch-page > .srch {
+  @apply min-h-0 flex-1;
+}
+
+.srch-page > .srch > * {
+  @apply @3xl:min-h-0;
+}
+
+/* Cost, inline in the action bar. */
+.srch__cost {
+  @apply mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-[0.8125rem] text-body;
+}
+
+.srch__cost-sep {
+  @apply text-neutral-300;
+}
+
+.srch__cost-val {
+  @apply font-semibold text-accent-dark;
+}
+
+.srch__cost-after {
+  @apply text-neutral-500;
+}
+
+/* Results replace the hero rather than sit under it — the workspace shows
+   one state at a time. With results up the column starts at the top; the
+   hero's ~12vh offset only exists to centre the empty state. */
+.srch__work:has(.srch__results:not(.is-hidden)) .srch__hero {
+  @apply hidden;
+}
+
+.srch__work:has(.srch__results:not(.is-hidden)) {
+  @apply @3xl:pt-6;
+}
+
+.srch__results {
+  @apply w-full;
+}
+
+.srch__results .panel {
+  @apply mt-0;
+}
+
+.srch__results-head {
+  @apply mb-4 flex flex-wrap items-start justify-between gap-3 text-left;
+}
+
+.srch__results-title {
+  @apply text-[0.875rem] font-medium text-body;
+}
+
+.srch__results-title .numeric {
+  @apply font-semibold text-title;
+}
+
+.srch__results-act {
+  @apply flex shrink-0 flex-wrap items-center gap-2;
+}
+
+/* What is applied, above the rows it produced. */
+.srch__applied {
+  @apply mb-3 flex flex-wrap items-center gap-2;
+}
+
+.achip {
+  @apply inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-0 py-1 pr-2 pl-3 text-[0.8125rem] text-title transition-colors duration-200 hover:border-neutral-300 hover:bg-neutral-50;
+}
+
+/* Which filter it came from, so two chips reading "50+" are still distinct. */
+.achip__group {
+  @apply text-neutral-500;
+}
+
+.achip__x {
+  @apply text-[0.875rem] text-neutral-500;
+}
+
+.achip:hover .achip__x {
+  @apply text-error;
+}
+
+.achip__clear {
+  @apply text-[0.8125rem] font-medium text-primary underline decoration-neutral-300 decoration-2 underline-offset-[3px] transition-colors duration-200 hover:decoration-primary;
+}
+
+.srch__hero-peek {
+  @apply mt-5;
+}
+
+.srch__peek {
+  @apply inline-flex items-center gap-2 text-[0.875rem] font-semibold text-primary underline decoration-neutral-300 decoration-2 underline-offset-[5px] transition-colors duration-200 hover:decoration-primary;
+}
+
+.srch__peek i {
+  @apply text-[1rem];
+}
+
+.srch__hero {
+  @apply w-full max-w-[46rem] text-center;
+}
+
+/* 28px, weight 500 — measured. Lighter than our usual heading weight, which
+   is what keeps the empty state calm rather than shouting. */
+.srch__hero-title {
+  @apply font-title text-[1.5rem] font-semibold tracking-[-0.02em] text-title md:text-[1.75rem];
+}
+
+.srch__hero-lead {
+  @apply mx-auto mt-3 max-w-[52ch] text-[0.9375rem] leading-[1.6];
+}
+
+/* The one-line ask. 60px tall with a 1px border and 8px radius, measured
+   off the reference. */
+/* Stacks below sm: side by side the button never yields (it is shrink-0),
+   so at 320px the input was squeezed to 89px and the placeholder was cut
+   mid-word. Stacked, the field gets the full width and the button sits
+   under it at full width too. */
+.srch__ask {
+  @apply mt-6 flex flex-col items-stretch gap-2 rounded-lg border border-neutral-200 bg-neutral-0 p-2.5 transition-colors duration-200 sm:flex-row sm:items-center sm:gap-3 sm:py-2.5 sm:pr-2.5 sm:pl-4;
+}
+
+/* The magnifier only makes sense beside the field, not above the stack. */
+.srch__ask-field {
+  @apply flex min-w-0 flex-1 items-center gap-2 max-sm:rounded-md max-sm:bg-neutral-50 max-sm:px-3 max-sm:py-2;
+}
+
+.srch__ask:focus-within {
+  @apply border-primary;
+}
+
+.srch__ask-field > i {
+  @apply shrink-0 text-[1.125rem] text-neutral-500;
+}
+
+.srch__ask-input {
+  @apply min-w-0 flex-1 border-0 bg-transparent p-0 text-[0.9375rem] text-title placeholder:text-neutral-400 focus:outline-none;
+}
+
+/* The one gradient in the project, and it earns it: violet-to-indigo says
+   a machine wrote what comes back (§5). White ink on it is 6.1:1 at the
+   lightest stop. */
+.srch__ask-btn {
+  @apply inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-[0.875rem] font-semibold whitespace-nowrap text-neutral-0 transition-[filter] duration-200 hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary;
+  background-image: linear-gradient(
+    100deg,
+    var(--color-ai) 0%,
+    var(--color-primary) 70%
+  );
+}
+
+.srch__ask-btn i {
+  @apply text-[1rem];
+}
+
+/* Saved and recent, side by side under the ask. */
+.srch__recall {
+  @apply mt-6 grid gap-px overflow-hidden rounded-xl border border-neutral-200 text-left sm:grid-cols-2;
+  background-color: var(--color-neutral-200);
+}
+
+.srch__recall-col {
+  @apply bg-neutral-0 p-4;
+}
+
+.srch__recall-title {
+  @apply flex items-center gap-2 text-[0.8125rem] font-semibold text-title;
+}
+
+.srch__recall-title i {
+  @apply text-[1rem] text-discover-deep;
+}
+
+.srch__recall-list {
+  @apply mt-3 flex flex-col;
+}
+
+.srch__recall-item {
+  @apply -mx-2 flex items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[0.875rem] text-body transition-colors duration-200 hover:bg-neutral-50 hover:text-title;
+}
+
+.srch__recall-item i {
+  @apply shrink-0 text-[0.9375rem] text-neutral-500;
+}
+
+.srch__recall-none {
+  @apply mt-3 text-[0.875rem] text-neutral-500;
+}
+
+.srch__hero .est {
+  @apply mt-8 text-left;
+}
+
+/* One filter. The head is the only control; the panel is plain content. */
+/* 8px between rows, measured. No rule between filters — the reference
+   separates them by spacing alone, and hairlines on every row made the rail
+   read as a stack of panels. */
+.fac + .fac {
+  @apply mt-2;
+}
+
+.fac__h {
+  @apply m-0 font-body text-inherit;
+}
+
+/* Measured off the reference: 48px row, 15px label at weight 500 in the
+   MUTED ink — not bold title ink. The label is a quiet index entry; the
+   value you set inside it is what should carry weight. */
+.fac__head {
+  @apply flex min-h-12 w-full items-center gap-3 px-1 text-left text-[0.9375rem] font-medium text-body transition-colors duration-200 hover:text-title @3xl:pr-5;
+}
+
+.fac.is-open .fac__head {
+  @apply text-title;
+}
+
+.fac__icon {
+  @apply shrink-0 text-[1rem] text-neutral-500;
+}
+
+.fac.is-open .fac__icon {
+  @apply text-discover-deep;
+}
+
+.fac__label {
+  @apply min-w-0 flex-1 truncate;
+}
+
+/* The badge says a filter is set without opening it. */
+.fac__count {
+  @apply shrink-0 rounded-full bg-discover-soft px-2 py-0.5 text-[0.6875rem] font-semibold text-discover-deep;
+}
+
+.fac__caret {
+  @apply shrink-0 text-[0.9375rem] text-neutral-500 transition-transform duration-200;
+}
+
+.fac.is-open .fac__caret {
+  @apply rotate-180;
+}
+
+.fac__panel {
+  @apply hidden px-1 pt-0 pb-4 @3xl:pr-5;
+}
+
+.fac.is-open .fac__panel {
+  @apply block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fac__caret {
+    @apply transition-none;
+  }
+}
+
+@media (min-width: 992px) {
+  .srch__side {
+    @apply sticky top-[88px];
+  }
+}
+
+/* The range's end labels, so the slider states its own bounds. */
+.range__scale {
+  @apply mt-2 flex justify-between text-[0.75rem] text-body;
+}
+
+.field__val {
+  @apply ml-2 font-normal text-body;
+}
+
+.range {
+  --range-fill: 20%;
+  @apply h-2 w-full cursor-pointer appearance-none rounded-full;
+  background:
+    linear-gradient(var(--color-discover-deep), var(--color-discover-deep)) 0 /
+      var(--range-fill) 100% no-repeat,
+    var(--color-neutral-200);
+}
+
+.range::-webkit-slider-thumb {
+  @apply h-5 w-5 appearance-none rounded-full border-2 border-neutral-0 bg-discover-deep transition-transform;
+  box-shadow: 0 1px 4px rgb(20 22 50 / 0.3);
+}
+
+.range::-moz-range-thumb {
+  @apply h-5 w-5 rounded-full border-2 border-neutral-0 bg-discover-deep transition-transform;
+  box-shadow: 0 1px 4px rgb(20 22 50 / 0.3);
+}
+
+.range:active::-webkit-slider-thumb {
+  @apply scale-110;
+}
+
+.range:active::-moz-range-thumb {
+  @apply scale-110;
+}
+
+.range:focus-visible {
+  @apply outline-2 outline-offset-4 outline-primary;
+}
+
+.range:disabled {
+  @apply cursor-not-allowed opacity-50;
+}
+
+/* --- Checkbox with a hint ----------------------------------------------- */
+.check {
+  @apply flex cursor-pointer items-start gap-3;
+}
+
+.est__rows {
+  @apply flex flex-col;
+}
+
+.est__row {
+  @apply flex items-baseline justify-between gap-4 py-2.5;
+}
+
+.est__row + .est__row {
+  @apply border-t border-neutral-100;
+}
+
+.est__key {
+  @apply text-[0.875rem] text-body;
+}
+
+.est__val {
+  @apply font-title text-[1.125rem] font-bold text-title;
+}
+
+/* Amber on the cost line: spending is the commercial action (§5). */
+.est__row--cost .est__val {
+  @apply text-accent-dark;
+}
+
+.est__row--after .est__key,
+.est__row--after .est__val {
+  @apply text-[0.8125rem] font-medium text-body;
+}
+
+.est__warn {
+  @apply hidden;
+}
+
+.est__warn.is-shown {
+  @apply mt-4 flex items-start gap-2 rounded-xl bg-error/8 p-3 text-[0.8125rem] leading-[1.5] text-error;
+}
+
+.est__warn i {
+  @apply mt-0.5 shrink-0 text-[1rem];
+}
+
+.est__link {
+  @apply font-semibold underline underline-offset-2;
+}
+
+.est__note {
+  @apply mt-4 flex items-start gap-2 text-[0.8125rem] leading-[1.5] text-body;
+}
+
+.est__note i {
+  @apply mt-0.5 shrink-0 text-[1rem] text-neutral-500;
+}
+
+/* Filter field — chips + typeahead. Matches .form-input's padding and type
+   rather than a fixed height, so both stay in step if it is retuned (§18.1). */
+.ffield {
+  @apply relative flex w-full flex-wrap items-center gap-1.5 rounded-xl border border-neutral-200 bg-neutral-0 px-2 py-2 transition-colors duration-200;
+}
+
+.ffield:focus-within {
+  @apply border-primary;
+}
+
+.ffield--exclude.is-filled {
+  @apply border-error/40 bg-error/5;
+}
+
+.ffield__chip {
+  @apply inline-flex items-center gap-1 rounded-lg bg-primary/10 py-1 pr-1 pl-2.5 text-[0.8125rem] font-medium text-primary;
+}
+
+.ffield--exclude .ffield__chip {
+  @apply bg-error/10 text-error;
+}
+
+.ffield__x {
+  @apply f-center h-5 w-5 shrink-0 rounded-md text-current opacity-60 transition-opacity duration-200 hover:opacity-100;
+}
+
+.ffield__x i {
+  @apply text-[0.875rem];
+}
+
+.ffield__input {
+  @apply min-w-[6rem] flex-1 border-0 bg-transparent px-2 py-1 text-[0.9375rem] text-title outline-none placeholder:text-neutral-400;
+}
+
+/* Fixed, not absolute: .app-content is a query container and would clip
+   an absolutely-positioned panel at its edge (§6.1). */
+.ffield__panel {
+  @apply invisible fixed z-80 max-h-64 overflow-y-auto rounded-xl border border-neutral-200 bg-neutral-0 p-1.5 opacity-0 shadow-lg transition-opacity duration-150;
+  top: var(--panel-y, 0);
+  left: var(--panel-x, 0);
+  width: var(--panel-w, 12rem);
+}
+
+.ffield.is-open .ffield__panel {
+  @apply visible opacity-100;
+}
+
+.ffield__opt {
+  @apply flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-left text-[0.875rem] text-body transition-colors hover:bg-neutral-100 hover:text-title;
+}
+
+.ffield__opt i {
+  @apply shrink-0 text-[1rem] text-neutral-400;
+}
+
+.ffield__new {
+  @apply border-t border-neutral-100 text-title;
+}
+
+.ffield__new:empty {
+  @apply hidden;
+}
+
+.ffield__none {
+  @apply px-3 py-2 text-[0.875rem] text-neutral-500;
+}
+
+/* Bucket rows — a radio set that reads as a segmented list. */
+.bkt {
+  @apply mt-2 flex flex-wrap gap-2;
+}
+
+.bkt__opt {
+  @apply relative inline-flex cursor-pointer items-center rounded-lg border border-neutral-200 px-3 py-1.5 text-[0.8125rem] font-medium text-body transition-colors duration-200 hover:border-neutral-300 hover:text-title;
+}
+
+.bkt__opt input {
+  @apply absolute h-px w-px opacity-0;
+}
+
+.bkt__opt:has(input:checked) {
+  @apply border-primary bg-primary text-neutral-0;
+}
+
+.bkt__opt:has(input:focus-visible) {
+  @apply outline-2 outline-offset-2 outline-primary;
+}
+
+.bkt__custom {
+  @apply mt-3 hidden gap-2;
+}
+
+.bkt__custom.is-shown {
+  @apply grid grid-cols-2;
+}
+
+/* The running count. Quiet until something is actually filtered. */
+.fcount {
+  @apply flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-xl border border-neutral-200 bg-[#f6f5ff] px-4 py-3;
+}
+
+.fcount.is-active {
+  @apply border-primary/25 bg-primary/5;
+}
+
+.fcount__label {
+  @apply flex items-center gap-2 text-[0.875rem] font-medium text-title;
+}
+
+.fcount__badge {
+  @apply f-center h-6 min-w-6 rounded-full bg-neutral-200 px-1.5 text-[0.75rem] font-bold text-body;
+}
+
+.fcount.is-active .fcount__badge {
+  @apply bg-primary text-neutral-0;
+}
+
+.fcount__clear {
+  @apply invisible inline-flex items-center gap-1.5 text-[0.8125rem] font-semibold text-primary transition-colors duration-200 hover:text-primary-dark;
+}
+
+.fcount.is-active .fcount__clear {
+  @apply visible;
+}
+
+.back-link {
+  @apply mb-4 inline-flex items-center gap-1.5 text-[0.875rem] font-semibold text-primary transition-colors duration-200 hover:text-primary-dark;
+}
+
+.back-link i {
+  @apply text-base transition-transform duration-200;
+}
+
+.back-link:hover i {
+  @apply -translate-x-0.5;
+}
+
+.form-card {
+  @apply rounded-2xl border border-neutral-200 bg-neutral-0 p-5;
+}
+
+.form-card__title {
+  @apply font-title text-[1rem] font-bold text-title;
+}
+
+.form-card__hint {
+  @apply mt-1 text-[0.8125rem] text-body;
+}
+
+.form-hint {
+  @apply mt-1.5 text-[0.8125rem] text-body;
+}
+
+/* The negative margin must equal the PARENT's padding or the bar hangs off
+   its edges. Every container this sits in pads p-4 sm:p-5 (or .form-card's
+   p-5) — the old sm:-mx-6 assumed 24px that nothing actually uses, and left
+   the bar 4px proud on settings and 24px proud on new search. */
+.form-actions {
+  @apply sticky bottom-0 z-30 -mx-4 mt-4 flex flex-wrap items-center justify-end gap-2 border-t border-neutral-200 bg-neutral-0/95 px-4 py-3 backdrop-blur-sm sm:-mx-5 sm:px-5;
+}
+
+.map {
+  @apply isolate z-10 h-[320px] w-full overflow-hidden rounded-xl border border-neutral-200 @3xl:h-[420px];
+}
+
+.mpin {
+  @apply flex h-[30px] w-[30px] items-center justify-center rounded-full border-2 border-neutral-0 font-title text-[0.75rem] font-bold text-neutral-0;
+  background: var(--mpin-color, var(--color-discover-deep));
+  box-shadow: 0 2px 6px rgb(20 22 50 / 0.35);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Popup, restyled from Leaflet's defaults. */
+.leaflet-popup-content-wrapper {
+  @apply rounded-xl border border-neutral-200 shadow-lg;
+}
+
+.leaflet-popup-content {
+  @apply m-0 px-3 py-2;
+}
+
+.leaflet-popup-tip {
+  @apply border border-neutral-200;
+}
+
+.mpop {
+  @apply flex items-center gap-3;
+}
+
+.mpop__name {
+  @apply font-title text-[0.875rem] font-bold text-title;
+}
+
+.mpop__score {
+  @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-ai/12 font-title text-[0.8125rem] font-bold text-ai-deep;
+}
+
+.mpop__meta {
+  @apply text-[0.75rem] text-body;
+}
+
+/* Leaflet's controls and attribution, brought into our type scale. */
+.leaflet-control-zoom a {
+  @apply flex items-center justify-center rounded-lg border-neutral-200 bg-neutral-0 text-title;
+}
+
+.leaflet-control-zoom a:hover {
+  @apply bg-neutral-100;
+}
+
+.leaflet-container .leaflet-control-attribution {
+  @apply rounded-tl-lg bg-neutral-0/85 px-2 text-[0.625rem] text-body;
+}
+
+.leaflet-container .leaflet-control-attribution a {
+  @apply text-primary;
+}
+
+/* Leaflet sets its own font stack on the container. */
+.leaflet-container {
+  @apply font-body;
+}
+
+/* --- Finished state ---------------------------------------------------- */
+.done {
+  @apply mt-4 border-success/25;
+}
+
+.lbanner {
+  @apply flex flex-wrap items-center justify-between gap-4 rounded-2xl border p-5;
+}
+
+.lbanner--running {
+  @apply border-discover/30 bg-discover/8;
+}
+
+.lbanner--done {
+  @apply border-success/30 bg-success/8;
+}
+
+.lbanner__main {
+  @apply flex min-w-0 items-start gap-4;
+}
+
+.lbanner__icon {
+  @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-[1.25rem];
+}
+
+.lbanner--running .lbanner__icon {
+  @apply bg-discover/20 text-discover-deep;
+}
+
+.lbanner--done .lbanner__icon {
+  @apply bg-success/20 text-success;
+}
+
+.lbanner__title {
+  @apply flex flex-wrap items-center gap-2 font-title text-[1rem] font-bold text-title;
+}
+
+/* Same backend-driven width as .job__fill — see the note there. */
+.lbanner__fill {
+  --progress: 0%;
+  @apply block h-full rounded-full bg-discover-deep transition-[width] duration-500;
+  width: var(--progress);
+}
+
+.mapcard {
+  @apply overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-0;
+}
+
+.mapcard__head {
+  @apply flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-neutral-100 px-4 py-3;
+}
+
+.mapcard__legend {
+  @apply flex flex-wrap items-center gap-x-4 gap-y-1.5;
+}
+
+.mapcard__key {
+  @apply flex items-center gap-1.5 text-[0.75rem] text-body;
+}
+
+.mapcard__swatch {
+  @apply h-2.5 w-2.5 shrink-0 rounded-full;
+}
+
+.mapcard__swatch--hi {
+  @apply bg-ai-deep;
+}
+
+.mapcard__swatch--mid {
+  @apply bg-ai;
+}
+
+.mapcard__swatch--raw {
+  @apply bg-discover-deep;
+}
+
+/* Square off the map's own corners — the card already rounds them. */
+.mapcard .map {
+  @apply rounded-none border-0;
+}
+
+/* Taller here than the default: on this screen the map IS the content. */
+.mapcard .map {
+  @apply h-[380px] @3xl:h-[520px];
+}
+
+.score {
+  @apply inline-flex h-8 min-w-8 items-center justify-center rounded-lg px-1.5 font-title text-[0.875rem] font-bold;
+}
+
+.score--hi {
+  @apply bg-ai/12 text-ai-deep;
+}
+
+.score--mid {
+  @apply bg-ai/8 text-ai-deep;
+}
+
+.score--lo {
+  @apply bg-neutral-100 text-body;
+}
+
+/* LIST SCREEN PATTERNS */
+
+.app-tablist {
+  @apply flex gap-1 overflow-x-auto border-b border-neutral-200;
+  scrollbar-width: none;
+}
+
+.app-tablist::-webkit-scrollbar {
+  display: none;
+}
+
+.app-tab {
+  @apply -mb-px flex shrink-0 cursor-pointer items-center gap-2 border-b-2 border-transparent px-4 py-3 text-[0.9375rem] font-semibold whitespace-nowrap text-body transition-colors duration-200 hover:text-primary;
+}
+
+.app-tab.is-active {
+  @apply border-primary text-primary;
+}
+
+.app-tab__count {
+  @apply numeric rounded-full bg-neutral-100 px-2 py-0.5 text-[0.75rem] font-semibold text-body;
+}
+
+.app-tab.is-active .app-tab__count {
+  @apply bg-primary/10 text-primary;
+}
+
+/* --- Toolbar ----------------------------------------------------------- */
+.list-toolbar {
+  @apply flex flex-wrap items-center gap-3 border-b border-neutral-200 px-5 py-4;
+}
+
+.list-toolbar:last-child {
+  @apply border-b-0;
+}
+
+.search-field {
+  @apply relative basis-full @lg:min-w-[14rem] @lg:flex-1 @lg:basis-56;
+}
+
+.search-field i {
+  @apply pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-[1.125rem] text-neutral-500;
+}
+
+.search-field .form-input {
+  @apply pl-10;
+}
+
+.d-table {
+  @apply w-full text-left text-[0.9375rem];
+}
+
+.d-table th {
+  @apply border-b border-neutral-200 px-5 py-3 text-[0.75rem] font-semibold tracking-[0.04em] whitespace-nowrap text-body uppercase;
+}
+
+.d-table td {
+  @apply border-b border-neutral-100 px-5 py-3.5 text-body;
+}
+
+.d-table td[data-card-actions] {
+  @apply w-px whitespace-nowrap;
+}
+
+.d-table tbody tr:last-child td {
+  @apply border-b-0;
+}
+
+.d-table tbody tr:hover td {
+  @apply bg-neutral-50;
+}
+
+.d-table__key {
+  @apply font-medium text-title;
+}
+
+.d-table__id {
+  @apply font-semibold text-primary transition-colors duration-200 hover:text-primary-dark;
+}
+
+.d-table__muted {
+  @apply text-neutral-500;
+}
+
+@container (max-width: 57rem) {
+  .d-table--cards,
+  .d-table--cards tbody,
+  .d-table--cards tr:not(.is-hidden),
+  .d-table--cards td {
+    @apply block;
+  }
+
+  .d-table--cards thead {
+    @apply hidden;
+  }
+
+  .d-table--cards tr {
+    @apply relative border-b border-neutral-100 px-5 py-4 last:border-b-0;
+  }
+
+  .d-table--cards td[data-label="Status"] {
+    @apply py-1.5;
+  }
+
+  .panel:has(.d-table--cards) .list-toolbar {
+    @apply gap-2;
+  }
+
+  .panel:has(.d-table--cards) .list-toolbar .list-count {
+    @apply basis-auto;
+  }
+
+  .d-table--cards tbody tr:hover td {
+    @apply bg-transparent;
+  }
+
+  .d-table--cards td {
+    @apply flex items-baseline justify-between gap-4 border-0 px-0 py-1 text-[0.875rem] font-medium text-title;
+  }
+
+  .d-table--cards td::before {
+    content: attr(data-label);
+    @apply shrink-0 text-[0.75rem] font-medium text-neutral-500 normal-case;
+  }
+
+  .d-table--cards td[data-card-title] {
+    @apply mb-2.5 block pb-0;
+  }
+
+  .d-table--cards td[data-card-title]::before {
+    @apply hidden;
+  }
+
+  .d-table--cards td[data-card-title] {
+    @apply order-1 min-w-0 flex-1 pr-3;
+  }
+
+  .d-table--cards td[data-card-actions] {
+    @apply order-2 mt-0 w-auto shrink-0 justify-end p-0;
+  }
+
+  .d-table--cards tr:has([data-card-actions] .row-icon) td[data-card-title] {
+    @apply w-full flex-none pr-0;
+  }
+
+  .d-table--cards tr:has([data-card-actions] .row-icon) td[data-card-actions] {
+    @apply order-3 mt-2 w-full;
+  }
+
+  .d-table--cards tr:has([data-card-actions] .row-icon) td[data-label] {
+    @apply order-2;
+  }
+
+  @container (max-width: 30rem) {
+    .d-table--cards td[data-card-title] {
+      @apply w-full flex-none pr-0;
+    }
+
+    .d-table--cards td[data-card-actions] {
+      @apply order-3 mt-2 w-full;
+    }
+
+    .d-table--cards td[data-label] {
+      @apply order-2;
+    }
+  }
+
+  .d-table--cards tr:not(.is-hidden) {
+    @apply flex flex-row flex-wrap items-start;
+  }
+
+  .d-table--cards td[data-label] {
+    @apply order-3 w-full;
+  }
+
+  .d-table--cards td[data-card-title] > a {
+    @apply block truncate;
+  }
+
+  .d-table--cards td[data-card-actions]::before {
+    @apply hidden;
+  }
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.no-results {
+  @apply flex flex-col items-center px-6 py-14 text-center;
+}
+
+.no-results__icon {
+  @apply mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-neutral-100 text-[1.25rem] text-body;
+}
+
+.no-results__title {
+  @apply font-title text-[1rem] font-bold text-title;
+}
+
+.no-results__body {
+  @apply mt-1.5 max-w-[38ch] text-[0.875rem] leading-[1.6];
+}
+
+/* Credit ledger — screen 32 */
+.ledger__act {
+  @apply flex items-center gap-2 font-medium text-title;
+}
+
+.ledger__act i {
+  @apply shrink-0 text-[1.05rem] text-body;
+}
+
+.ledger__act--ai i {
+  @apply text-ai-deep;
+}
+
+.ledger__act--return i {
+  @apply text-success;
+}
+
+/* Carried line + total: same row shape, different weight. */
+.ledger__foot,
+.ledger__total {
+  @apply flex items-center justify-between gap-4 px-4 py-3 sm:px-5;
+}
+
+.ledger__total {
+  @apply border-t border-neutral-200;
+}
+
+/* The rule-1/rule-2 restatement under the panel. */
+.ledger__note {
+  @apply mt-4 flex items-start gap-2.5 rounded-xl border border-neutral-200 bg-[#f6f5ff] px-4 py-3 text-[0.875rem] leading-[1.6];
+}
+
+.ledger__note i {
+  @apply mt-0.5 shrink-0 text-[1.05rem] text-discover-deep;
+}
+
+.cnew {
+  @apply grid items-start gap-4 @4xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)];
+}
+
+.cnew__main,
+.cnew__sum {
+  @apply @4xl:sticky @4xl:top-24;
+}
+
+.cnew__grid {
+  @apply mt-4 grid gap-4 @xl:grid-cols-2;
+}
+
+.cnew__grid > * {
+  @apply min-w-0;
+}
+
+.cnew__link {
+  @apply font-medium text-primary underline underline-offset-2 hover:no-underline;
+}
+
+/* --- One pickable list ------------------------------------------------ */
+.pickr {
+  @apply flex cursor-pointer items-start gap-3 rounded-xl border border-neutral-200 bg-neutral-0 px-4 py-3 transition-colors duration-200 hover:border-neutral-300;
+}
+
+.pickr:has(.form-check:checked) {
+  @apply border-primary bg-primary/5;
+}
+
+.pickr:has(.form-check:focus-visible) {
+  @apply outline-2 outline-offset-2 outline-primary;
+}
+
+.pickr__body {
+  @apply flex min-w-0 flex-col;
+}
+
+.pickr__name {
+  @apply text-[0.9375rem] font-medium text-title;
+}
+
+.pickr__meta {
+  @apply mt-0.5 text-[0.8125rem] text-body;
+}
+
+.cnew__guard {
+  @apply mt-4 flex items-start gap-2.5 rounded-xl border border-success/30 bg-success/5 px-4 py-3 text-[0.8125rem] leading-[1.55];
+}
+
+.cnew__guard i {
+  @apply mt-0.5 shrink-0 text-[1.05rem] text-success;
+}
+
+/* --- The running summary ---------------------------------------------- */
+.cnew__facts {
+  @apply mt-4 grid gap-px overflow-hidden rounded-xl border border-neutral-200 bg-neutral-200;
+}
+
+.cnew__fact {
+  @apply flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 bg-neutral-0 px-4 py-2.5;
+}
+
+.cnew__fact-key {
+  @apply text-[0.8125rem] text-body;
+}
+
+.cnew__fact-val {
+  @apply text-[0.9375rem] font-semibold text-title;
+}
+
+/* Export center — screen 31 */
+
+.exp__col {
+  @apply flex cursor-pointer items-start gap-2.5 rounded-lg px-2 py-2 transition-colors duration-200 hover:bg-[#f6f5ff];
+}
+
+/* A column that cannot be turned off should not look clickable. */
+.exp__col:has(.form-check:disabled) {
+  @apply cursor-default hover:bg-transparent;
+}
+
+.exp__col-body {
+  @apply flex min-w-0 flex-col;
+}
+
+.exp__col-name {
+  @apply flex flex-wrap items-center gap-1.5 text-[0.875rem] font-medium text-title;
+}
+
+.exp__col-note {
+  @apply mt-0.5 text-[0.75rem] leading-[1.4] text-body;
+}
+
+.exp__note {
+  @apply mt-4 flex items-start gap-2.5 rounded-xl border border-ai/25 bg-ai/5 px-4 py-3 text-[0.8125rem] leading-[1.55];
+}
+
+.exp__note i {
+  @apply mt-0.5 shrink-0 text-[1.05rem] text-ai;
+}
+
+.exp__free {
+  @apply mt-4 flex items-start gap-2.5 rounded-xl border border-success/30 bg-success/5 px-4 py-3 text-[0.8125rem] leading-[1.55];
+}
+
+.exp__free i {
+  @apply mt-0.5 shrink-0 text-[1.05rem] text-success;
+}
+
+.errscr {
+  @apply flex min-h-screen items-center justify-center px-4 py-12;
+}
+
+.errscr__logo {
+  @apply mx-auto h-12 w-auto;
+}
+
+.errscr__num {
+  @apply mt-8 flex items-center justify-center gap-1 font-title text-[6rem] leading-none font-extrabold tracking-tight text-primary sm:text-[8rem];
+}
+
+/* 500 is our fault, and the numeral is where that is said. */
+.errscr__num--bad {
+  @apply text-error;
+}
+
+.errscr__pin {
+  @apply relative flex items-center justify-center text-[0.92em] text-discover;
+}
+
+.errscr__pin::before {
+  content: "";
+  @apply absolute h-[1.15em] w-[1.15em] rounded-full bg-discover/10;
+}
+
+.errscr__pin i {
+  @apply relative;
+}
+
+.errscr__act {
+  @apply mt-7 flex flex-wrap items-center justify-center gap-3;
+}
+
+/* --- 500's credit promise and reference --------------------------------- */
+.errscr__promise,
+.mnt__promise {
+  @apply mt-6 flex items-start gap-2.5 rounded-xl border border-success/30 bg-success/5 px-4 py-3 text-left text-[0.875rem] leading-[1.55];
+}
+
+.errscr__promise i,
+.mnt__promise i {
+  @apply mt-0.5 shrink-0 text-[1.05rem] text-success;
+}
+
+.mnt__promise {
+  @apply text-left;
+}
+
+/* Integrations — screen 37 */
+.integs {
+  @apply grid gap-3 @xl:grid-cols-2 @4xl:grid-cols-3;
+}
+
+.integs + .integs {
+  @apply mt-3;
+}
+
+.integ {
+  @apply flex min-w-0 flex-col rounded-2xl border border-neutral-200 bg-neutral-0 p-4;
+}
+
+.integ.is-connected {
+  @apply border-success/40 bg-success/5;
+}
+
+.integ__top {
+  @apply mb-3 flex items-start justify-between gap-2;
+}
+
+.integ__logo {
+  @apply f-center h-10 w-10 shrink-0 rounded-xl text-[1.25rem];
+}
+
+.integ__logo--hubspot {
+  @apply bg-accent/10 text-accent-dark;
+}
+
+.integ__logo--sheets {
+  @apply bg-success/10 text-success;
+}
+
+.integ__logo--pipedrive {
+  @apply bg-primary/10 text-primary;
+}
+
+.integ__logo--salesforce {
+  @apply bg-discover-deep/10 text-discover-deep;
+}
+
+.integ__logo--slack {
+  @apply bg-ai/10 text-ai;
+}
+
+.integ__logo--zapier {
+  @apply bg-accent/10 text-accent-dark;
+}
+
+.integ__facts {
+  @apply mt-3 grid gap-1.5 border-t border-neutral-200 pt-3;
+}
+
+.integ__fact {
+  @apply flex flex-wrap items-baseline justify-between gap-x-3 text-[0.8125rem];
+}
+
+.integ__fact dt {
+  @apply text-body;
+}
+
+.integ__fact dd {
+  @apply font-medium text-title;
+}
+
+.integ__act {
+  @apply mt-auto flex flex-wrap items-center gap-2 pt-4;
+}
+
+.integ__url {
+  @apply font-mono text-[0.8125rem] break-all;
+}
+
+.integ__note {
+  @apply mt-4 flex items-start gap-2.5 rounded-xl border border-neutral-200 bg-[#f6f5ff] px-4 py-3 text-[0.8125rem] leading-[1.55];
+}
+
+.integ__note i {
+  @apply mt-0.5 shrink-0 text-[1.05rem] text-discover-deep;
+}
+
+.is-testing {
+  @apply pointer-events-none opacity-60;
+}
+
+/* API documentation — screen 36 */
+.doc {
+  @apply grid items-start gap-4 @4xl:grid-cols-[minmax(0,1fr)_16rem];
+}
+
+/* min-w-0 is load-bearing, not tidiness. A grid item's default min-width is
+   auto, so the widest <pre> in the docs (a 422px curl line) sets the floor
+   for the whole track — overflow-x-auto on the <pre> does NOT stop that
+   intrinsic width escaping. Without it the page measured 603px wide at a
+   320px viewport. */
+.doc__main,
+.doc__nav {
+  @apply min-w-0 @4xl:sticky @4xl:top-24;
+}
+
+.doc__links {
+  @apply mt-3 flex flex-col gap-0.5;
+}
+
+.doc__link {
+  @apply flex items-center gap-2 rounded-lg px-2 py-1.5 font-mono text-[0.75rem] text-body transition-colors duration-200 hover:bg-[#f6f5ff] hover:text-title;
+}
+
+/* --- Endpoint heading --------------------------------------------------- */
+.doc__ep {
+  @apply flex flex-wrap items-center gap-2;
+}
+
+.doc__verb--get {
+  @apply bg-discover-deep/10 text-discover-deep;
+}
+
+/* Amber = it DOES something commercial: this is the call that spends. */
+.doc__verb--post {
+  @apply bg-accent/10 text-accent-dark;
+}
+
+.doc__block-head {
+  @apply flex flex-wrap items-center justify-between gap-2 border-b border-neutral-200 bg-[#f6f5ff] px-3 py-2;
+}
+
+.doc__inline {
+  @apply rounded bg-[#f6f5ff] px-1.5 py-0.5 font-mono text-[0.8125rem] break-all text-title;
+}
+
+.doc__facts {
+  @apply mt-4 grid gap-px overflow-hidden rounded-xl border border-neutral-200 bg-neutral-200;
+}
+
+.doc__fact {
+  @apply flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 bg-neutral-0 px-4 py-2.5;
+}
+
+.doc__scopes {
+  @apply mt-4 grid gap-2 @xl:grid-cols-2;
+}
+
+.doc__scope-name {
+  @apply flex flex-wrap items-center gap-2 text-[0.875rem] font-medium text-title;
+}
+
+.doc__note {
+  @apply mt-4 flex items-start gap-2.5 rounded-xl border px-4 py-3 text-[0.8125rem] leading-[1.55];
+}
+
+.doc__note i {
+  @apply mt-0.5 shrink-0 text-[1.05rem];
+}
+
+.doc__note--free {
+  @apply border-success/30 bg-success/5;
+}
+
+.doc__note--free i {
+  @apply text-success;
+}
+
+.doc__note--ai {
+  @apply border-ai/25 bg-ai/5;
+}
+
+.doc__note--ai i {
+  @apply text-ai;
+}
+
+.doc__note--warn {
+  @apply border-accent/30 bg-accent/5;
+}
+
+.doc__note--warn i {
+  @apply text-accent-dark;
+}
+
+.doc__tablist {
+  @apply border-0;
+}
+
+.camp__top {
+  @apply mt-4 mb-4 flex flex-wrap items-start justify-between gap-3;
+}
+
+.camp__facts {
+  @apply mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.875rem] text-body;
+}
+
+.camp__note {
+  @apply mt-4 flex items-start gap-2.5 rounded-xl border border-neutral-200 bg-[#f6f5ff] px-4 py-3 text-[0.875rem] leading-[1.55];
+}
+
+/* Inside a panel the note carries the panel's own padding instead. */
+.panel > .camp__note {
+  @apply mx-4 mb-5 sm:mx-5;
+}
+
+.camp__note i {
+  @apply mt-0.5 shrink-0 text-[1.05rem] text-discover-deep;
+}
+
+.status--review {
+  @apply gap-1.5 bg-accent/12 text-accent-dark;
+}
+
+.status--review i {
+  @apply text-[0.875rem];
+}
+
+/* --- The gate --------------------------------------------------------- */
+.gate {
+  @apply rounded-2xl border border-neutral-200 bg-neutral-0 p-4 sm:p-5;
+}
+
+.gate.is-complete {
+  @apply border-success/40 bg-success/5;
+}
+
+.gate__fill {
+  @apply h-full rounded-full bg-accent transition-[width] duration-300;
+  width: var(--review-pct, 0%);
+}
+
+.gate.is-complete .gate__fill {
+  @apply bg-success;
+}
+
+.gate__row {
+  @apply mt-3 flex flex-wrap items-center gap-x-4 gap-y-2;
+}
+
+/* --- One message under review ----------------------------------------- */
+.revs {
+  @apply flex flex-col gap-4 px-4 py-4 sm:px-5;
+}
+
+.rev {
+  @apply rounded-xl border border-neutral-200 bg-neutral-0 p-4;
+}
+
+.rev.is-read {
+  @apply border-success/40 bg-success/5;
+}
+
+.rev__head {
+  @apply flex flex-wrap items-start justify-between gap-3;
+}
+
+.rev__where {
+  @apply mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[0.8125rem] text-body;
+}
+
+/* Hidden until the message is marked read — the tick is the receipt. */
+.rev__flag {
+  @apply hidden shrink-0 items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-1 text-[0.75rem] font-semibold text-success;
+}
+
+.rev.is-read .rev__flag {
+  @apply flex;
+}
+
+.rev__subject {
+  @apply mt-3 flex flex-wrap items-baseline gap-x-2 text-[0.9375rem] font-semibold text-title;
+}
+
+.rev__body {
+  @apply mt-3 flex flex-col gap-2.5 rounded-lg border border-ai/20 bg-ai/5 px-4 py-3 text-[0.875rem] leading-[1.6];
+}
+
+.rev__ack {
+  @apply mt-3 flex cursor-pointer items-center gap-2.5 text-[0.875rem] font-medium text-title;
+}
+
+/* Buy credits — screen 33 */
+.bal {
+  @apply grid gap-4 rounded-2xl border border-neutral-200 bg-neutral-0 p-5 @2xl:grid-cols-[repeat(2,minmax(0,1fr))_minmax(0,1.4fr)] @2xl:items-center;
+}
+
+.bal__val--plan {
+  @apply flex flex-wrap items-center gap-2 text-[1.25rem];
+}
+
+.bal__roll {
+  @apply flex items-start gap-2.5 rounded-xl border border-neutral-200 bg-[#f6f5ff] px-4 py-3 text-[0.875rem] leading-[1.55];
+}
+
+.bal__roll i {
+  @apply mt-0.5 shrink-0 text-[1.05rem] text-discover-deep;
+}
+
+.packs {
+  @apply grid gap-3 px-4 pt-4 sm:px-5 @2xl:grid-cols-3;
+}
+
+.pack {
+  @apply relative cursor-pointer rounded-xl border border-neutral-200 bg-neutral-0 p-4 transition-colors duration-200 hover:border-neutral-300;
+}
+
+.pack__radio {
+  @apply sr-only;
+}
+
+.pack:has(.pack__radio:checked) {
+  @apply border-primary bg-primary/5;
+}
+
+.pack:has(.pack__radio:focus-visible) {
+  @apply outline-2 outline-offset-2 outline-primary;
+}
+
+.pack__body {
+  @apply flex flex-col;
+}
+
+.packs__foot {
+  @apply flex flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-5;
+}
+
+.packs__note,
+.tiers__note {
+  @apply flex min-w-0 flex-1 basis-64 items-start gap-2.5 text-[0.8125rem] leading-[1.55];
+}
+
+.packs__note i,
+.tiers__note i {
+  @apply mt-0.5 shrink-0 text-[1rem] text-discover-deep;
+}
+
+.tiers__note {
+  @apply basis-auto px-4 pb-5 sm:px-5;
+}
+
+/* --- Plan tiers ------------------------------------------------------- */
+.tiers {
+  @apply grid gap-3 px-4 pt-4 sm:px-5 @2xl:grid-cols-3;
+}
+
+.tier {
+  @apply flex min-w-0 flex-col rounded-xl border border-neutral-200 bg-neutral-0 p-4;
+}
+
+.tier--current {
+  @apply border-primary bg-primary/5;
+}
+
+.tier__name {
+  @apply flex flex-wrap items-center gap-2 font-title text-[1rem] font-bold text-title;
+}
+
+.tier__price {
+  @apply mt-2 flex items-baseline gap-1;
+}
+
+.tier__list {
+  @apply mt-4 mb-4 grid flex-1 content-start gap-2;
+}
+
+.tier__list li {
+  @apply flex items-start gap-2 text-[0.8125rem] leading-[1.5] text-body;
+}
+
+.tier__list i {
+  @apply mt-0.5 shrink-0 text-[0.9375rem] text-success;
+}
+
+.tier__item--off {
+  @apply text-neutral-500;
+}
+
+.tier__item--off i {
+  @apply text-neutral-400;
+}
+
+.tier__on {
+  @apply flex items-center justify-center gap-2 rounded-lg border border-primary/30 px-3 py-2 text-[0.8125rem] font-semibold text-primary;
+}
+
+/* Notes & activities — screen 28 */
+.acts {
+  @apply flex flex-col px-4 py-2 sm:px-5;
+}
+
+.act:not(.is-hidden) {
+  @apply flex;
+}
+
+.act {
+  @apply items-start gap-3 border-b border-neutral-100 py-3.5 last:border-b-0;
+}
+
+.act__dot {
+  @apply f-center mt-0.5 h-8 w-8 shrink-0 rounded-full bg-neutral-100 text-[0.9375rem] text-body;
+}
+
+/* Violet = the AI wrote it, amber = an action the user took (§5). */
+.act__dot--ai {
+  @apply bg-ai/12 text-ai-deep;
+}
+
+.act__dot--act {
+  @apply bg-accent/12 text-accent-dark;
+}
+
+.act__title {
+  @apply flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.9375rem] leading-[1.5] text-title;
+}
+
+.act__meta {
+  @apply mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[0.8125rem] text-body;
+}
+
+.act__lead--none {
+  @apply font-medium text-title no-underline hover:no-underline;
+}
+
+.act__form {
+  @apply grid gap-4 @xl:grid-cols-2;
+}
+
+.act__form > * {
+  @apply min-w-0;
+}
+
+.tkt__top {
+  @apply mt-4 mb-4 flex flex-wrap items-start justify-between gap-3;
+}
+
+.tkt__facts {
+  @apply mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.875rem] text-body;
+}
+
+.tkt {
+  @apply grid items-start gap-4 @4xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)];
+}
+
+.tkt__main,
+.tkt__thread {
+  @apply flex flex-col gap-5 px-4 py-5 sm:px-5;
+}
+
+/* --- One message ------------------------------------------------------ */
+.msg {
+  @apply flex gap-3;
+}
+
+.msg[tabindex="-1"]:focus {
+  @apply outline-none;
+}
+
+.msg__mark {
+  @apply f-center h-9 w-9 shrink-0 rounded-full bg-primary/10 text-[0.75rem] font-bold text-primary;
+}
+
+.msg__mark--agent {
+  @apply bg-discover/12 text-[1.0625rem] text-discover-deep;
+}
+
+.msg__body {
+  @apply min-w-0 flex-1;
+}
+
+.msg__head {
+  @apply flex flex-wrap items-baseline gap-x-2 gap-y-0.5;
+}
+
+.msg__who {
+  @apply flex flex-wrap items-center gap-x-2 text-[0.875rem] font-semibold text-title;
+}
+
+.msg__when {
+  @apply text-[0.8125rem] text-neutral-500;
+}
+
+.msg__text {
+  @apply mt-1.5 flex flex-col gap-3 text-[0.9375rem] leading-[1.65];
+}
+
+.msg--agent .msg__text {
+  @apply rounded-xl border border-neutral-200 bg-[#f6f5ff] px-4 py-3;
+}
+
+/* A link to the evidence a reply cites. */
+.msg__ref {
+  @apply mt-2.5 inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-0 px-3 py-2 text-[0.8125rem] font-medium text-primary transition-colors duration-200 hover:border-neutral-300 hover:bg-neutral-50;
+}
+
+.msg__ref i:last-child {
+  @apply text-[0.875rem] transition-transform duration-200;
+}
+
+.msg__ref:hover i:last-child {
+  @apply translate-x-0.5;
+}
+
+.tkt__reply-act {
+  @apply mt-3 flex flex-wrap items-center justify-between gap-3;
+}
+
+/* --- What support can see --------------------------------------------- */
+.tkt__meta {
+  @apply mt-4 grid gap-px overflow-hidden rounded-xl border border-neutral-200 bg-neutral-200;
+}
+
+.tkt__meta-row {
+  @apply flex flex-wrap items-baseline gap-x-3 gap-y-1 bg-neutral-0 px-4 py-2.5;
+}
+
+/* The "sent with your account details" note on the new-ticket form. */
+.tkt__attach {
+  @apply mt-4 flex items-start gap-2.5 rounded-xl border border-neutral-200 bg-[#f6f5ff] px-4 py-3 text-[0.8125rem] leading-[1.55];
+}
+
+.tkt__attach i {
+  @apply mt-0.5 shrink-0 text-[1rem] text-discover-deep;
+}
+
+/* Profile — screen 39 */
+.pro {
+  @apply grid items-start gap-4 @4xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)];
+}
+
+.pro__main,
+.pro__grid {
+  @apply grid gap-4 @xl:grid-cols-2;
+}
+
+.pro__grid > * {
+  @apply min-w-0;
+}
+
+/* --- Photo ------------------------------------------------------------ */
+.pro__photo {
+  @apply mt-4 flex flex-wrap items-center gap-4;
+}
+
+.pro__avatar {
+  @apply h-20 w-20 shrink-0 overflow-hidden rounded-full border border-neutral-200 bg-neutral-100;
+}
+
+.pro__avatar img {
+  @apply h-full w-full object-cover;
+}
+
+/* --- Connected accounts ----------------------------------------------- */
+.pro__conns,
+.pro__sessions {
+  @apply mt-4 grid gap-px overflow-hidden rounded-xl border border-neutral-200 bg-neutral-200;
+}
+
+.pro__conn,
+.pro__session {
+  @apply flex flex-wrap items-center gap-3 bg-neutral-0 px-4 py-3;
+}
+
+.pro__conn-mark {
+  @apply f-center h-9 w-9 shrink-0 rounded-lg bg-neutral-100 text-[1.125rem] text-body;
+}
+
+.pro__conn-body,
+.pro__session-body {
+  @apply flex min-w-0 flex-1 basis-40 flex-col;
+}
+
+.pro__conn-key,
+.pro__session-key {
+  @apply flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.875rem] font-semibold text-title;
+}
+
+.pro__conn-val,
+.pro__conn-val--off {
+  @apply text-neutral-500;
+}
+
+/* API keys — screen 35 */
+
+.apik-lock__icon {
+  @apply f-center mb-4 h-12 w-12 rounded-2xl bg-primary/10 text-[1.375rem] text-primary;
+}
+
+.apik-lock__list {
+  @apply mt-5 grid max-w-[52ch] gap-2.5;
+}
+
+.apik-lock__list li {
+  @apply flex items-start gap-2.5 text-[0.875rem] leading-[1.55];
+}
+
+.apik-lock__list i {
+  @apply mt-0.5 shrink-0 text-[1rem] text-success;
+}
+
+.apik-lock__note,
+.apik__note {
+  @apply mt-5 flex max-w-[64ch] items-start gap-2.5 rounded-xl border border-neutral-200 bg-neutral-0 px-4 py-3 text-[0.875rem] leading-[1.55];
+}
+
+.apik__note {
+  @apply mt-4 bg-[#f6f5ff];
+}
+
+.apik-lock__note i,
+.apik__note i {
+  @apply mt-0.5 shrink-0 text-[1.05rem] text-discover-deep;
+}
+
+.apik-lock__act {
+  @apply mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:items-center;
+}
+
+/* Notifications — screen 38 */
+.notif:not(.is-hidden) {
+  @apply flex;
+}
+
+/* The whole row is an <a>, so the hover is a real affordance (§1.10). */
+.notif {
+  @apply items-start gap-3 border-b border-neutral-100 px-4 py-4 transition-colors duration-200 last:border-b-0 hover:bg-neutral-50 sm:px-5;
+}
+
+.notif.is-unread {
+  @apply border-l-2 border-l-primary bg-primary/5;
+}
+
+.notif__icon {
+  @apply f-center h-10 w-10 shrink-0 rounded-xl text-[1.125rem];
+}
+
+.notif__body {
+  @apply flex min-w-0 flex-1 flex-col;
+}
+
+/* Contacts — screen 27 */
+.ct__who {
+  @apply flex min-w-0 items-center gap-3;
+}
+
+.ct__avatar {
+  @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[0.75rem] font-bold text-primary;
+}
+
+.ct__name {
+  @apply flex flex-wrap items-center gap-x-2 gap-y-1 font-medium text-title;
+}
+
+.ct__form {
+  @apply grid gap-4;
+}
+
+.ct__form > * {
+  @apply min-w-0;
+}
+
+@container (width >= 26rem) {
+  .ct__form {
+    @apply grid-cols-2;
+  }
+}
+
+.ct__primary {
+  @apply mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-neutral-200 bg-[#f6f5ff] px-4 py-3;
+}
+
+/* Account settings — screen 40 */
+.switch {
+  @apply relative h-6 w-11 shrink-0 cursor-pointer appearance-none rounded-full border border-neutral-300 bg-neutral-200 transition-colors;
+}
+
+.switch:checked {
+  @apply border-primary bg-primary;
+}
+
+.switch::after {
+  content: "";
+  @apply absolute top-[3px] left-[3px] h-4 w-4 rounded-full bg-neutral-0 shadow-sm transition-transform;
+}
+
+.switch:checked::after {
+  translate: 1.25rem 0;
+}
+
+.switch:focus-visible {
+  @apply outline-2 outline-offset-2 outline-primary;
+}
+
+.setting-row {
+  @apply flex flex-wrap items-start justify-between gap-x-4 gap-y-2 border-b border-neutral-200 py-4 last:border-b-0;
+}
+
+.setting-row__text {
+  @apply min-w-0 flex-1 basis-56;
+}
+
+.setting-row__label {
+  @apply block cursor-pointer text-[0.875rem] font-semibold text-title;
+}
+
+.setting-row__hint {
+  @apply mt-1 text-[0.8125rem] leading-[1.55] text-body;
+}
+
+.set__grid {
+  @apply mt-4 grid gap-4 @xl:grid-cols-2;
+}
+
+.set__head {
+  @apply flex flex-wrap items-start justify-between gap-3;
+}
+
+/* --- A member row ---------------------------------------------------- */
+.set__who {
+  @apply flex min-w-0 items-center gap-3;
+}
+
+.set__avatar {
+  @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[0.75rem] font-bold text-primary;
+}
+
+/* --- What each role can do ------------------------------------------- */
+.set__roles {
+  @apply mt-5 grid gap-px overflow-hidden rounded-xl border border-neutral-200 bg-neutral-200;
+}
+
+.set__role-row {
+  @apply flex flex-wrap gap-x-3 gap-y-1 bg-neutral-0 px-4 py-3;
+}
+
+.set__danger-list {
+  @apply mt-4 grid gap-2;
+}
+
+.set__danger-list li {
+  @apply flex items-start gap-2 text-[0.875rem] leading-[1.55];
+}
+
+.set__danger-list i {
+  @apply mt-0.5 shrink-0 text-[0.9375rem] text-error;
+}
+
+.set__danger-note {
+  @apply mt-4 flex items-start gap-2.5 rounded-xl border border-neutral-200 bg-neutral-0 px-4 py-3 text-[0.875rem] leading-[1.55];
+}
+
+.set__danger-note i {
+  @apply mt-0.5 shrink-0 text-[1.05rem] text-discover-deep;
+}
+
+.set__danger-act {
+  @apply mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between;
+}
+
+.status {
+  @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.8125rem] font-semibold whitespace-nowrap;
+}
+
+.status--running {
+  @apply bg-discover/12 text-discover-deep;
+}
+
+/* success-deep, not success: the ink sits on a success/12 wash that itself
+   sits on a card tint, and plain success measured 4.30:1 there. */
+.status--done {
+  @apply bg-success/12 text-success-deep;
+}
+
+.status--saved {
+  @apply bg-neutral-100 text-body;
+}
+
+.status--failed {
+  @apply bg-error/10 text-error;
+}
+
+.status--new {
+  @apply bg-neutral-100 text-body;
+}
+
+.status--contacted {
+  @apply bg-primary/10 text-primary;
+}
+
+.status--replied {
+  @apply bg-primary/15 text-primary;
+}
+
+.status--qualified {
+  @apply bg-success/12 text-success;
+}
+
+.status--won {
+  @apply bg-success text-neutral-0;
+}
+
+.status--lost {
+  @apply bg-neutral-100 text-neutral-500;
+}
+
+.row-actions {
+  @apply flex flex-nowrap items-center justify-end gap-1.5;
+}
+
+.row-icon {
+  @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-neutral-200 bg-neutral-0 text-[1.0625rem] text-body transition-colors duration-200 hover:border-neutral-300 hover:bg-neutral-50 hover:text-title;
+}
+
+.row-icon:focus-visible {
+  @apply outline-2 outline-offset-2 outline-primary;
+}
+
+.filter-btn {
+  @apply inline-flex shrink-0 items-center gap-2 rounded-xl border border-neutral-200 bg-neutral-0 px-4 py-3 text-[0.9375rem] font-medium text-title transition-colors duration-200 hover:border-neutral-300 hover:bg-neutral-50;
+}
+
+.filter-btn i:first-child {
+  @apply text-[1rem] text-body;
+}
+
+.filter-btn__caret {
+  @apply text-[0.875rem] text-body transition-transform duration-200;
+}
+
+.menu.is-open .filter-btn {
+  @apply border-primary;
+}
+
+.menu.is-open .filter-btn__caret {
+  @apply rotate-180;
+}
+
+.filter-btn:focus-visible {
+  @apply outline-2 outline-offset-2 outline-primary;
+}
+
+.menu[data-value]:not([data-value="all"]) .filter-btn {
+  @apply border-primary/40 bg-primary/5 text-primary;
+}
+
+.menu__item {
+  @apply relative;
+}
+
+.menu__item.is-selected {
+  @apply bg-primary/8 font-semibold text-primary;
+}
+
+.menu__item .menu__tick {
+  @apply ml-auto text-[0.875rem] opacity-0;
+}
+
+.menu__item.is-selected .menu__tick {
+  @apply opacity-100;
+}
+
+.menu__all {
+  @apply f-center -mx-1.5 -mb-1.5 mt-1 gap-1.5 rounded-b-xl border-t border-neutral-200 px-3 py-2.5 text-[0.875rem] font-semibold text-primary transition-colors duration-200 hover:bg-neutral-100;
+}
+
+.menu__all i {
+  @apply text-[1rem] transition-transform duration-200;
+}
+
+.menu__all:hover i {
+  @apply translate-x-0.5;
+}
+
+/* The "N searches" readout beside a list toolbar's filters. */
+.list-count {
+  @apply ml-auto shrink-0 text-[0.875rem] text-body;
+}
+
+.form-check:indeterminate {
+  @apply border-primary bg-primary;
+}
+
+.form-check:indeterminate::after {
+  content: "";
+  @apply absolute top-1/2 left-1/2 block h-0.5 w-[0.55rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-0;
+}
+
+.bulk-bar {
+  @apply flex flex-wrap items-center justify-between gap-3 border-b border-neutral-200 bg-primary/5 px-5 py-3;
+}
+
+.bulk-bar__actions {
+  @apply flex flex-wrap items-center gap-2;
+}
+
+.tag-pill {
+  @apply inline-flex items-center rounded-md bg-neutral-100 px-2 py-0.5 text-[0.75rem] font-medium text-body;
+}
+
+.tag-pill + .tag-pill {
+  @apply ml-1;
+}
+
+/* The checkbox column: no wider than the control it holds. */
+.d-table__check {
+  @apply w-10 pr-0;
+}
+
+/* Location under a business name. CYAN — it came off the map (§5). */
+.d-table__place {
+  @apply mt-0.5 flex items-center gap-1 text-[0.8125rem] text-body;
+}
+
+.d-table__place i {
+  @apply text-[0.875rem] text-discover-deep;
+}
+
+.d-table__mail {
+  @apply text-[0.875rem] text-discover-deep transition-colors duration-200 hover:text-discover hover:underline;
+}
+
+/* Phone, like the inbox, is data we retrieved off the listing — discover,
+   not AI (§5). numeric so digits align down the column. */
+.d-table__tel {
+  @apply whitespace-nowrap text-[0.875rem] text-discover-deep transition-colors duration-200 hover:text-discover hover:underline;
+}
+
+.row-icon--danger:hover {
+  @apply border-error/30 bg-error/8 text-error;
+}
+
+@container (max-width: 57rem) {
+  .d-table--cards td.d-table__check {
+    @apply absolute top-4 left-5 w-auto p-0;
+  }
+
+  .d-table--cards td.d-table__check::before {
+    @apply hidden;
+  }
+
+  /* Title clears the checkbox on the left and the actions on the right. */
+  .d-table--cards tr:has(td.d-table__check) td[data-card-title] {
+    @apply pl-7;
+  }
+}
+
+.tbl-pager {
+  @apply flex flex-wrap items-center justify-center gap-x-4 gap-y-3 border-t border-neutral-200 px-5 py-3.5 @2xl:justify-between;
+}
+
+.tbl-pager__controls {
+  @apply flex items-center gap-1;
+}
+
+.tbl-pager__step {
+  @apply flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 bg-neutral-0 text-[1rem] text-body transition-colors duration-200 hover:border-neutral-300 hover:bg-neutral-50 hover:text-title;
+}
+
+.tbl-pager__step.is-disabled {
+  @apply pointer-events-none border-neutral-100 text-neutral-400;
+}
+
+.tbl-pager__num {
+  @apply numeric flex h-9 min-w-9 items-center justify-center rounded-lg px-2.5 text-[0.875rem] font-medium text-body transition-colors duration-200 hover:bg-neutral-100 hover:text-title;
+}
+
+.tbl-pager__num.is-active {
+  @apply bg-primary text-neutral-0 hover:bg-primary;
+}
+
+/* LEAD DETAIL (19) */
+
+/* --- Detail header ------------------------------------------------------ */
+.lead-head {
+  @apply @container flex flex-wrap items-start justify-between gap-4;
+}
+
+.lead-head__id {
+  @apply flex min-w-0 items-start gap-4;
+}
+
+/* The business's category mark. Azure — it came off the map (§5). */
+.lead-head__mark {
+  @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-discover/12 text-[1.25rem] text-discover-deep;
+}
+
+.lead-head__meta {
+  @apply mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.875rem] text-body;
+}
+
+.lead-head__meta a {
+  @apply text-discover-deep transition-colors duration-200 hover:underline;
+}
+
+.verdict-card__top {
+  @apply flex flex-wrap items-center gap-4;
+}
+
+.verdict-card__score {
+  @apply numeric flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-ai text-[1.75rem] font-bold text-neutral-0;
+}
+
+.verdict-card__key {
+  @apply flex items-center gap-1.5 text-[0.75rem] font-semibold tracking-[0.08em] text-ai-deep uppercase;
+}
+
+.signal-row {
+  @apply flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-neutral-100 py-3 last:border-b-0;
+}
+
+.meter {
+  @apply flex w-24 shrink-0 gap-1;
+}
+
+.meter__seg {
+  @apply h-1.5 flex-1 rounded-full bg-neutral-200;
+}
+
+.meter--strong .meter__seg {
+  @apply bg-ai;
+}
+
+.meter--fair .meter__seg:nth-child(-n + 2) {
+  @apply bg-ai/60;
+}
+
+.meter--weak .meter__seg:nth-child(1) {
+  @apply bg-neutral-400;
+}
+
+.draft {
+  @apply rounded-xl border border-ai/25 bg-neutral-0;
+}
+
+.draft__head {
+  @apply flex flex-wrap items-center justify-between gap-3 border-b border-ai/15 px-4 py-3;
+}
+
+.draft__key {
+  @apply flex items-center gap-1.5 text-[0.75rem] font-semibold tracking-[0.08em] text-ai-deep uppercase;
+}
+
+.draft__foot {
+  @apply flex flex-wrap items-center justify-between gap-3 border-t border-neutral-100 px-4 py-3;
+}
+
+/* --- Activity timeline -------------------------------------------------- */
+.timeline {
+  @apply relative flex flex-col;
+}
+
+.timeline__item {
+  @apply relative flex gap-4 pb-5 last:pb-0;
+}
+
+/* The connecting line, on every item but the last. */
+.timeline__item:not(:last-child)::before {
+  content: "";
+  @apply absolute top-7 bottom-0 left-[13px] w-px bg-neutral-200;
+}
+
+.timeline__dot {
+  @apply relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-[0.875rem] text-body;
+}
+
+.timeline__dot--ai {
+  @apply bg-ai/12 text-ai-deep;
+}
+
+.timeline__dot--act {
+  @apply bg-accent/12 text-accent-dark;
+}
+
+/* --- Detail layout ------------------------------------------------------ */
+.lead-grid {
+  @apply mt-5 grid gap-4 @4xl:grid-cols-3 @4xl:items-start;
+}
+
+.lead-grid__main {
+  @apply flex flex-col gap-4 @4xl:col-span-2;
+}
+
+.lead-grid__side {
+  @apply flex flex-col gap-4;
+}
+
+/* A labelled fact in the side panel. */
+.fact + .fact {
+  @apply mt-3 border-t border-neutral-100 pt-3;
+}
+
+.pipe {
+  @apply mt-4 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2;
+  scrollbar-width: thin;
+}
+
+.pipe__col {
+  @apply flex w-[17rem] shrink-0 snap-start flex-col rounded-2xl border border-neutral-200 bg-[#f6f5ff]/60 p-3;
+}
+
+.pipe__col.is-over {
+  @apply border-dashed border-primary/50 bg-primary/6;
+}
+
+.pipe__head {
+  @apply flex items-center justify-between gap-2 px-1 pb-3;
+}
+
+.pipe__name {
+  @apply flex items-center gap-2 font-title text-[0.875rem] font-bold text-title;
+}
+
+.pipe__dot--new {
+  @apply bg-neutral-400;
+}
+
+.pipe__dot--contacted {
+  @apply bg-discover-deep;
+}
+
+.pipe__dot--replied {
+  @apply bg-ai;
+}
+
+.pipe__dot--qualified {
+  @apply bg-success/70;
+}
+
+.pipe__dot--won {
+  @apply bg-success;
+}
+
+.pipe__dot--lost {
+  @apply bg-neutral-300;
+}
+
+/* min-h keeps an empty column a real drop target rather than a hairline. */
+.pipe__drop {
+  @apply flex min-h-24 flex-1 flex-col gap-2;
+}
+
+.pipe__empty {
+  @apply hidden px-1 pt-2 text-[0.8125rem] text-neutral-500;
+}
+
+.pipe__col.is-empty .pipe__empty {
+  @apply block;
+}
+
+/* --- A lead on the board ------------------------------------------------ */
+.pcard {
+  @apply cursor-grab rounded-xl border border-neutral-200 bg-neutral-0 p-3 transition-shadow duration-200 hover:shadow-md;
+}
+
+.pcard:active {
+  @apply cursor-grabbing;
+}
+
+.pcard.is-dragging {
+  @apply opacity-50;
+}
+
+.pcard__top {
+  @apply flex items-start justify-between gap-2;
+}
+
+.pcard__when {
+  @apply mt-2 flex items-center gap-1.5 text-[0.75rem] text-body;
+}
+
+.pcard__when i {
+  @apply shrink-0 text-[0.875rem] text-neutral-400;
+}
+
+.pcard__foot {
+  @apply mt-3 flex items-center justify-between gap-2 border-t border-neutral-100 pt-2.5;
+}
+
+.pcard__more {
+  @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[1rem] text-neutral-500 transition-colors duration-200 hover:bg-neutral-100 hover:text-title;
+}
+
+.pcard__more:focus-visible {
+  @apply outline-2 outline-offset-2 outline-primary;
+}
+
+.copy-btn .copy-btn__done {
+  @apply hidden;
+}
+
+.copy-btn.is-copied {
+  @apply border-success/40 text-success;
+}
+
+.copy-btn.is-copied .copy-btn__idle {
+  @apply hidden;
+}
+
+.copy-btn.is-copied .copy-btn__done {
+  @apply flex;
+}
+
+.gen__grid {
+  @apply grid gap-4 @4xl:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] @4xl:items-start;
+}
+
+.gen__side,
+.gen__routes {
+  @apply grid gap-2;
+}
+
+.gen__route {
+  @apply flex w-full items-center gap-3 rounded-xl border border-neutral-200 bg-neutral-0 px-4 py-3 text-left transition-colors duration-200 hover:border-primary/40 hover:bg-[#f6f5ff];
+}
+
+.gen__route-icon {
+  @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-[1.0625rem] text-primary;
+}
+
+.copy-btn.is-copied .gen__route-icon {
+  @apply bg-success/10 text-success;
+}
+
+.gen__rule {
+  @apply mt-4 flex items-start gap-2 rounded-lg bg-success/8 px-3 py-2.5 text-[0.8125rem] text-body;
+}
+
+.gen__rule i {
+  @apply mt-px shrink-0 text-[1rem] text-success;
+}
+
+.scr {
+  @apply @container;
+}
+
+.scr__grid {
+  @apply grid gap-4 @4xl:grid-cols-[1fr_1.1fr] @4xl:items-start;
+}
+
+/* -mx-5 px-5 full-bleeds the save bar across the card that pads it. That
+   only cancels out INSIDE .form-card — .scr__main is a grid column holding
+   its own cards, so the negative margin had nothing to pull against and
+   pushed the column 4px past the viewport at 320px. */
+.form-card .form-actions {
+  @apply static -mx-5 mt-5 px-5;
+}
+
+/* A bleed only cancels against a parent that PADS. .panel carries none (its
+   children pad individually), and new search's bar is a direct child of an
+   unpadded form — in both cases the negative margin had nothing to pull
+   against and the bar hung past its container, painting over the panel's
+   rounded border. These pad themselves to match their siblings instead. */
+.panel > .form-actions,
+form > .form-actions {
+  @apply mx-0 px-4 sm:px-5;
+}
+
+.scr__main {
+  @apply mt-5;
+}
+
+/* One weight: label + value, a note, then the slider. */
+.wrow + .wrow {
+  @apply mt-6 border-t border-neutral-100 pt-5;
+}
+
+.scr__total {
+  @apply mt-5 border-t border-neutral-200 pt-4 text-[0.8125rem] text-body;
+}
+
+.prev th,
+.prev td {
+  @apply px-2 py-2.5 text-[0.8125rem];
+}
+
+.prev td:first-child {
+  @apply font-medium text-title;
+}
+
+/* Restacked, the three value cells stop being a table and become a
+   before/after read, so they sit on ONE row instead of three stacked
+   label/value lines: Now and New side by side, the delta after them.
+   Five leads x three lines was a screenful of "no change". */
+@container (max-width: 57rem) {
+  .prev.d-table--cards tr {
+    @apply flex flex-wrap items-center gap-x-3 gap-y-1.5 px-0 py-3;
+  }
+
+  .prev.d-table--cards td {
+    @apply w-auto flex-none gap-1.5 py-0;
+  }
+
+  .prev.d-table--cards td[data-card-title] {
+    @apply mb-0 basis-full pr-0;
+  }
+
+  /* No ml-auto: pushed right it wrapped onto a line of its own at 320px.
+     It reads as the consequence of the two scores, so it follows them. */
+  .prev.d-table--cards td[data-label="Change"] {
+    @apply basis-full;
+  }
+}
+
+.delta {
+  @apply inline-flex items-center gap-1 text-[0.8125rem] font-semibold whitespace-nowrap;
+}
+
+.delta.is-up {
+  @apply text-success;
+}
+
+.delta.is-down {
+  @apply text-body;
+}
+
+.delta.is-same {
+  @apply text-[0.75rem] font-normal text-neutral-500;
+}
+
+.scr.is-zeroed .scr__total {
+  @apply font-semibold text-error;
+}
+
+.anz__form {
+  @apply grid gap-4 @3xl:grid-cols-[1.6fr_1fr] @3xl:items-start;
+}
+
+.anz__opt {
+  @apply mt-4 flex items-start gap-3;
+}
+
+.anz__results {
+  @apply divide-y divide-neutral-100;
+}
+
+.anzr {
+  @apply border-l-2 border-ai/70 px-4 py-4 @xl:px-5;
+}
+
+.anzr__head {
+  @apply flex flex-wrap items-center justify-between gap-x-4 gap-y-1;
+}
+
+.anzr__read {
+  @apply mt-2 text-[0.875rem] leading-relaxed text-body;
+}
+
+.anzr__gap {
+  @apply mt-2.5 flex items-start gap-2 rounded-lg bg-ai/6 px-3 py-2 text-[0.8125rem] font-medium text-ai-deep;
+}
+
+.anzr__gap i {
+  @apply mt-px shrink-0 text-[0.9375rem];
+}
+
+.anzr__fit {
+  @apply mt-2.5 flex items-start gap-2 text-[0.8125rem] font-medium;
+}
+
+.anzr__fit i {
+  @apply mt-px shrink-0 text-[0.9375rem];
+}
+
+.anzr__fit--yes {
+  @apply text-success;
+}
+
+.anzr__fit--maybe {
+  @apply text-body;
+}
+
+.anz__results .anzr__fit,
+.anz__results.is-gaps .anzr__fit,
+.anz__results.is-summary .anzr__fit,
+.anz__results.is-summary .anzr__gap,
+.anz__results.is-fit .anzr__gap {
+  @apply hidden;
+}
+
+.anz__results.is-fit .anzr__fit {
+  @apply flex;
+}
+
+.anz__results.is-summary .anzr {
+  @apply py-3;
+}
+
+.anz__results.is-summary .anzr__read {
+  @apply mt-1.5;
+}
+
+.mapview {
+  @apply @container mt-4 flex flex-col gap-4;
+}
+
+.mapview > .panel {
+  @apply mt-0;
+}
+
+.mapview__grid {
+  @apply grid items-stretch gap-4 @4xl:grid-cols-3;
+}
+
+.mapview__map {
+  @apply @4xl:col-span-2;
+}
+
+/* Taller than the default .map: on this screen it IS the screen. */
+.mapview__map .map {
+  @apply h-[420px] @3xl:h-[calc(100vh-16rem)];
+}
+
+.mapview__rail {
+  @apply flex flex-col;
+}
+
+.mapview__rail > .panel {
+  @apply mt-0 flex min-h-0 flex-1 flex-col;
+}
+
+@media (min-width: 992px) {
+  .mapview__rail-list {
+    @apply min-h-0 flex-1 overflow-y-auto;
+  }
+}
+
+.mrow {
+  @apply flex cursor-pointer items-start gap-3 border-b border-neutral-100 px-4 py-3 transition-colors duration-200 last:border-b-0 hover:bg-neutral-50;
+}
+
+.mrow__meta {
+  @apply mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1;
+}
+
+.mrow__where {
+  @apply flex items-center gap-1 text-[0.75rem] text-body;
+}
+
+.mrow__where i {
+  @apply text-[0.8125rem] text-discover-deep;
+}
+
+.mrail-foot {
+  @apply mt-auto flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-neutral-200 px-4 py-3;
+}
+
+/* Popup gains a link on this screen, so it needs a little structure. */
+.mpop__head {
+  @apply flex items-center gap-3;
+}
+
+.mpop__link {
+  @apply mt-2 block text-[0.8125rem] font-semibold text-primary hover:underline;
+}

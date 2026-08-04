@@ -565,6 +565,57 @@ select.form-input {
   @apply bg-error text-neutral-0 hover:brightness-90;
 }
 
+/* Toast */
+.toast-container {
+  @apply fixed top-6 right-6 z-100 flex w-[min(22rem,calc(100vw-3rem))] flex-col gap-3;
+}
+
+.toast {
+  @apply flex items-start gap-3 rounded-2xl border border-neutral-200 bg-neutral-0 p-4 opacity-0 shadow-2xl transition-all duration-300;
+  transform: translateX(120%);
+}
+
+.toast.is-shown {
+  @apply opacity-100;
+  transform: translateX(0);
+}
+
+.toast__icon {
+  @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[1.125rem];
+}
+
+.toast--success .toast__icon {
+  @apply bg-success/10 text-success;
+}
+
+.toast--error .toast__icon {
+  @apply bg-error/10 text-error;
+}
+
+.toast--warning .toast__icon {
+  @apply bg-warning/10 text-warning;
+}
+
+.toast--info .toast__icon {
+  @apply bg-info/10 text-info;
+}
+
+.toast__body {
+  @apply min-w-0 flex-1 pt-1.5;
+}
+
+.toast__title {
+  @apply text-[0.875rem] font-semibold text-title;
+}
+
+.toast__message {
+  @apply mt-0.5 text-[0.8125rem] leading-[1.5] text-body;
+}
+
+.toast__close {
+  @apply mt-1.5 shrink-0 text-neutral-400 transition-colors hover:text-title;
+}
+
 /* Scroll reveal — the resting state before GSAP takes over. */
 [data-anim]:not(:has([data-anim-item])),
 [data-anim-item] {

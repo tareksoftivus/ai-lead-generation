@@ -1,0 +1,20 @@
+{
+    "name": "Contacts",
+    "alias": "contacts",
+    "description": "Contacts module",
+    "version": "1.0.0",
+    "priority": 100,
+    "providers": [
+        "App\\Modules\\Contacts\\Providers\\ContactsServiceProvider"
+    ],
+    "routes": {
+        "admin": "Routes/admin.php",
+        "web": "Routes/web.php"
+    },
+    "requires": [],
+    "packages": {
+        "require": {},
+        "require-dev": {}
+    },
+    "active": true
+}

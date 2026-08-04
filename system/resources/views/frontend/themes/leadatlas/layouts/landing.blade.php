@@ -19,6 +19,9 @@
     @endforeach
 
     @include('frontend.themes.leadatlas.navigation.footer', ['theme' => $theme, 'themeVars' => $themeVars, 'resolvedMenus' => $resolvedMenus])
+
+    <div id="toastContainer" class="toast-container"></div>
+    @include('frontend.themes.leadatlas.partials.flash')
 </body>
 
 </html>

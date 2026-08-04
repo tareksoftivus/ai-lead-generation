@@ -13,6 +13,7 @@ use App\Modules\NotificationTemplates\Database\Seeders\NotificationTemplateSeede
 use App\Modules\PaymentGatewaySettings\Database\Seeders\PaymentGatewaySettingsSeeder;
 use App\Modules\Settings\Database\Seeders\BrandMediaSeeder;
 use App\Modules\Settings\Database\Seeders\SettingSeeder;
+use App\Modules\Testimonials\Database\Seeders\TestimonialsSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -47,6 +48,7 @@ class DatabaseSeeder extends Seeder
             DemoSupportTicketsSeeder::class,
             DemoActivityLogsSeeder::class,
             DemoBlogSeeder::class,
+            TestimonialsSeeder::class,
         ]);
     }
 }

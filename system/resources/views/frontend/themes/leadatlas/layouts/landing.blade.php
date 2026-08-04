@@ -6,7 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>{{ $page->meta_title ?: $page->title }}</title>
     <meta name="description" content="{{ $page->meta_description ?: __('Find, enrich, and score local business leads from Google Maps with AI. Search by keyword and location, then export outreach-ready prospects.') }}" />
-    <link rel="icon" href="{{ asset('assets/frontend/leadatlas/images/logo-32.png') }}" type="image/png" sizes="32x32" />
+    @if(setting('site_favicon') && media_url(setting('site_favicon')))
+        <link rel="icon" href="{{ media_url(setting('site_favicon')) }}" />
+    @else
+        <link rel="icon" href="{{ asset('assets/frontend/leadatlas/images/logo-32.png') }}" type="image/png" sizes="32x32" />
+    @endif
     <link rel="apple-touch-icon" href="{{ asset('assets/frontend/leadatlas/images/logo-180.png') }}" />
     @vite(['resources/js/leadatlas.js'])
 </head>

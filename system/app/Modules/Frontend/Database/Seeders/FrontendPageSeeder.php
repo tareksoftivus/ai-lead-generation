@@ -116,6 +116,23 @@ class FrontendPageSeeder extends Seeder
             ]
         );
 
+        $terms = Page::updateOrCreate(
+            ['slug' => 'terms'],
+            [
+                'title' => 'Terms & Conditions',
+                'status' => 'published',
+                'excerpt' => 'What a credit buys, how billing works, and who is responsible for the outreach you send.',
+                'default_layout' => 'default',
+                'theme_overrides' => [],
+                'is_system' => false,
+                'is_home' => false,
+                'meta_title' => 'Terms & Conditions',
+                'meta_description' => 'What a credit buys, how billing works, and who is responsible for the outreach you send.',
+                'meta_image_media_id' => null,
+                'published_at' => now(),
+            ]
+        );
+
         $homeSectionSlugs = [
             'homepage-hero-leadatlas',
             'homepage-stages',
@@ -190,11 +207,23 @@ class FrontendPageSeeder extends Seeder
             ->pluck('id')
             ->all();
 
+        $termsSectionSlugs = [
+            'terms-page-head',
+            'terms-rich-content',
+        ];
+
+        $termsSectionIds = FrontendSection::whereIn('slug', $termsSectionSlugs)
+            ->get(['id', 'slug'])
+            ->sortBy(fn (FrontendSection $section) => array_search($section->slug, $termsSectionSlugs, true))
+            ->pluck('id')
+            ->all();
+
         $composer->syncSections($home, $homeSectionIds);
         $composer->syncSections($about, $aboutSectionIds);
         $composer->syncSections($features, $featuresSectionIds);
         $composer->syncSections($pricing, $pricingSectionIds);
         $composer->syncSections($contact, $contactSectionIds);
         $composer->syncSections($blog, $blogSectionIds);
+        $composer->syncSections($terms, $termsSectionIds);
     }
 }

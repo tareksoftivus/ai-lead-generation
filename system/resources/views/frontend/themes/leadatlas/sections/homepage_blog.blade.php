@@ -51,7 +51,8 @@
 
                     <div class="post__body">
                         <p class="post__meta">
-                            <span class="post__topic post__topic--{{ $post['variant'] ?? 'find' }}">{{ $post['topic'] ?? '' }}</span>
+                            <span
+                                class="post__topic post__topic--{{ $post['variant'] ?? 'find' }}">{{ $post['topic'] ?? '' }}</span>
                             <span class="post__dot" aria-hidden="true">·</span>
                             <span><span class="numeric">{{ $post['read_minutes'] ?? '' }}</span> {{ __('min read') }}</span>
                         </p>
@@ -69,11 +70,13 @@
                         <p class="post__foot">
                             <span class="post__by">
                                 @if($post['author_avatar_url'])
-                                    <img src="{{ $post['author_avatar_url'] }}" alt="{{ $post['author_name'] ?? '' }}" class="post__avatar" width="80" height="80" />
+                                    <img src="{{ $post['author_avatar_url'] }}" alt="{{ $post['author_name'] ?? '' }}"
+                                        class="post__avatar" width="80" height="80" />
                                 @endif
                                 {{ $post['author_name'] ?? '' }}
                             </span>
-                            <a href="{{ $post['link'] ?: '#' }}" class="btn btn-primary btn-sm post__more" tabindex="-1" aria-hidden="true">
+                            <a href="{{ $post['link'] ?: '#' }}" class="btn btn-primary btn-sm post__more" tabindex="-1"
+                                aria-hidden="true">
                                 <span class="btn__label">
                                     <span>{{ __('Read more') }}</span>
                                     <span aria-hidden="true">{{ __('Read more') }}</span>

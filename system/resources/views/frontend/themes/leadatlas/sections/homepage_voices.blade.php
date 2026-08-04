@@ -12,7 +12,7 @@
     $items = collect($rawItems)
         ->values()
         ->map(function ($item, $index) use ($defaultAvatars) {
-            $item['avatar_url'] = media_url($item['avatar'] ?? null) ?: ($defaultAvatars[$index % 4] ?? null);
+            $item['avatar_url'] = $item['avatar_url'] ?? media_url($item['avatar'] ?? null) ?: ($defaultAvatars[$index % 4] ?? null);
 
             return $item;
         });

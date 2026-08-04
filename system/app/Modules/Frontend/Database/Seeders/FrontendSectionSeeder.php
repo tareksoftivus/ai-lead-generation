@@ -49,7 +49,7 @@ class FrontendSectionSeeder extends Seeder
                     'primary_button_text' => 'Start finding leads',
                     'primary_button_link' => '/register',
                     'secondary_button_text' => 'See how scoring works',
-                    'secondary_button_link' => '#features',
+                    'secondary_button_link' => '/features',
                     'screenshot_caption' => 'app.leadatlas.com/dashboard',
                     'screenshot_image' => null,
                     'screenshot_alt' => 'The LeadAtlas dashboard: two searches running, 1,284 leads found, and the highest-scoring businesses ranked by AI score.',
@@ -111,16 +111,7 @@ class FrontendSectionSeeder extends Seeder
                     'eyebrow' => 'Who uses it',
                     'title' => 'Built for people who sell to local business.',
                     'subtitle' => 'Agencies, freelancers, and sales teams who were doing this by hand in a spreadsheet.',
-                    'items' => [
-                        ['variant' => 'find', 'icon' => 'ph-map-trifold', 'label' => 'On finding leads', 'quote' => 'We used to burn a full day a week copying business details off Maps into a sheet. Now one search does the same thing before the coffee is cold.', 'avatar' => null, 'name' => 'Rachel Mendez', 'role' => 'Founder, Northgate Digital'],
-                        ['variant' => 'ai', 'icon' => 'ph-sparkle', 'label' => 'On the scoring', 'quote' => 'The score is only useful because it shows its reasoning. I can see it flagged a practice for having no booking system, and I know that is a real conversation to have.', 'avatar' => null, 'name' => 'Daniel Okafor', 'role' => 'Sales lead, Certa Group'],
-                        ['variant' => 'act', 'icon' => 'ph-paper-plane-tilt', 'label' => 'On the outreach', 'quote' => 'I rewrite maybe a third of the drafted emails. The other two thirds go out as written, and they mention something specific about the business — which is why they get answered.', 'avatar' => null, 'name' => 'Sofia Kallio', 'role' => 'Freelance consultant'],
-                        ['variant' => 'find', 'icon' => 'ph-map-trifold', 'label' => 'On the search', 'quote' => 'Searching costs nothing, so I check a new town before I decide whether it is worth working. That was never true of the tools I used before.', 'avatar' => null, 'name' => 'Marcus Bell', 'role' => 'Owner, Bell & Co Signage'],
-                        ['variant' => 'act', 'icon' => 'ph-paper-plane-tilt', 'label' => 'On the export', 'quote' => 'Everything lands in the CRM we already use. Nobody on the team had to learn a second place to look, which is the only reason it stuck.', 'avatar' => null, 'name' => 'Priya Raman', 'role' => 'Ops manager, Halden Fit'],
-                        ['variant' => 'find', 'icon' => 'ph-map-trifold', 'label' => 'On the map', 'quote' => 'Seeing them on a map changed how I plan a week. I work one neighbourhood at a time now instead of driving across the city for two appointments.', 'avatar' => null, 'name' => 'Tomas Lindqvist', 'role' => 'Field sales, Vantage POS'],
-                        ['variant' => 'ai', 'icon' => 'ph-sparkle', 'label' => 'On the analysis', 'quote' => 'It tells me what a business is missing before I call. Opening with something specific beats a pitch, and I no longer spend the first minute working out who they are.', 'avatar' => null, 'name' => 'Amara Nwosu', 'role' => 'Founder, Brightline Web'],
-                        ['variant' => 'act', 'icon' => 'ph-paper-plane-tilt', 'label' => 'On the credits', 'quote' => 'I pay for what I actually enrich, and a lead with no contact details refunds itself. That was the part I expected to be a catch, and it was not.', 'avatar' => null, 'name' => 'Greg Whitfield', 'role' => 'Director, Whitfield Media'],
-                    ],
+                    'items' => [],
                 ],
             ],
             [
@@ -133,14 +124,10 @@ class FrontendSectionSeeder extends Seeder
                     'eyebrow' => 'Pricing',
                     'title' => 'Pay for the leads, not the seats.',
                     'subtitle' => 'One credit finds and enriches one business. Invite your whole team on any plan — you are billed for what you pull, not for who pulls it.',
-                    'plans' => [
-                        ['name' => 'Starter', 'price' => '$29', 'period' => '/month', 'credits' => '1,000 credits a month', 'featured' => false, 'badge' => '', 'features' => "Unlimited map searches\nContact enrichment\nAI scoring on every lead\nCSV export", 'button_text' => 'Start free', 'button_link' => '/register'],
-                        ['name' => 'Growth', 'price' => '$89', 'period' => '/month', 'credits' => '5,000 credits a month', 'featured' => true, 'badge' => 'Most chosen', 'features' => "Everything in Starter\nAI summaries and drafted emails\nBuilt-in CRM pipeline\nEmail campaigns", 'button_text' => 'Start free', 'button_link' => '/register'],
-                        ['name' => 'Scale', 'price' => '$249', 'period' => '/month', 'credits' => '20,000 credits a month', 'featured' => false, 'badge' => '', 'features' => "Everything in Growth\nREST API and webhooks\nBulk export and integrations\nPriority support", 'button_text' => 'Start free', 'button_link' => '/register'],
-                    ],
+                    'plans' => [],
                     'note' => 'Every plan starts with 100 free credits — no card required.',
                     'note_link_text' => 'Compare plans in full',
-                    'note_link' => '#pricing',
+                    'note_link' => '/pricing',
                 ],
             ],
             [
@@ -173,11 +160,7 @@ class FrontendSectionSeeder extends Seeder
                     'eyebrow' => 'From the blog',
                     'title' => 'How this actually gets done.',
                     'subtitle' => 'Notes on finding local businesses, scoring them, and getting a reply — written for people doing the work.',
-                    'posts' => [
-                        ['image' => null, 'date_day' => '14', 'date_month' => 'Jul', 'topic' => 'Finding leads', 'variant' => 'find', 'read_minutes' => '7', 'title' => 'A map search is not a lead list. Here is the gap.', 'excerpt' => 'Pulling a hundred businesses off Google Maps takes a morning. Working out which twelve are worth a call takes the rest of the week.', 'author_avatar' => null, 'author_name' => 'Rachel Mendez', 'link' => '#'],
-                        ['image' => null, 'date_day' => '08', 'date_month' => 'Jul', 'topic' => 'Scoring', 'variant' => 'ai', 'read_minutes' => '5', 'title' => 'What a lead score should and should not tell you', 'excerpt' => 'A score that cannot explain itself is a horoscope. What to demand of any tool that ranks your prospects.', 'author_avatar' => null, 'author_name' => 'Daniel Osei', 'link' => '#'],
-                        ['image' => null, 'date_day' => '02', 'date_month' => 'Jul', 'topic' => 'Outreach', 'variant' => 'act', 'read_minutes' => '6', 'title' => 'The first line decides whether the rest gets read', 'excerpt' => 'Cold email openers that name a specific gap outperform anything built from a template. Some examples, and why.', 'author_avatar' => null, 'author_name' => 'Rachel Mendez', 'link' => '#'],
-                    ],
+                    'posts' => [],
                     'all_articles_text' => 'All articles',
                     'all_articles_link' => '/blog',
                 ],
@@ -367,6 +350,90 @@ class FrontendSectionSeeder extends Seeder
                 'status' => 'published',
                 'description' => 'Category filters, featured article, post grid, and pagination for the Blog page.',
                 'data' => [],
+            ],
+            [
+                'name' => 'Terms Page Hero',
+                'slug' => 'terms-page-head',
+                'type' => 'featurespage_hero',
+                'status' => 'published',
+                'description' => 'Breadcrumb header for the Terms & Conditions page.',
+                'data' => [
+                    'breadcrumb_group' => 'Legal',
+                    'title' => 'Terms & conditions',
+                    'lead' => 'What a credit buys, how billing works, and who is responsible for the outreach you send.',
+                ],
+            ],
+            [
+                'name' => 'Terms — Content',
+                'slug' => 'terms-rich-content',
+                'type' => 'rich_content',
+                'status' => 'published',
+                'description' => 'Long-form legal content for the Terms & Conditions page.',
+                'data' => [
+                    'title' => 'Terms & conditions',
+                    'notice' => 'These terms are written to fit an AI lead-generation product, but they are not legal advice. Have a lawyer review and adapt them before you launch.',
+                    'content' => <<<'HTML'
+                        <section>
+                            <h2>1. The agreement</h2>
+                            <p>These terms cover your use of LeadAtlas. Creating an account means accepting them, alongside our <a href="/privacy">privacy policy</a>. If you are accepting on behalf of a company, you confirm you may bind that company.</p>
+                        </section>
+                        <section>
+                            <h2>2. Your account</h2>
+                            <ul>
+                                <li>You must be at least 18 and give accurate details when signing up.</li>
+                                <li>You are responsible for what happens under your account, including anything your team members do.</li>
+                                <li>Invite as many team members as you like — plans are priced on credits, not seats.</li>
+                            </ul>
+                        </section>
+                        <section>
+                            <h2>3. Credits</h2>
+                            <p>A credit is the unit of work. One credit covers one business being pulled from the map, its contact details found, and the AI score and reasoning written for it. Drafting an outreach email costs one further credit. Searching the map and exporting a lead you already hold are free.</p>
+                            <ul>
+                                <li><strong>Failed enrichment is not charged.</strong> If we cannot find an email or a phone number for a business, the credit is returned to your balance automatically.</li>
+                                <li>Monthly credits arrive on renewal. Up to one month's allowance rolls over; anything beyond that expires.</li>
+                                <li>Top-up credits do not expire and are spent only after your monthly allowance is used.</li>
+                                <li>Credits have no cash value and are not transferable.</li>
+                            </ul>
+                        </section>
+                        <section>
+                            <h2>4. Payment and cancellation</h2>
+                            <p>Paid plans bill monthly in advance. You can change plan at any time — upgrades take effect immediately with the difference charged pro rata, downgrades take effect at your next renewal.</p>
+                            <p>Cancelling stops the renewal. It does not delete your account or the leads you have already pulled, and we do not refund part months except where the law requires it.</p>
+                        </section>
+                        <section>
+                            <h2>5. How you may use the data</h2>
+                            <p>This is the section that matters most. LeadAtlas gives you business records assembled from public sources. What you do with them is your responsibility, and you agree that:</p>
+                            <ul>
+                                <li>Your outreach complies with the marketing and anti-spam law that applies to you — GDPR and PECR in the UK and EU, CAN-SPAM in the US, and their equivalents elsewhere.</li>
+                                <li>You honour opt-outs and unsubscribe requests promptly, and you do not contact anyone who has told you to stop.</li>
+                                <li>You will not resell the raw data as a list product, or use it for anything unlawful, harassing, or discriminatory.</li>
+                            </ul>
+                            <p>We may suspend an account we reasonably believe is breaking this section.</p>
+                        </section>
+                        <section>
+                            <h2>6. What we do not promise</h2>
+                            <p>AI scores, summaries, and drafted emails are generated automatically and can be wrong. They are a ranking aid, not a verified statement of fact about a business, and you should check anything you rely on commercially.</p>
+                            <p>We also do not promise that a search will return a particular number of businesses, that contact details are current, or that the service will be uninterrupted. Public sources change without telling us.</p>
+                        </section>
+                        <section>
+                            <h2>7. Your data and ours</h2>
+                            <p>You keep ownership of the leads you pull and can export them at any time. We keep ownership of the platform, its interface, and its models. Neither of us gets rights in the other's property by using this service.</p>
+                        </section>
+                        <section>
+                            <h2>8. Liability</h2>
+                            <p>To the extent the law allows, our total liability in any 12-month period is limited to what you paid us in that period. We are not liable for lost profits, lost business, or lost data.</p>
+                            <p>Nothing here limits liability for death, personal injury, or fraud, because it cannot.</p>
+                        </section>
+                        <section>
+                            <h2>9. Ending the agreement</h2>
+                            <p>You can close your account at any time from your settings. We can suspend or close an account for a material breach of these terms, and we will tell you why unless we are legally prevented from doing so. Your leads stay exportable for 90 days after closure.</p>
+                        </section>
+                        <section>
+                            <h2>10. Changes and contact</h2>
+                            <p>We will email account holders before a material change takes effect. Continuing to use the service afterwards means accepting the revised terms. Questions go to <a href="/contact">our contact page</a>.</p>
+                        </section>
+                        HTML,
+                ],
             ],
         ];
 

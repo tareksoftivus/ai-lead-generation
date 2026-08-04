@@ -268,6 +268,13 @@ return [
                 'default' => 'Rich content section',
                 'rules' => 'nullable|string|max:255',
             ],
+            'notice' => [
+                'type' => 'textarea',
+                'label' => 'Notice Banner',
+                'hint' => 'Optional callout shown above the content, e.g. a placeholder/legal disclaimer.',
+                'default' => '',
+                'rules' => 'nullable|string|max:500',
+            ],
             'content' => [
                 'type' => 'editor',
                 'label' => 'Content',

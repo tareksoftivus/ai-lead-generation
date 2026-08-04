@@ -7,6 +7,12 @@
     @if($page->meta_description)
         <meta name="description" content="{{ $page->meta_description }}">
     @endif
+    @if(setting('site_favicon') && media_url(setting('site_favicon')))
+        <link rel="icon" href="{{ media_url(setting('site_favicon')) }}" />
+    @else
+        <link rel="icon" href="{{ asset('assets/frontend/leadatlas/images/logo-32.png') }}" type="image/png" sizes="32x32" />
+    @endif
+    <link rel="apple-touch-icon" href="{{ asset('assets/frontend/leadatlas/images/logo-180.png') }}" />
     <style>
         :root { --primary: {{ $themeVars['primary_color'] ?? '#4F39F6' }}; --accent: {{ $themeVars['accent_color'] ?? '#0F172A' }}; }
     </style>

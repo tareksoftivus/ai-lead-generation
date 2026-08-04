@@ -1,6 +1,28 @@
 @php
     $data = $section->data;
-    $posts = $data['posts'] ?? [];
+    $rawPosts = $data['posts'] ?? [];
+
+    $defaultThumbnails = [
+        0 => asset('assets/frontend/leadatlas/images/blog/blog-thumb-01.jpg'),
+        1 => asset('assets/frontend/leadatlas/images/blog/blog-thumb-02.jpg'),
+        2 => asset('assets/frontend/leadatlas/images/blog/blog-thumb-03.jpg'),
+    ];
+
+    $defaultAuthorAvatars = [
+        0 => asset('assets/frontend/leadatlas/images/avatars/avatar-1.jpg'),
+        1 => asset('assets/frontend/leadatlas/images/avatars/avatar-2.jpg'),
+        2 => asset('assets/frontend/leadatlas/images/avatars/avatar-3.jpg'),
+        3 => asset('assets/frontend/leadatlas/images/avatars/avatar-4.jpg'),
+    ];
+
+    $posts = collect($rawPosts)
+        ->values()
+        ->map(function ($post, $index) use ($defaultThumbnails, $defaultAuthorAvatars) {
+            $post['image_url'] = media_url($post['image'] ?? null) ?: ($defaultThumbnails[$index % 3] ?? null);
+            $post['author_avatar_url'] = media_url($post['author_avatar'] ?? null) ?: ($defaultAuthorAvatars[$index % 4] ?? null);
+
+            return $post;
+        });
 @endphp
 <section class="spy-section" data-anim>
     <div class="container">
@@ -18,7 +40,9 @@
             @foreach($posts as $post)
                 <article class="post">
                     <a href="{{ $post['link'] ?: '#' }}" class="post__media" tabindex="-1" aria-hidden="true">
-                        <img src="{{ asset('assets/frontend/leadatlas/images/blog/'.($post['image'] ?? '')) }}" alt="{{ $post['title'] ?? '' }}" class="post__img" />
+                        @if($post['image_url'])
+                            <img src="{{ $post['image_url'] }}" alt="{{ $post['title'] ?? '' }}" class="post__img" />
+                        @endif
                         <span class="post__date">
                             <span class="post__date-day numeric">{{ $post['date_day'] ?? '' }}</span>
                             <span class="post__date-mon">{{ $post['date_month'] ?? '' }}</span>
@@ -44,7 +68,9 @@
 
                         <p class="post__foot">
                             <span class="post__by">
-                                <img src="{{ asset('assets/frontend/leadatlas/images/avatars/'.($post['author_avatar'] ?? 'avatar-1.jpg')) }}" alt="{{ $post['author_name'] ?? '' }}" class="post__avatar" width="80" height="80" />
+                                @if($post['author_avatar_url'])
+                                    <img src="{{ $post['author_avatar_url'] }}" alt="{{ $post['author_name'] ?? '' }}" class="post__avatar" width="80" height="80" />
+                                @endif
                                 {{ $post['author_name'] ?? '' }}
                             </span>
                             <a href="{{ $post['link'] ?: '#' }}" class="btn btn-primary btn-sm post__more" tabindex="-1" aria-hidden="true">

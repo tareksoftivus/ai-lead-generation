@@ -215,6 +215,18 @@
   }
 }
 
+.media-picker-preview-fallback-img {
+  @apply opacity-60 grayscale-[15%];
+}
+
+.media-picker-dropzone--fallback {
+  @apply border-neutral-200 bg-neutral-50;
+}
+
+.media-picker-fallback-note {
+  @apply text-xs font-medium text-neutral-400 italic;
+}
+
 .media-picker-placeholder {
   @apply mt-5 flex h-16 w-24 items-center justify-center rounded-lg bg-neutral-100 text-neutral-300;
 

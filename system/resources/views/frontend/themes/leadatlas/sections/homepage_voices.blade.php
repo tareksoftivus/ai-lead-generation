@@ -1,6 +1,21 @@
 @php
     $data = $section->data;
-    $items = $data['items'] ?? [];
+    $rawItems = $data['items'] ?? [];
+
+    $defaultAvatars = [
+        0 => asset('assets/frontend/leadatlas/images/avatars/avatar-1.jpg'),
+        1 => asset('assets/frontend/leadatlas/images/avatars/avatar-2.jpg'),
+        2 => asset('assets/frontend/leadatlas/images/avatars/avatar-3.jpg'),
+        3 => asset('assets/frontend/leadatlas/images/avatars/avatar-4.jpg'),
+    ];
+
+    $items = collect($rawItems)
+        ->values()
+        ->map(function ($item, $index) use ($defaultAvatars) {
+            $item['avatar_url'] = media_url($item['avatar'] ?? null) ?: ($defaultAvatars[$index % 4] ?? null);
+
+            return $item;
+        });
 @endphp
 <section class="spy-section bg-primary/5" data-anim aria-labelledby="voices-heading">
     <div class="container">
@@ -28,8 +43,10 @@
                         {{ $voice['quote'] ?? '' }}
                     </blockquote>
                     <figcaption class="mt-6 flex items-center gap-3 border-t border-neutral-100 pt-4">
-                        <img src="{{ asset('assets/frontend/leadatlas/images/avatars/'.($voice['avatar'] ?? 'avatar-1.jpg')) }}" alt="" width="80" height="80" loading="lazy" decoding="async"
-                            class="size-11 shrink-0 rounded-full bg-neutral-100 object-cover" />
+                        @if($voice['avatar_url'])
+                            <img src="{{ $voice['avatar_url'] }}" alt="" width="80" height="80" loading="lazy" decoding="async"
+                                class="size-11 shrink-0 rounded-full bg-neutral-100 object-cover" />
+                        @endif
                         <span class="min-w-0">
                             <span class="block truncate text-[0.875rem] font-semibold text-title">{{ $voice['name'] ?? '' }}</span>
                             <span class="block truncate text-[0.8125rem] text-body">{{ $voice['role'] ?? '' }}</span>

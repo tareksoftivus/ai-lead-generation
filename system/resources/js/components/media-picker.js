@@ -13,6 +13,10 @@ function emitPickerChange(picker, url) {
   const input = picker.querySelector('[data-media-picker-input]');
   if (!input) return;
 
+  // Repeater rows (and any other component that snapshots its own state
+  // on the `input` event) need to see this programmatic value change.
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+
   const match = (input.name || '').match(/\[([^\]]+)\]$/);
   const key = match ? match[1] : input.name;
 
@@ -101,10 +105,28 @@ document.addEventListener('DOMContentLoaded', function () {
     const input = picker.querySelector('[data-media-picker-input]');
     const preview = picker.querySelector('[data-media-picker-preview]');
     const placeholder = picker.querySelector('[data-media-picker-placeholder]');
+    const fallbackUrl = picker.dataset.mediaPreviewFallbackUrl;
+    const ctaNote = picker.querySelector('.media-picker-fallback-note');
 
     if (input) input.value = '';
-    if (preview) preview.innerHTML = '';
-    if (placeholder) placeholder.hidden = false;
+
+    if (fallbackUrl) {
+      if (preview) preview.innerHTML = '<img src="' + fallbackUrl + '" alt="" class="media-picker-preview-fallback-img">';
+      if (placeholder) placeholder.hidden = true;
+      if (!ctaNote) {
+        const ctaEl = picker.querySelector('[data-media-picker-cta]');
+        if (ctaEl) {
+          const note = document.createElement('p');
+          note.className = 'media-picker-fallback-note';
+          note.textContent = 'Using default image';
+          ctaEl.insertAdjacentElement('afterend', note);
+        }
+      }
+    } else {
+      if (preview) preview.innerHTML = '';
+      if (placeholder) placeholder.hidden = false;
+    }
+
     removeBtn.hidden = true;
     picker._stagedFile = null;
 
@@ -232,6 +254,11 @@ document.addEventListener('DOMContentLoaded', function () {
     closeModal('mediaLibraryModal');
   });
 
+  // ── Remove the "Using default image" note once a real value is set ──
+  function clearFallbackNote(picker) {
+    picker.querySelector('.media-picker-fallback-note')?.remove();
+  }
+
   // ── Apply a Media Selection to a Picker ──
   function applyToPicker(picker, media) {
     const input = picker.querySelector('[data-media-picker-input]');
@@ -243,6 +270,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (placeholder) placeholder.hidden = true;
     if (removeBtn) removeBtn.hidden = false;
     picker._stagedFile = null;
+    clearFallbackNote(picker);
 
     if (preview) {
       if (media.type === 'image') {
@@ -269,6 +297,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (input) input.value = '';
     if (placeholder) placeholder.hidden = true;
     if (removeBtn) removeBtn.hidden = false;
+    clearFallbackNote(picker);
 
     const isImage = file.type.indexOf('image/') === 0;
     const objectUrl = URL.createObjectURL(file);

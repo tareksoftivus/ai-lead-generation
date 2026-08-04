@@ -1,5 +1,7 @@
 @php
     $sectionData = old('data', $section?->data ?? []);
+
+    $groupedFields = collect($definition['fields'] ?? [])->groupBy(fn ($field) => $field['group'] ?? '__ungrouped__', preserveKeys: true);
 @endphp
 
 <form method="POST" action="{{ $action }}">
@@ -49,13 +51,40 @@
                 </div>
 
                 <div class="space-y-5">
-                    @foreach(($definition['fields'] ?? []) as $fieldKey => $field)
-                        <x-forms.schema-field
-                            :field="$field"
-                            :name="'data[' . $fieldKey . ']'"
-                            :error-key="'data.' . $fieldKey"
-                            :value="$sectionData[$fieldKey] ?? ($field['default'] ?? null)"
-                        />
+                    @foreach($groupedFields as $groupKey => $fields)
+                        @if($groupKey === '__ungrouped__')
+                            @foreach($fields as $fieldKey => $field)
+                                <x-forms.schema-field
+                                    :field="$field"
+                                    :name="'data[' . $fieldKey . ']'"
+                                    :error-key="'data.' . $fieldKey"
+                                    :value="$sectionData[$fieldKey] ?? ($field['default'] ?? null)"
+                                />
+                            @endforeach
+                        @else
+                            @php
+                                $firstField = $fields->first();
+                            @endphp
+                            <div class="section-card space-y-4">
+                                <div>
+                                    <h4 class="text-sm font-bold text-neutral-700">{{ $firstField['group_label'] ?? '' }}</h4>
+                                    @if(!empty($firstField['group_hint']))
+                                        <p class="mt-1 text-sm text-neutral-500">{{ $firstField['group_hint'] }}</p>
+                                    @endif
+                                </div>
+
+                                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    @foreach($fields as $fieldKey => $field)
+                                        <x-forms.schema-field
+                                            :field="$field"
+                                            :name="'data[' . $fieldKey . ']'"
+                                            :error-key="'data.' . $fieldKey"
+                                            :value="$sectionData[$fieldKey] ?? ($field['default'] ?? null)"
+                                        />
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
                     @endforeach
                 </div>
             </div>

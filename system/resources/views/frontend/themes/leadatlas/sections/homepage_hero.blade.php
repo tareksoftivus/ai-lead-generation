@@ -1,5 +1,7 @@
 @php
     $data = $section->data;
+    $screenshotUrl = media_url($data['screenshot_image'] ?? null) ?: asset('assets/frontend/leadatlas/images/hero-frame.png');
+    $screenshotAlt = $data['screenshot_alt'] ?? 'The LeadAtlas dashboard: two searches running, 1,284 leads found, and the highest-scoring businesses ranked by AI score.';
 @endphp
 <section class="relative isolate overflow-hidden bg-neutral-0 pt-[72px]">
     <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
@@ -30,21 +32,21 @@
                 </p>
             @endif
 
-            <div class="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
-                @if(!empty($data['primary_button_text']))
-                    <a href="{{ $data['primary_button_link'] ?: '#' }}" class="btn btn-primary">
-                        <span class="btn__label">
+            @if(!empty($data['primary_button_text']) || !empty($data['secondary_button_text']))
+                <div class="mx-auto mt-7 flex max-w-[28rem] flex-col divide-y divide-neutral-200 overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-0 sm:flex-row sm:divide-x sm:divide-y-0">
+                    @if(!empty($data['primary_button_text']))
+                        <a href="{{ $data['primary_button_link'] ?: '#' }}"
+                            class="flex flex-1 items-center justify-center gap-2 px-6 py-4 text-[0.9375rem] font-semibold text-neutral-0 bg-primary transition-colors hover:bg-primary/90">
                             <span>{{ $data['primary_button_text'] }}</span>
-                            <span aria-hidden="true">{{ $data['primary_button_text'] }}</span>
-                        </span>
-                        <i class="ph ph-arrow-right"></i>
-                    </a>
-                @endif
-                @if(!empty($data['secondary_button_text']))
-                    <a href="{{ $data['secondary_button_link'] ?: '#' }}"
-                        class="text-[0.9375rem] font-semibold text-title underline decoration-neutral-300 decoration-2 underline-offset-[6px] transition-colors hover:decoration-discover-deep">{{ $data['secondary_button_text'] }}</a>
-                @endif
-            </div>
+                            <i class="ph ph-arrow-right"></i>
+                        </a>
+                    @endif
+                    @if(!empty($data['secondary_button_text']))
+                        <a href="{{ $data['secondary_button_link'] ?: '#' }}"
+                            class="flex flex-1 items-center justify-center px-6 py-4 text-[0.9375rem] font-semibold text-title transition-colors hover:bg-neutral-50">{{ $data['secondary_button_text'] }}</a>
+                    @endif
+                </div>
+            @endif
         </div>
 
         <div class="relative mt-12 md:mt-14" data-anim-load>
@@ -69,8 +71,8 @@
                     </span>
                 </div>
 
-                <img src="{{ asset('assets/frontend/leadatlas/images/hero-frame.png') }}"
-                    alt="{{ __('The LeadAtlas dashboard: two searches running, 1,284 leads found, and the highest-scoring businesses ranked by AI score.') }}"
+                <img src="{{ $screenshotUrl }}"
+                    alt="{{ $screenshotAlt }}"
                     width="1913" height="955" fetchpriority="high" decoding="async" class="shot__img" />
 
                 <div class="lead-card">

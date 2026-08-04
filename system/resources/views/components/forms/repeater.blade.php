@@ -11,12 +11,28 @@
     $componentId = 'repeater-' . md5($name . json_encode($schema));
     $schemaCollection = collect($schema);
     $hasEditorField = $schemaCollection->contains(fn ($field) => ($field['type'] ?? 'text') === 'editor');
+    $mediaFieldKeys = $schemaCollection->filter(fn ($field) => ($field['type'] ?? 'text') === 'media')->keys();
     $initialItems = old($name, $items);
     if (is_string($initialItems)) {
         $decoded = json_decode($initialItems, true);
         $initialItems = is_array($decoded) ? $decoded : [];
     }
     $errorName = $errorKey ?? $name;
+
+    $mediaPreviewMap = [];
+    if ($mediaFieldKeys->isNotEmpty() && is_array($initialItems)) {
+        foreach ($mediaFieldKeys as $fieldKey) {
+            foreach ($initialItems as $item) {
+                $mediaId = is_array($item) ? ($item[$fieldKey] ?? null) : null;
+                if ($mediaId && ! isset($mediaPreviewMap[$mediaId])) {
+                    $url = media_url($mediaId);
+                    if ($url) {
+                        $mediaPreviewMap[$mediaId] = $url;
+                    }
+                }
+            }
+        }
+    }
 @endphp
 
 <div
@@ -25,6 +41,7 @@
     data-name="{{ $name }}"
     data-schema='@json($schema)'
     data-initial-items='@json($initialItems)'
+    data-media-preview-map='@json($mediaPreviewMap)'
     class="space-y-3"
 >
     @if($label)
@@ -114,7 +131,7 @@
                 return `<p class="form-hint">${escapeHtml(hint)}</p>`;
               }
 
-              function renderField(fieldKey, fieldDef, rowData, index, rowKey) {
+              function renderField(fieldKey, fieldDef, rowData, index, rowKey, mediaPreviewMap) {
                 const value = rowData?.[fieldKey] ?? '';
                 const label = escapeHtml(normalizeText(fieldDef.label || fieldKey));
                 const fieldType = fieldDef.type || 'text';
@@ -194,6 +211,36 @@
                     <div class="space-y-2">
                       <label class="form-label">${label}</label>
                       <input type="color" value="${escapeHtml(value || '#000000')}" class="input-field h-12 p-2" data-repeater-prop="${fieldName}">
+                      ${hintMarkup}
+                    </div>
+                  `;
+                }
+
+                if (fieldType === 'media') {
+                  const accept = escapeHtml(fieldDef.accept || 'image');
+                  const previewUrl = value ? (mediaPreviewMap[String(value)] || '') : '';
+                  const hasValue = Boolean(value);
+                  const mediaHint = normalizeText(fieldDef.recommended_size || fieldDef.hint || '');
+
+                  return `
+                    <div class="space-y-2">
+                      <label class="form-label">${label}</label>
+                      <div class="media-picker" data-media-picker data-media-accept="${accept}">
+                        <input type="hidden" value="${escapeHtml(value)}" data-repeater-prop="${fieldName}" data-media-picker-input>
+                        <div class="media-picker-dropzone" data-media-picker-trigger data-media-picker-dropzone>
+                          <div class="media-picker-preview" data-media-picker-preview>${previewUrl ? `<img src="${escapeHtml(previewUrl)}" alt="">` : ''}</div>
+                          <div class="media-picker-placeholder" data-media-picker-placeholder${hasValue ? ' hidden' : ''}>
+                            <i class="ph ph-image"></i>
+                          </div>
+                          <div class="media-picker-dropzone-text">
+                            <p class="media-picker-cta" data-media-picker-cta>{{ __('Click or drop files') }}</p>
+                            ${mediaHint ? `<p class="media-picker-hint">${escapeHtml(mediaHint)}</p>` : ''}
+                          </div>
+                          <button type="button" class="media-picker-remove" data-media-picker-remove title="{{ __('Remove') }}"${hasValue ? '' : ' hidden'}>
+                            <i class="ph ph-x"></i>
+                          </button>
+                        </div>
+                      </div>
                       ${hintMarkup}
                     </div>
                   `;
@@ -331,6 +378,12 @@
 
               function addRow(container, rowData = {}) {
                 const schema = JSON.parse(container.dataset.schema || '{}');
+                let mediaPreviewMap = {};
+                try {
+                  mediaPreviewMap = JSON.parse(container.dataset.mediaPreviewMap || '{}');
+                } catch (error) {
+                  mediaPreviewMap = {};
+                }
                 const itemsRoot = container.querySelector('[data-repeater-items]');
                 const index = itemsRoot.querySelectorAll('[data-repeater-row]').length;
                 const rowKey = repeaterSequence++;
@@ -347,7 +400,7 @@
                     </button>
                   </div>
                   <div class="space-y-4">
-                    ${Object.entries(schema).map(([fieldKey, fieldDef]) => renderField(fieldKey, fieldDef, rowData, index, rowKey)).join('')}
+                    ${Object.entries(schema).map(([fieldKey, fieldDef]) => renderField(fieldKey, fieldDef, rowData, index, rowKey, mediaPreviewMap)).join('')}
                   </div>
                 `;
 

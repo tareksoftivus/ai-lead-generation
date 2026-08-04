@@ -1,20 +1,36 @@
 @php
     $data = $section->data;
     $topics = $data['topics'] ?? [];
-    $posts = $data['posts'] ?? [];
+    $rawPosts = $data['posts'] ?? [];
     $pages = $data['pages'] ?? [];
 
-    $resolveImage = function (?string $image): ?string {
-        if (empty($image)) {
-            return null;
-        }
+    $defaultThumbnails = [
+        0 => asset('assets/frontend/leadatlas/images/blog/blog-thumb-02.jpg'),
+        1 => asset('assets/frontend/leadatlas/images/blog/blog-thumb-03.jpg'),
+        2 => asset('assets/frontend/leadatlas/images/blog/blog-thumb-04.jpg'),
+        3 => asset('assets/frontend/leadatlas/images/blog/blog-thumb-05.jpg'),
+        4 => asset('assets/frontend/leadatlas/images/blog/blog-thumb-06.jpg'),
+        5 => asset('assets/frontend/leadatlas/images/blog/blog-thumb-07.jpg'),
+    ];
 
-        return str_starts_with($image, 'http://') || str_starts_with($image, 'https://') || str_starts_with($image, '/')
-            ? $image
-            : asset('assets/frontend/leadatlas/images/blog/'.$image);
-    };
+    $defaultAuthorAvatars = [
+        0 => asset('assets/frontend/leadatlas/images/avatars/avatar-4.jpg'),
+        1 => asset('assets/frontend/leadatlas/images/avatars/avatar-3.jpg'),
+        2 => asset('assets/frontend/leadatlas/images/avatars/avatar-2.jpg'),
+        3 => asset('assets/frontend/leadatlas/images/avatars/avatar-4.jpg'),
+    ];
 
-    $leadImage = $resolveImage($data['lead_image'] ?? null);
+    $posts = collect($rawPosts)
+        ->values()
+        ->map(function ($post, $index) use ($defaultThumbnails, $defaultAuthorAvatars) {
+            $post['image_url'] = media_url($post['image'] ?? null) ?: ($defaultThumbnails[$index % 6] ?? null);
+            $post['author_avatar_url'] = media_url($post['author_avatar'] ?? null) ?: ($defaultAuthorAvatars[$index % 4] ?? null);
+
+            return $post;
+        });
+
+    $leadImage = media_url($data['lead_image'] ?? null) ?: asset('assets/frontend/leadatlas/images/blog/blog-thumb-01.jpg');
+    $leadAuthorAvatar = media_url($data['lead_author_avatar'] ?? null) ?: asset('assets/frontend/leadatlas/images/avatars/avatar-3.jpg');
 @endphp
 <section class="spb-section pt-12 md:pt-14" data-anim>
     <div class="container">
@@ -56,7 +72,7 @@
                 </p>
 
                 <p class="post__by">
-                    <img src="{{ asset('assets/frontend/leadatlas/images/avatars/'.($data['lead_author_avatar'] ?: 'avatar-1.jpg')) }}" alt="{{ $data['lead_author_name'] ?? '' }}" class="post__avatar" width="80" height="80" />
+                    <img src="{{ $leadAuthorAvatar }}" alt="{{ $data['lead_author_name'] ?? '' }}" class="post__avatar" width="80" height="80" />
                     {{ $data['lead_author_name'] ?? '' }}
                 </p>
             </div>
@@ -64,11 +80,10 @@
 
         <div class="posts" data-anim-item>
             @foreach($posts as $post)
-                @php($postImage = $resolveImage($post['image'] ?? null))
                 <article class="post">
                     <a href="{{ $post['link'] ?: '#' }}" class="post__media" tabindex="-1" aria-hidden="true">
-                        @if($postImage)
-                            <img src="{{ $postImage }}" alt="{{ $post['title'] ?? '' }}" class="post__img" />
+                        @if($post['image_url'])
+                            <img src="{{ $post['image_url'] }}" alt="{{ $post['title'] ?? '' }}" class="post__img" />
                         @else
                             <div class="flex h-full w-full items-center justify-center bg-neutral-100 text-neutral-300">
                                 <i class="ph ph-image text-4xl" aria-hidden="true"></i>
@@ -97,7 +112,9 @@
 
                         <p class="post__foot">
                             <span class="post__by">
-                                <img src="{{ asset('assets/frontend/leadatlas/images/avatars/'.($post['author_avatar'] ?: 'avatar-1.jpg')) }}" alt="{{ $post['author_name'] ?? '' }}" class="post__avatar" width="80" height="80" />
+                                @if($post['author_avatar_url'])
+                                    <img src="{{ $post['author_avatar_url'] }}" alt="{{ $post['author_name'] ?? '' }}" class="post__avatar" width="80" height="80" />
+                                @endif
                                 {{ $post['author_name'] ?? '' }}
                             </span>
                             <a href="{{ $post['link'] ?: '#' }}" class="btn btn-primary btn-sm post__more" tabindex="-1" aria-hidden="true">

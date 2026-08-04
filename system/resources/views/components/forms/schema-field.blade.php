@@ -68,7 +68,14 @@
         <x-forms.select :label="$displayLabel" :name="$name" :selected="$resolvedValue" :options="$selectOptions" />
     @endif
 @elseif($type === 'media')
-    <x-media.picker :label="$displayLabel" :name="$name" :value="$resolvedValue" :accept="$field['accept'] ?? 'image'" :hint="$displayMediaHint" />
+    <x-media.picker
+        :label="$displayLabel"
+        :name="$name"
+        :value="$resolvedValue"
+        :accept="$field['accept'] ?? 'image'"
+        :hint="$displayMediaHint"
+        :preview-fallback-url="!empty($field['preview_fallback']) ? asset($field['preview_fallback']) : null"
+    />
 @elseif($type === 'color')
     <div>
         @if($displayLabel)

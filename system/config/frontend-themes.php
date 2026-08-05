@@ -15,6 +15,8 @@ return [
             'pricingpage_unit', 'pricingpage_plans', 'pricingpage_rollover', 'pricingpage_compare', 'pricingpage_faq',
             'contactpage_form',
             'blogpage_grid',
+            'termspage_hero', 'termspage_content',
+            'privacypage_hero', 'privacypage_content',
         ],
         'page_layouts' => [
             'default' => [

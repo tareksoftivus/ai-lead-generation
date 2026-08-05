@@ -53,8 +53,8 @@
             <div class="ft__group">
                 <h2 class="font-mono text-[0.6875rem] font-medium tracking-[0.16em] text-body uppercase">{{ __('Legal') }}</h2>
                 <ul class="mt-5 flex flex-col gap-3">
-                    <li><a href="#" class="text-[0.9375rem] text-body transition-colors duration-200 hover:text-title">{{ __('Privacy policy') }}</a></li>
-                    <li><a href="#" class="text-[0.9375rem] text-body transition-colors duration-200 hover:text-title">{{ __('Terms & conditions') }}</a></li>
+                    <li><a href="{{ route('frontend.page', 'privacy-policy') }}" class="text-[0.9375rem] text-body transition-colors duration-200 hover:text-title">{{ __('Privacy policy') }}</a></li>
+                    <li><a href="{{ route('frontend.page', 'terms') }}" class="text-[0.9375rem] text-body transition-colors duration-200 hover:text-title">{{ __('Terms & conditions') }}</a></li>
                 </ul>
             </div>
 

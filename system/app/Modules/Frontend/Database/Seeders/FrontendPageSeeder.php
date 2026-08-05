@@ -133,6 +133,23 @@ class FrontendPageSeeder extends Seeder
             ]
         );
 
+        $privacy = Page::updateOrCreate(
+            ['slug' => 'privacy-policy'],
+            [
+                'title' => 'Privacy Policy',
+                'status' => 'published',
+                'excerpt' => 'What we collect, why we are allowed to, and what a business can do about appearing in our index.',
+                'default_layout' => 'default',
+                'theme_overrides' => [],
+                'is_system' => false,
+                'is_home' => false,
+                'meta_title' => 'Privacy Policy',
+                'meta_description' => 'What we collect, why we are allowed to, and what a business can do about appearing in our index.',
+                'meta_image_media_id' => null,
+                'published_at' => now(),
+            ]
+        );
+
         $homeSectionSlugs = [
             'homepage-hero-leadatlas',
             'homepage-stages',
@@ -218,6 +235,17 @@ class FrontendPageSeeder extends Seeder
             ->pluck('id')
             ->all();
 
+        $privacySectionSlugs = [
+            'privacy-page-head',
+            'privacy-rich-content',
+        ];
+
+        $privacySectionIds = FrontendSection::whereIn('slug', $privacySectionSlugs)
+            ->get(['id', 'slug'])
+            ->sortBy(fn (FrontendSection $section) => array_search($section->slug, $privacySectionSlugs, true))
+            ->pluck('id')
+            ->all();
+
         $composer->syncSections($home, $homeSectionIds);
         $composer->syncSections($about, $aboutSectionIds);
         $composer->syncSections($features, $featuresSectionIds);
@@ -225,5 +253,6 @@ class FrontendPageSeeder extends Seeder
         $composer->syncSections($contact, $contactSectionIds);
         $composer->syncSections($blog, $blogSectionIds);
         $composer->syncSections($terms, $termsSectionIds);
+        $composer->syncSections($privacy, $privacySectionIds);
     }
 }

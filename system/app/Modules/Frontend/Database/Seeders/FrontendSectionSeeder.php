@@ -354,7 +354,7 @@ class FrontendSectionSeeder extends Seeder
             [
                 'name' => 'Terms Page Hero',
                 'slug' => 'terms-page-head',
-                'type' => 'featurespage_hero',
+                'type' => 'termspage_hero',
                 'status' => 'published',
                 'description' => 'Breadcrumb header for the Terms & Conditions page.',
                 'data' => [
@@ -366,7 +366,7 @@ class FrontendSectionSeeder extends Seeder
             [
                 'name' => 'Terms — Content',
                 'slug' => 'terms-rich-content',
-                'type' => 'rich_content',
+                'type' => 'termspage_content',
                 'status' => 'published',
                 'description' => 'Long-form legal content for the Terms & Conditions page.',
                 'data' => [
@@ -431,6 +431,93 @@ class FrontendSectionSeeder extends Seeder
                         <section>
                             <h2>10. Changes and contact</h2>
                             <p>We will email account holders before a material change takes effect. Continuing to use the service afterwards means accepting the revised terms. Questions go to <a href="/contact">our contact page</a>.</p>
+                        </section>
+                        HTML,
+                ],
+            ],
+            [
+                'name' => 'Privacy Page Hero',
+                'slug' => 'privacy-page-head',
+                'type' => 'privacypage_hero',
+                'status' => 'published',
+                'description' => 'Breadcrumb header for the Privacy Policy page.',
+                'data' => [
+                    'breadcrumb_group' => 'Legal',
+                    'title' => 'Privacy policy',
+                    'lead' => 'What we collect, why we are allowed to, and what a business can do about appearing in our index.',
+                ],
+            ],
+            [
+                'name' => 'Privacy — Content',
+                'slug' => 'privacy-rich-content',
+                'type' => 'privacypage_content',
+                'status' => 'published',
+                'description' => 'Long-form legal content for the Privacy Policy page.',
+                'data' => [
+                    'title' => 'Privacy policy',
+                    'notice' => 'This policy is written to fit an AI lead-generation product, but it is not legal advice. Have a lawyer review and adapt it before you launch.',
+                    'content' => <<<'HTML'
+                        <section>
+                            <h2>1. Who this covers</h2>
+                            <p>This policy applies to people who hold a LeadAtlas account, and to the business records the platform collects on their behalf. Those are two different groups with different rights, and the sections below say which is which.</p>
+                        </section>
+                        <section>
+                            <h2>2. What we collect about you</h2>
+                            <p>Account and billing data you give us directly:</p>
+                            <ul>
+                                <li>Your name, work email, and password (stored hashed).</li>
+                                <li>Billing details, held by our payment processor — we never store full card numbers.</li>
+                                <li>Usage records: searches run, credits spent, and exports taken, so we can bill accurately and show you your own history.</li>
+                            </ul>
+                        </section>
+                        <section>
+                            <h2>3. What we collect about businesses</h2>
+                            <p>This is the part specific to what LeadAtlas does. When you run a search, we collect information about businesses from public sources — chiefly Google Maps listings and the websites those listings point to. That can include a business name, address, phone number, published email address, opening hours, rating, and review count.</p>
+                            <p>These businesses are not our users and have not signed up. We treat that data as follows:</p>
+                            <ul>
+                                <li>We collect only what is already published. We do not attempt to bypass logins, paywalls, or access controls.</li>
+                                <li>We do not collect special category data, and we do not build profiles of individual employees.</li>
+                                <li>A business can ask us to remove its record. See section 8.</li>
+                            </ul>
+                        </section>
+                        <section>
+                            <h2>4. Why we can use this data</h2>
+                            <p>Where the GDPR applies, we rely on legitimate interests for collecting public business data — specifically, the interest of our users in reaching potential customers, balanced against the limited privacy expectation attached to information a business has chosen to publish. We rely on contract for your own account data, and on consent for marketing email.</p>
+                            <p><strong>You are the controller of the leads you pull.</strong> We process them on your behalf. That means your own outreach must have its own lawful basis, and any opt-out you receive is yours to honour.</p>
+                        </section>
+                        <section>
+                            <h2>5. How AI is used</h2>
+                            <p>Scores, summaries, and drafted emails are produced by a language model reading the public data described in section 3. Two things follow from that:</p>
+                            <ul>
+                                <li>Generated text can be wrong. It is a ranking aid, not a verdict, and every score shows the reasoning behind it so you can disagree with it.</li>
+                                <li>We do not use your searches or your lead lists to train third-party models.</li>
+                            </ul>
+                        </section>
+                        <section>
+                            <h2>6. Who we share it with</h2>
+                            <p>We do not sell data. We share it only with the processors needed to run the service — hosting, payment processing, email delivery, and the AI provider that generates scores and summaries — each under contract and only for that purpose.</p>
+                            <p>We disclose data to authorities only where legally required, and we will tell you unless we are prohibited from doing so.</p>
+                        </section>
+                        <section>
+                            <h2>7. How long we keep it</h2>
+                            <ul>
+                                <li>Account data: for as long as your account is open.</li>
+                                <li>Leads you have pulled: until you delete them, or 90 days after your account closes.</li>
+                                <li>Billing records: seven years, because tax law requires it.</li>
+                            </ul>
+                        </section>
+                        <section>
+                            <h2>8. Your rights, and a business's rights</h2>
+                            <p>If you hold an account, you can access, correct, export, or delete your data from your account settings, or by writing to us.</p>
+                            <p>If you represent a business that appears in our index and you want that record removed, email <a href="/contact">our contact page</a> with the business name and address. We will remove it from the index. We cannot retrieve copies that users have already exported, which is why we act on these quickly.</p>
+                        </section>
+                        <section>
+                            <h2>9. Security</h2>
+                            <p>Data is encrypted in transit and at rest. Access to production systems is limited to staff who need it and is logged. No system is perfectly secure, and we will notify affected users and the relevant authority within 72 hours of a breach that puts personal data at risk.</p>
+                        </section>
+                        <section>
+                            <h2>10. Changes and contact</h2>
+                            <p>If we make a material change we will email account holders before it takes effect. Questions about this policy go to <a href="/contact">our contact page</a>.</p>
                         </section>
                         HTML,
                 ],

@@ -9,8 +9,6 @@ use App\Modules\Shared\Widgets\Admin\AdminHealthWidget;
 use App\Modules\Shared\Widgets\Admin\RecentActivityWidget;
 use App\Modules\Shared\Widgets\Admin\StatsWidget;
 use App\Modules\Shared\Widgets\Admin\UserDistributionChartWidget;
-use App\Modules\Shared\Widgets\User\QuickLinksWidget;
-use App\Modules\Shared\Widgets\User\WelcomeWidget;
 use App\Services\WidgetRegistry;
 
 class SharedServiceProvider extends BasePanelModuleProvider
@@ -30,8 +28,5 @@ class SharedServiceProvider extends BasePanelModuleProvider
         $registry->register(new RecentActivityWidget($dashboardService));
         $registry->register(new ActivityHubWidget($dashboardService));
         $registry->register(new UserDistributionChartWidget($dashboardService));
-
-        $registry->register(new WelcomeWidget);
-        $registry->register(new QuickLinksWidget);
     }
 }

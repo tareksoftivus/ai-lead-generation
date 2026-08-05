@@ -62,6 +62,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return (bool) $this->two_factor_enabled;
     }
 
+    public function hasConfirmedTwoFactor(): bool
+    {
+        return ! is_null($this->two_factor_confirmed_at);
+    }
+
     public function hasOtpTwoFactorEnabled(): bool
     {
         return (bool) $this->otp_two_factor_enabled;

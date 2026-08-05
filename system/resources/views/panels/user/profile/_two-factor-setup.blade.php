@@ -1,17 +1,11 @@
 @if(setting('enable_2fa_for_users', true))
-<div class="section-card">
-    <div class="flex items-center gap-3 mb-4">
-        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-            <i class="ph ph-shield-check text-xl"></i>
-        </div>
-        <div>
-            <h3 class="heading-5 text-neutral-950">{{ __('Two-Factor Authentication') }}</h3>
-            <p class="text-sm text-neutral-400">{{ __('Add an extra layer of security to your account.') }}</p>
-        </div>
-    </div>
+<div class="form-card mt-4">
+    <h3 class="form-card__title">{{ __('Two-factor authentication') }}</h3>
+    <p class="form-card__hint">
+        {{ __('Add an extra layer of security to your account.') }}
+    </p>
 
     @if($user->hasConfirmedTwoFactor())
-        {{-- 2FA is enabled --}}
         <div class="rounded-xl border border-success/30 bg-success/10 p-4 mb-4">
             <div class="flex items-center gap-2">
                 <i class="ph ph-check-circle text-success text-lg"></i>
@@ -43,7 +37,6 @@
             </x-ui.button>
         </form>
     @else
-        {{-- 2FA is not enabled --}}
         <div class="rounded-xl border border-neutral-100 bg-neutral-50 p-4 mb-4">
             <div class="flex items-center gap-2">
                 <i class="ph ph-shield-warning text-neutral-400 text-lg"></i>

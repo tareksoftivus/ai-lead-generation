@@ -6,7 +6,8 @@
     <p class="font-mono text-[0.6875rem] font-medium tracking-[0.16em] text-discover-deep uppercase">
         {{ __('Welcome back') }}
     </p>
-    <p class="mt-4 font-title text-[1.75rem] leading-[1.15] font-bold tracking-[-0.02em] text-balance text-title xl:text-[2rem]">
+    <p
+        class="mt-4 font-title text-[1.75rem] leading-[1.15] font-bold tracking-[-0.02em] text-balance text-title xl:text-[2rem]">
         {{ __('Your searches are where you left them.') }}
     </p>
     <p class="mt-4 text-[1rem] leading-[1.6]">
@@ -42,16 +43,8 @@
             <label for="login-email" class="form-label">{{ __('Work email') }}</label>
             <div class="field__control">
                 <i class="ph ph-envelope-simple field__icon" aria-hidden="true"></i>
-                <input
-                    type="email"
-                    id="login-email"
-                    name="email"
-                    class="form-input"
-                    autocomplete="email"
-                    placeholder="{{ __('alex@agency.com') }}"
-                    value="{{ old('email') }}"
-                    required
-                />
+                <input type="email" id="login-email" name="email" class="form-input" autocomplete="email"
+                    placeholder="{{ __('alex@agency.com') }}" value="{{ old('email') }}" required />
             </div>
             @error('email')
                 <p class="form-error">{{ $message }}</p>
@@ -62,21 +55,10 @@
             <label for="login-password" class="form-label">{{ __('Password') }}</label>
             <div class="password-field field__control">
                 <i class="ph ph-lock-simple field__icon" aria-hidden="true"></i>
-                <input
-                    type="password"
-                    id="login-password"
-                    name="password"
-                    class="form-input"
-                    autocomplete="current-password"
-                    placeholder="{{ __('Your password') }}"
-                    required
-                />
-                <button
-                    type="button"
-                    class="password-field__toggle"
-                    data-password-toggle
-                    aria-label="{{ __('Show password') }}"
-                >
+                <input type="password" id="login-password" name="password" class="form-input"
+                    autocomplete="current-password" placeholder="{{ __('Your password') }}" required />
+                <button type="button" class="password-field__toggle" data-password-toggle
+                    aria-label="{{ __('Show password') }}">
                     <i class="ph ph-eye" aria-hidden="true"></i>
                     <i class="ph ph-eye-slash" aria-hidden="true"></i>
                 </button>
@@ -88,20 +70,13 @@
 
         <div class="auth__row">
             <label class="consent">
-                <input
-                    type="checkbox"
-                    name="remember"
-                    class="form-check"
-                    @checked(old('remember', true))
-                />
+                <input type="checkbox" name="remember" class="form-check" @checked(old('remember', true)) />
                 <span class="text-[0.875rem] leading-[1.55]">{{ __('Keep me signed in') }}</span>
             </label>
 
             @if (Route::has('password.request'))
-                <a
-                    href="{{ route('password.request') }}"
-                    class="text-[0.875rem] font-medium text-title underline decoration-neutral-300 underline-offset-2 transition-colors hover:decoration-title"
-                >
+                <a href="{{ route('password.request') }}"
+                    class="text-[0.875rem] font-medium text-title underline decoration-neutral-300 underline-offset-2 transition-colors hover:decoration-title">
                     {{ __('Forgot password?') }}
                 </a>
             @endif

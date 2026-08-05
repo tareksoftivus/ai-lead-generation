@@ -22,7 +22,7 @@ class StoreTicketRequest extends FormRequest
             'subject' => ['required', 'string', 'max:255'],
             'body' => ['required', 'string', 'max:5000'],
             'category' => ['nullable', 'string', 'max:255'],
-            'priority' => ['required', Rule::in(array_keys(SupportTicket::priorities()))],
+            'priority' => ['nullable', Rule::in(array_keys(SupportTicket::priorities()))],
         ];
     }
 }

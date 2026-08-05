@@ -46,7 +46,9 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/css/leadatlas.css',
+                'resources/css/panel-user.css',
                 'resources/js/app.js',
+                'resources/js/panel-user.js',
                 'resources/js/components/frontend-menu-builder.js',
                 'resources/js/leadatlas.js',
                 ...moduleAssetInputs,

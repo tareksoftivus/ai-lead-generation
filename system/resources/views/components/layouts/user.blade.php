@@ -9,18 +9,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title }} - {{ config('app.name', 'Admin Panel') }}</title>
+    <title>{{ $title }} - {{ config('app.name', 'LeadAtlas') }}</title>
 
-    {{-- Google Fonts --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-
-    {{-- Phosphor Icons --}}
-    <link rel="stylesheet" href="{{ asset('assets/global/fonts/phosphor/regular/style.css') }}">
-
-    {{-- Vite Assets --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- Vite Assets (LeadAtlas design system + app shell JS) --}}
+    @vite(['resources/js/panel-user.js', 'resources/js/app.js'])
 
     {{-- Additional Styles --}}
     @stack('styles')
@@ -28,40 +20,33 @@
     {{-- Branding: favicon + dynamic theme colors --}}
     @include('components.layouts.partials.branding')
 </head>
-<body class="bg-neutral-0 text-neutral-900 antialiased">
+<body class="bg-neutral-0 overflow-x-hidden font-body text-body antialiased">
 
     {{-- Impersonation Banner --}}
     <x-ui.impersonation-banner />
 
     {{-- Sidebar Navigation --}}
-    <x-navigation.sidebar />
-
-    {{-- Sidebar Mobile Overlay --}}
-    <div id="sidebarOverlay" class="sidebar-overlay hidden"></div>
+    <x-navigation.user-sidebar />
 
     {{-- Main Content --}}
-    <section id="mainContent" class="main-content min-h-screen">
-
+    <div class="app-main">
         {{-- Topbar --}}
-        <x-navigation.topbar :title="$title" />
+        <x-navigation.user-topbar :title="$title" />
 
         {{-- Page Content --}}
-        <main class="p-4 lg:p-8">
+        <main class="app-content">
             {{ $slot }}
         </main>
-    </section>
-
-    {{-- Drawer Overlay --}}
-    <div id="drawerOverlay" class="drawer-overlay"></div>
-
-    {{-- Drawers --}}
-    @stack('drawers')
+    </div>
 
     {{-- Toast Notification Container --}}
     <x-ui.toast />
 
     {{-- Flash Messages --}}
     <x-ui.flash />
+
+    {{-- Drawers --}}
+    @stack('drawers')
 
     {{-- Modals --}}
     @stack('modals')

@@ -54,8 +54,9 @@ class Module extends BasePanelModule
     public function userNavigation(NavigationBuilder $navigation): void
     {
         $navigation
+            ->group('Account')
             ->item(label: 'Support', route: 'user.support-tickets.*')
             ->icon('ph-lifebuoy')
-            ->order(30);
+            ->order(40);
     }
 }

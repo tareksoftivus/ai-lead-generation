@@ -53,6 +53,8 @@ class SupportTicketsController extends Controller implements HasMiddleware
         return view('support::user.index', [
             'tickets' => $tickets,
             'table' => $table,
+            'openCount' => $tickets->whereIn('status', ['open', 'pending'])->count(),
+            'closedCount' => $tickets->whereIn('status', ['resolved', 'closed'])->count(),
         ]);
     }
 

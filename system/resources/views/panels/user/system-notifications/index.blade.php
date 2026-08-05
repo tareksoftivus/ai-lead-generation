@@ -1,65 +1,250 @@
 <x-layouts.user :title="__('Notifications')">
-    <div class="space-y-6">
-        <div class="flex items-center justify-between">
-            <h1 class="heading-4 text-neutral-950">{{ __('Notifications') }}</h1>
+    <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <h2 class="heading-3">{{ __('Notifications') }}</h2>
+            <p class="m-text mt-1">
+                {{ __('What happened while you were away — finished searches, AI results, and anything about your credit balance.') }}
+            </p>
         </div>
 
-        <div class="section-card">
-            {{-- Status Filter Tabs --}}
-            <div class="mb-4 flex items-center gap-2 border-b border-neutral-100 px-4 pt-4">
-                <a href="{{ route('user.system-notifications.index') }}"
-                   class="border-b-2 px-3 pb-3 text-sm font-medium transition-colors {{ !request('status') ? 'border-primary text-primary' : 'border-transparent text-neutral-500 hover:text-neutral-700' }}">
+        @if($notifications->isNotEmpty())
+            <form method="POST" action="{{ route('user.system-notifications.mark-all-read') }}">
+                @csrf
+                <button type="submit" class="btn btn-outline btn-sm shrink-0">
+                    <span class="btn__label">
+                        <span>{{ __('Mark all read') }}</span>
+                        <span aria-hidden="true">{{ __('Mark all read') }}</span>
+                    </span>
+                    <i class="ph ph-checks"></i>
+                </button>
+            </form>
+        @endif
+    </div>
+
+    @if($notifications->isEmpty())
+        <div class="empty">
+            <span class="empty__icon" aria-hidden="true">
+                <i class="ph ph-bell-slash"></i>
+            </span>
+            <h2 class="empty__title">{{ __('Nothing yet') }}</h2>
+            <p class="empty__body">
+                {{ __('Alerts land here when a search finishes, the AI scores leads, or your credits run low.') }}
+            </p>
+            <a href="{{ route('user.search.new') }}" class="btn btn-primary btn-sm">
+                <span class="btn__label">
+                    <span>{{ __('New search') }}</span>
+                    <span aria-hidden="true">{{ __('New search') }}</span>
+                </span>
+                <i class="ph ph-arrow-right"></i>
+            </a>
+        </div>
+    @else
+        <div class="panel" data-list>
+            <nav class="app-tablist" aria-label="{{ __('Filter notifications') }}">
+                <button
+                    type="button"
+                    class="app-tab is-active"
+                    data-list-tab="all"
+                    aria-current="page"
+                >
                     {{ __('All') }}
-                </a>
-                <a href="{{ route('user.system-notifications.index', ['status' => 'unread']) }}"
-                   class="border-b-2 px-3 pb-3 text-sm font-medium transition-colors {{ request('status') === 'unread' ? 'border-primary text-primary' : 'border-transparent text-neutral-500 hover:text-neutral-700' }}">
+                    <span class="app-tab__count">{{ $notifications->total() }}</span>
+                </button>
+                <button type="button" class="app-tab" data-list-tab="unread">
                     {{ __('Unread') }}
-                </a>
-                <a href="{{ route('user.system-notifications.index', ['status' => 'read']) }}"
-                   class="border-b-2 px-3 pb-3 text-sm font-medium transition-colors {{ request('status') === 'read' ? 'border-primary text-primary' : 'border-transparent text-neutral-500 hover:text-neutral-700' }}">
-                    {{ __('Read') }}
-                </a>
-            </div>
+                    <span class="app-tab__count">{{ $unreadCount }}</span>
+                </button>
+            </nav>
 
-            {{-- Notifications List --}}
-            <div class="divide-y divide-neutral-100">
-                @forelse($notifications as $notification)
-                <a href="{{ $notification->getUrl() ?? '#' }}"
-                   class="flex gap-4 p-4 transition-colors hover:bg-neutral-50 {{ !$notification->isRead() ? 'bg-primary/5' : '' }}">
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg {{ match($notification->getType()) {
-                        'success' => 'bg-success/10 text-success',
-                        'warning' => 'bg-warning/10 text-warning',
-                        'danger' => 'bg-error/10 text-error',
-                        default => 'bg-primary/10 text-primary',
-                    } }}">
-                        <i class="ph {{ $notification->getIcon() }} text-xl"></i>
-                    </div>
-                    <div class="min-w-0 flex-1">
-                        <div class="flex items-start justify-between gap-2">
-                            <p class="text-sm font-medium text-neutral-900 {{ !$notification->isRead() ? 'font-bold' : '' }}">
-                                {{ $notification->getTitle() }}
-                            </p>
-                            <div class="flex shrink-0 items-center gap-2">
-                                @if(!$notification->isRead())
-                                <span class="h-2 w-2 rounded-full bg-primary"></span>
-                                @endif
-                                <span class="text-xs text-neutral-400">{{ $notification->created_at->diffForHumans() }}</span>
-                            </div>
-                        </div>
-                        <p class="mt-0.5 text-sm text-neutral-500">{{ $notification->getBody() }}</p>
-                    </div>
-                </a>
-                @empty
-                <div class="p-12 text-center">
-                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-neutral-100">
-                        <i class="ph ph-bell-slash text-2xl text-neutral-400"></i>
-                    </div>
-                    <p class="text-sm text-neutral-500">{{ __('No notifications found.') }}</p>
+            <div class="list-toolbar">
+                <label for="n-search" class="sr-only">{{ __('Search notifications') }}</label>
+                <div class="search-field">
+                    <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+                    <input
+                        type="search"
+                        id="n-search"
+                        class="form-input"
+                        placeholder="{{ __('Search notifications') }}"
+                        data-list-search
+                    />
                 </div>
-                @endforelse
+
+                <div
+                    class="menu shrink-0"
+                    data-dropdown
+                    data-dropdown-select
+                    data-list-filter="kind"
+                    data-value="all"
+                >
+                    <button
+                        type="button"
+                        class="filter-btn"
+                        data-dropdown-toggle
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                    >
+                        <i class="ph ph-funnel-simple" aria-hidden="true"></i>
+                        <span data-dropdown-label>{{ __('Any type') }}</span>
+                        <i class="ph ph-caret-down filter-btn__caret" aria-hidden="true"></i>
+                    </button>
+
+                    <div class="menu__panel" data-dropdown-panel>
+                        <button type="button" class="menu__item is-selected" data-value="all">
+                            {{ __('Any type') }}
+                            <i class="ph ph-check menu__tick" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="menu__item" data-value="search">
+                            {{ __('Searches') }}
+                            <i class="ph ph-check menu__tick" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="menu__item" data-value="ai">
+                            {{ __('AI results') }}
+                            <i class="ph ph-check menu__tick" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="menu__item" data-value="credits">
+                            {{ __('Credits') }}
+                            <i class="ph ph-check menu__tick" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <x-tables.pagination :paginator="$notifications" />
+            <div data-list-table>
+                @foreach($notifications as $notification)
+                    @php
+                        $iconBg = match ($notification->getType()) {
+                            'success' => 'bg-success/10 text-success',
+                            'warning' => 'bg-warning/10 text-warning',
+                            'danger' => 'bg-error/10 text-error',
+                            default => 'bg-primary/10 text-primary',
+                        };
+                        $date = $notification->created_at;
+                        if ($date->isToday()) {
+                            $dateLabel = __('Today') . ', ' . $date->format('H:i');
+                        } elseif ($date->isYesterday()) {
+                            $dateLabel = __('Yesterday') . ', ' . $date->format('H:i');
+                        } else {
+                            $dateLabel = $date->format('j M') . ', ' . $date->format('H:i');
+                        }
+                    @endphp
+
+                    @if($notification->getUrl())
+                        <a
+                            href="{{ $notification->getUrl() }}"
+                            class="notif {{ ! $notification->isRead() ? 'is-unread' : '' }}"
+                            data-list-key="{{ $notification->isRead() ? 'read' : 'unread' }}"
+                            data-kind="{{ $notification->getKind() }}"
+                        >
+                    @else
+                        <div
+                            class="notif {{ ! $notification->isRead() ? 'is-unread' : '' }}"
+                            data-list-key="{{ $notification->isRead() ? 'read' : 'unread' }}"
+                            data-kind="{{ $notification->getKind() }}"
+                        >
+                    @endif
+                        <span class="notif__icon {{ $iconBg }}">
+                            <i class="ph {{ $notification->getIcon() }}" aria-hidden="true"></i>
+                        </span>
+                        <span class="notif__body">
+                            <span class="text-[0.875rem] font-semibold text-title">
+                                {{ $notification->getTitle() }}
+                            </span>
+                            <span class="mt-0.5 text-[0.8125rem] leading-[1.55] text-body">
+                                {{ $notification->getBody() }}
+                            </span>
+                            <span class="mt-1 text-[0.8125rem] text-neutral-600">{{ $dateLabel }}</span>
+                        </span>
+                        @if(! $notification->isRead())
+                            <span
+                                class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-accent"
+                                aria-label="{{ __('Unread') }}"
+                            ></span>
+                        @endif
+                    @if($notification->getUrl())
+                        </a>
+                    @else
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+
+            @if($notifications->hasPages())
+                <div class="px-4 py-3">
+                    <x-tables.pagination :paginator="$notifications" />
+                </div>
+            @endif
+
+            <div class="no-results is-hidden" data-list-empty>
+                <span class="no-results__icon" aria-hidden="true">
+                    <i class="ph ph-magnifying-glass"></i>
+                </span>
+                <p class="no-results__title">{{ __('Nothing matches') }}</p>
+                <p class="no-results__body">
+                    {{ __('Try a different type, or clear the search to see everything.') }}
+                </p>
+            </div>
+        </div>
+    @endif
+
+    <div class="panel mt-4 overflow-hidden">
+        <div class="panel__head">
+            <h3 class="panel__title">{{ __('What appears here') }}</h3>
+            <a href="{{ route('user.settings.index') }}" class="panel__link">
+                {{ __('Email preferences') }}
+                <i class="ph ph-arrow-right" aria-hidden="true"></i>
+            </a>
+        </div>
+
+        <div class="px-4 pt-1 pb-2 sm:px-5">
+            <div class="setting-row">
+                <div class="setting-row__text">
+                    <label for="n-search-done" class="setting-row__label">
+                        {{ __('When a search finishes') }}
+                    </label>
+                    <p class="setting-row__hint">
+                        {{ __('Including searches that stop early, and what you were charged.') }}
+                    </p>
+                </div>
+                <input type="checkbox" id="n-search-done" name="notify_search_done" class="switch" checked />
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-row__text">
+                    <label for="n-ai" class="setting-row__label">
+                        {{ __('When the AI finishes scoring or analysing') }}
+                    </label>
+                    <p class="setting-row__hint">
+                        {{ __('Bulk runs only — a single lead\'s analysis is instant.') }}
+                    </p>
+                </div>
+                <input type="checkbox" id="n-ai" name="notify_ai_done" class="switch" checked />
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-row__text">
+                    <label for="n-credits" class="setting-row__label">
+                        {{ __('When credits run low') }}
+                    </label>
+                    <p class="setting-row__hint">
+                        {{ __('At') }}
+                        <span class="numeric">10%</span>
+                        {{ __('of your monthly allowance, so a search does not stop halfway.') }}
+                    </p>
+                </div>
+                <input type="checkbox" id="n-credits" name="notify_low_credits" class="switch" checked />
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-row__text">
+                    <label for="n-replies" class="setting-row__label">
+                        {{ __('When a campaign gets a reply') }}
+                    </label>
+                    <p class="setting-row__hint">
+                        {{ __('You still read and approve every message before it goes out.') }}
+                    </p>
+                </div>
+                <input type="checkbox" id="n-replies" name="notify_replies" class="switch" />
+            </div>
         </div>
     </div>
 </x-layouts.user>

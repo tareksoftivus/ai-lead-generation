@@ -1,0 +1,50 @@
+/*
+ * User panel stylesheet.
+ *
+ * The user dashboard uses the LeadAtlas design system (ported from
+ * template-integration/demo-html) rather than the admin shell styles.
+ * `app.css` is imported first so the shared panel components (forms, tables,
+ * pagination, toasts, modals, badges) keep their existing behaviour; the
+ * LeadAtlas tokens and app-shell rules then override where they differ,
+ * giving the dashboard its reference look.
+ *
+ * Extra @source roots are declared here (in addition to those already set in
+ * the imported files) so utility classes used only inside user-panel views,
+ * their widgets, and the shared component views get generated in this bundle.
+ */
+@import "./app.css";
+@import "./leadatlas.css";
+
+@source '../views/panels/user/**/*.blade.php';
+@source '../views/widgets/**/*.blade.php';
+@source '../views/components/**/*.blade.php';
+
+/* Progress-bar fill widths. The dashboard drives `--progress` via a class
+   (rather than an inline style) so every rule stays in the stylesheet. */
+.job__fill--15 {
+  --progress: 15%;
+}
+
+.job__fill--25 {
+  --progress: 25%;
+}
+
+.job__fill--37 {
+  --progress: 37%;
+}
+
+.job__fill--50 {
+  --progress: 50%;
+}
+
+.job__fill--65 {
+  --progress: 65%;
+}
+
+.job__fill--75 {
+  --progress: 75%;
+}
+
+.job__fill--90 {
+  --progress: 90%;
+}

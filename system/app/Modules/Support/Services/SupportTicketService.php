@@ -36,7 +36,7 @@ class SupportTicketService
 
     protected function applyEagerLoads(Builder $query): Builder
     {
-        return $query->with('user');
+        return $query->with('user')->withCount('replies');
     }
 
     /**

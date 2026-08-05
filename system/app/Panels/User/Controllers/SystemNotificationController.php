@@ -5,6 +5,7 @@ namespace App\Panels\User\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\SystemNotifications\Services\SystemNotificationService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -29,7 +30,10 @@ class SystemNotificationController extends Controller
         $perPage = $request->integer('per_page') ?: 15;
         $notifications = $this->service->listPaginated($user, $filters, $perPage);
 
-        return view('panels.user.system-notifications.index', compact('notifications'));
+        return view('panels.user.system-notifications.index', [
+            'notifications' => $notifications,
+            'unreadCount' => $this->service->getUnreadCount($user),
+        ]);
     }
 
     /**
@@ -79,12 +83,18 @@ class SystemNotificationController extends Controller
     /**
      * Mark all notifications as read (AJAX).
      */
-    public function markAllRead(): JsonResponse
+    public function markAllRead(Request $request): JsonResponse|RedirectResponse
     {
         $user = auth()->user();
         $this->service->markAllAsRead($user);
 
-        return response()->json(['success' => true]);
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true]);
+        }
+
+        return redirect()
+            ->route('user.system-notifications.index')
+            ->with('success', __('All notifications marked as read.'));
     }
 
     /**

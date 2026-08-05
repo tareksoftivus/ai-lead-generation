@@ -113,6 +113,77 @@ it('scopes the user index to their own tickets only', function () {
         ->assertDontSee('Theirs');
 });
 
+it('renders the support index under the reference layout with the Account nav group', function () {
+    $user = supportUser();
+    $open = SupportTicket::create([
+        'reference' => SupportTicket::generateReference(),
+        'user_id' => $user->id,
+        'subject' => 'Seattle search stopped',
+        'body' => 'body',
+        'priority' => 'medium',
+        'category' => 'search',
+        'status' => 'open',
+        'last_reply_at' => now(),
+    ]);
+    $resolved = SupportTicket::create([
+        'reference' => SupportTicket::generateReference(),
+        'user_id' => $user->id,
+        'subject' => 'Adding a second team member',
+        'body' => 'body',
+        'priority' => 'low',
+        'category' => 'account',
+        'status' => 'resolved',
+        'last_reply_at' => now(),
+    ]);
+
+    $response = $this->actingAs($user)->get(route('user.support-tickets.index'));
+
+    $response->assertSuccessful()
+        ->assertSee('app-sidebar', false)
+        ->assertSee('sidebar-group', false)
+        ->assertSee('Account', false)
+        ->assertSee('ticketModal', false)
+        ->assertSee('data-modal-open="ticketModal"', false)
+        ->assertSee('data-list', false)
+        ->assertSee('app-tablist', false)
+        ->assertSee('data-list-search', false)
+        ->assertSee('d-table--cards', false)
+        ->assertSee(route('user.support-tickets.show', $open))
+        ->assertSee(route('user.support-tickets.show', $resolved))
+        ->assertSee(route('user.support-tickets.store'))
+        ->assertSee('Seattle search stopped')
+        ->assertSee('Adding a second team member')
+        ->assertSee('is-hidden" data-list-empty', false);
+});
+
+it('shows the empty state on the support index when the user has no tickets', function () {
+    $user = supportUser();
+
+    $this->actingAs($user)
+        ->get(route('user.support-tickets.index'))
+        ->assertSuccessful()
+        ->assertSee('empty__title', false)
+        ->assertDontSee('d-table--cards', false);
+});
+
+it('opens a ticket without a priority and defaults it to medium', function () {
+    $user = supportUser();
+
+    $this->actingAs($user)
+        ->post(route('user.support-tickets.store'), [
+            'subject' => 'No priority given',
+            'body' => 'body',
+            'category' => 'billing',
+        ])
+        ->assertRedirect();
+
+    $ticket = SupportTicket::first();
+
+    expect($ticket->priority)->toBe('medium')
+        ->and($ticket->category)->toBe('billing')
+        ->and($ticket->status)->toBe('open');
+});
+
 it('404s when a user views a ticket they do not own', function () {
     $user = supportUser();
     $other = User::factory()->create(['is_active' => true, 'email_verified_at' => now()]);

@@ -123,6 +123,20 @@ class SystemNotification extends Model
     }
 
     /**
+     * Get the notification content category for list filtering
+     * (search, ai, credits, or general).
+     */
+    public function getKind(): string
+    {
+        return match (true) {
+            str_contains($this->getIcon(), 'coins') => 'credits',
+            str_contains($this->getIcon(), 'sparkle') || str_contains($this->getIcon(), 'list-magnifying') => 'ai',
+            str_contains($this->getIcon(), 'check-circle') || str_contains($this->getIcon(), 'warning-circle') => 'search',
+            default => 'general',
+        };
+    }
+
+    /**
      * Check if the notification has been read.
      */
     public function isRead(): bool

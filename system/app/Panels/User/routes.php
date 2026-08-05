@@ -2,8 +2,21 @@
 
 use App\Http\Controllers\Auth\PhoneVerificationController;
 use App\Http\Controllers\Auth\TwoFactorController;
+use App\Panels\User\Controllers\ActivitiesController;
+use App\Panels\User\Controllers\AnalysisController;
+use App\Panels\User\Controllers\ApiController;
+use App\Panels\User\Controllers\CampaignsController;
+use App\Panels\User\Controllers\ContactsController;
+use App\Panels\User\Controllers\CreditsController;
 use App\Panels\User\Controllers\DashboardController;
+use App\Panels\User\Controllers\EmailController;
+use App\Panels\User\Controllers\ExportController;
+use App\Panels\User\Controllers\LeadsController;
+use App\Panels\User\Controllers\PipelineController;
 use App\Panels\User\Controllers\ProfileController;
+use App\Panels\User\Controllers\ScoringController;
+use App\Panels\User\Controllers\SearchController;
+use App\Panels\User\Controllers\SettingsController;
 use App\Panels\User\Controllers\SystemNotificationController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +40,39 @@ Route::withoutMiddleware(['phone.verified', 'verified', '2fa', 'panel:user'])->g
 });
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+// Search
+Route::get('search/new', [SearchController::class, 'new'])->name('search.new');
+Route::get('search/history', [SearchController::class, 'history'])->name('search.history');
+
+// Leads
+Route::get('leads', [LeadsController::class, 'index'])->name('leads.index');
+Route::get('leads/map', [LeadsController::class, 'map'])->name('leads.map');
+Route::get('leads/lists', [LeadsController::class, 'lists'])->name('leads.lists');
+Route::get('leads/{lead}', [LeadsController::class, 'show'])->name('leads.show');
+
+// AI Tools
+Route::get('analysis', [AnalysisController::class, 'index'])->name('analysis.index');
+Route::get('scoring', [ScoringController::class, 'index'])->name('scoring.index');
+Route::get('email', [EmailController::class, 'index'])->name('email.index');
+
+// CRM
+Route::get('pipeline', [PipelineController::class, 'index'])->name('pipeline.index');
+Route::get('contacts', [ContactsController::class, 'index'])->name('contacts.index');
+Route::get('activities', [ActivitiesController::class, 'index'])->name('activities.index');
+
+// Outreach
+Route::get('campaigns', [CampaignsController::class, 'index'])->name('campaigns.index');
+Route::get('export', [ExportController::class, 'index'])->name('export.index');
+
+// Account
+Route::get('credits', [CreditsController::class, 'index'])->name('credits.index');
+Route::get('credits/buy', [CreditsController::class, 'buy'])->name('credits.buy');
+Route::get('api', fn () => redirect()->route('user.api.keys'))->name('api.index');
+Route::get('api/keys', [ApiController::class, 'keys'])->name('api.keys');
+Route::get('api/docs', [ApiController::class, 'docs'])->name('api.docs');
+Route::get('integrations', [ApiController::class, 'integrations'])->name('api.integrations');
+Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
 
 // Profile
 Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');

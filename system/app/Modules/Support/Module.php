@@ -57,6 +57,6 @@ class Module extends BasePanelModule
             ->group('Account')
             ->item(label: 'Support', route: 'user.support-tickets.*')
             ->icon('ph-lifebuoy')
-            ->order(40);
+            ->order(63);
     }
 }

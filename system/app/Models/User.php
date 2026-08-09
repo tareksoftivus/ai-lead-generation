@@ -33,6 +33,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'phone_verification_code',
         'otp_two_factor_enabled',
         'otp_two_factor_channel',
+        'credits_balance',
     ];
 
     protected $hidden = [
@@ -49,6 +50,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'is_active' => 'boolean',
             'last_login_at' => 'datetime',
             'otp_two_factor_enabled' => 'boolean',
+            'credits_balance' => 'integer',
         ];
     }
 

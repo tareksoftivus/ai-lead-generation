@@ -15,7 +15,7 @@ class PanelAccess
     {
         $config = config("panels.{$panel}");
 
-        if (!$config || empty($config['active'])) {
+        if (! $config || empty($config['active'])) {
             abort(404);
         }
 
@@ -23,21 +23,29 @@ class PanelAccess
         $guard = $config['guard'] ?? 'web';
         $user = Auth::guard($guard)->user();
 
-        if (!$user) {
+        if (! $user) {
             abort(403, "You don't have access to this panel.");
         }
 
         // Check role-based access (empty roles = all authenticated users allowed)
         $requiredRoles = $config['roles'] ?? [];
 
-        if (!empty($requiredRoles) && !$user->hasAnyRole($requiredRoles)) {
+        if (! empty($requiredRoles) && ! $user->hasAnyRole($requiredRoles)) {
             abort(403, "You don't have access to this panel.");
         }
 
-        $config['navigation'] = array_merge(
+        $navigation = array_merge(
             $config['navigation'] ?? [],
             app(ModuleRegistry::class)->buildNavigation($panel)
         );
+
+        usort($navigation, function (array $left, array $right): int {
+            $order = ($left['order'] ?? 9999) <=> ($right['order'] ?? 9999);
+
+            return $order !== 0 ? $order : strcmp($left['label'] ?? '', $right['label'] ?? '');
+        });
+
+        $config['navigation'] = $navigation;
 
         // Register panel-specific component overrides
         $this->registerComponentOverrides($panel, $config);

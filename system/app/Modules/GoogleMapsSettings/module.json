@@ -1,0 +1,19 @@
+{
+    "name": "GoogleMapsSettings",
+    "alias": "google-maps-settings",
+    "description": "Stores the admin-managed Google Places API server key",
+    "version": "1.0.0",
+    "priority": 20,
+    "providers": [
+        "App\\Modules\\GoogleMapsSettings\\Providers\\GoogleMapsSettingsServiceProvider"
+    ],
+    "routes": {
+        "admin": "Routes/admin.php"
+    },
+    "requires": [],
+    "packages": {
+        "require": {},
+        "require-dev": {}
+    },
+    "active": true
+}

@@ -42,12 +42,20 @@ class PanelServiceProvider extends ServiceProvider
                     continue;
                 }
 
+                $navigation = array_merge(
+                    $panel['navigation'] ?? [],
+                    app(ModuleRegistry::class)->buildNavigation($key)
+                );
+
+                usort($navigation, function (array $left, array $right): int {
+                    $order = ($left['order'] ?? 9999) <=> ($right['order'] ?? 9999);
+
+                    return $order !== 0 ? $order : strcmp($left['label'] ?? '', $right['label'] ?? '');
+                });
+
                 return array_merge($panel, [
                     'key' => $key,
-                    'navigation' => array_merge(
-                        $panel['navigation'] ?? [],
-                        app(ModuleRegistry::class)->buildNavigation($key)
-                    ),
+                    'navigation' => $navigation,
                 ]);
             }
 

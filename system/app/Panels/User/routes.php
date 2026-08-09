@@ -7,15 +7,12 @@ use App\Panels\User\Controllers\AnalysisController;
 use App\Panels\User\Controllers\ApiController;
 use App\Panels\User\Controllers\CampaignsController;
 use App\Panels\User\Controllers\ContactsController;
-use App\Panels\User\Controllers\CreditsController;
 use App\Panels\User\Controllers\DashboardController;
 use App\Panels\User\Controllers\EmailController;
 use App\Panels\User\Controllers\ExportController;
-use App\Panels\User\Controllers\LeadsController;
 use App\Panels\User\Controllers\PipelineController;
 use App\Panels\User\Controllers\ProfileController;
 use App\Panels\User\Controllers\ScoringController;
-use App\Panels\User\Controllers\SearchController;
 use App\Panels\User\Controllers\SettingsController;
 use App\Panels\User\Controllers\SystemNotificationController;
 use Illuminate\Support\Facades\Route;
@@ -41,16 +38,6 @@ Route::withoutMiddleware(['phone.verified', 'verified', '2fa', 'panel:user'])->g
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-// Search
-Route::get('search/new', [SearchController::class, 'new'])->name('search.new');
-Route::get('search/history', [SearchController::class, 'history'])->name('search.history');
-
-// Leads
-Route::get('leads', [LeadsController::class, 'index'])->name('leads.index');
-Route::get('leads/map', [LeadsController::class, 'map'])->name('leads.map');
-Route::get('leads/lists', [LeadsController::class, 'lists'])->name('leads.lists');
-Route::get('leads/{lead}', [LeadsController::class, 'show'])->name('leads.show');
-
 // AI Tools
 Route::get('analysis', [AnalysisController::class, 'index'])->name('analysis.index');
 Route::get('scoring', [ScoringController::class, 'index'])->name('scoring.index');
@@ -66,8 +53,6 @@ Route::get('campaigns', [CampaignsController::class, 'index'])->name('campaigns.
 Route::get('export', [ExportController::class, 'index'])->name('export.index');
 
 // Account
-Route::get('credits', [CreditsController::class, 'index'])->name('credits.index');
-Route::get('credits/buy', [CreditsController::class, 'buy'])->name('credits.buy');
 Route::get('api', fn () => redirect()->route('user.api.keys'))->name('api.index');
 Route::get('api/keys', [ApiController::class, 'keys'])->name('api.keys');
 Route::get('api/docs', [ApiController::class, 'docs'])->name('api.docs');

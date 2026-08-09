@@ -1,9 +1,16 @@
 <?php
 
 use App\Models\User;
+use App\Modules\Credits\Services\CreditLedger;
+use App\Modules\Leads\Models\Lead;
+use App\Modules\Leads\Models\LeadActivity;
+use App\Modules\Leads\Models\LeadList;
+use App\Modules\Leads\Models\Place;
+use App\Modules\Leads\Models\SearchRun;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
 
 uses(RefreshDatabase::class);
 
@@ -167,11 +174,14 @@ it('updates the password when the current password is correct', function () {
 });
 
 it('renders the New search screen with the filter rail and cost estimate', function () {
+    Permission::findOrCreate('leads.search', 'web');
+
     $user = User::factory()->create([
         'name' => 'Amara',
         'is_active' => true,
         'email_verified_at' => now(),
     ]);
+    $user->givePermissionTo('leads.search');
 
     $response = $this->actingAs($user)->get(route('user.search.new'));
 
@@ -197,11 +207,22 @@ it('renders the New search screen with the filter rail and cost estimate', funct
     $response->assertSee(route('user.search.new'));
 });
 
-it('renders the Search history screen with tabs, filters and row actions', function () {
+it('renders the Search history screen with tabs, filters, and real rows including re-run/delete actions', function () {
+    Permission::findOrCreate('leads.search', 'web');
+
     $user = User::factory()->create([
         'name' => 'Amara',
         'is_active' => true,
         'email_verified_at' => now(),
+    ]);
+    $user->givePermissionTo('leads.search');
+
+    SearchRun::query()->create([
+        'user_id' => $user->id,
+        'filters' => ['keyword' => ['dentists'], 'location' => ['Austin, TX'], 'radius' => 10],
+        'status' => 'done',
+        'results_count' => 184,
+        'credits_spent' => 172,
     ]);
 
     $response = $this->actingAs($user)->get(route('user.search.history'));
@@ -220,9 +241,10 @@ it('renders the Search history screen with tabs, filters and row actions', funct
     $response->assertSee('data-list-search', false);
     $response->assertSee('data-list-filter="period"', false);
 
-    // Sample history rows with re-run/delete confirm actions.
-    $response->assertSee('dentists in Austin, TX');
-    $response->assertSee('status--running', false);
+    // A real history row with its re-run/delete confirm actions.
+    $response->assertSee('dentists');
+    $response->assertSee('Austin, TX');
+    $response->assertSee('status--done', false);
     $response->assertSee('data-confirm', false);
 
     // The confirm dialog is available for row actions.
@@ -230,10 +252,26 @@ it('renders the Search history screen with tabs, filters and row actions', funct
 });
 
 it('renders the All leads screen with tabs, filters, bulk actions and modals', function () {
+    Permission::findOrCreate('leads.view', 'web');
+    Permission::findOrCreate('leads.manage', 'web');
+
     $user = User::factory()->create([
         'name' => 'Amara',
         'is_active' => true,
         'email_verified_at' => now(),
+    ]);
+    $user->givePermissionTo('leads.view', 'leads.manage');
+
+    $place = Place::query()->create([
+        'google_place_id' => 'p-barton-springs',
+        'name' => 'Barton Springs Dental',
+        'formatted_address' => '1401 S Lamar Blvd, Austin, TX',
+    ]);
+    Lead::query()->create([
+        'user_id' => $user->id,
+        'place_id' => $place->id,
+        'status' => 'qualified',
+        'score' => 92,
     ]);
 
     $response = $this->actingAs($user)->get(route('user.leads.index'));
@@ -253,7 +291,7 @@ it('renders the All leads screen with tabs, filters, bulk actions and modals', f
     $response->assertSee('data-list-filter="score"', false);
     $response->assertSee('data-list-filter="contact"', false);
 
-    // Bulk selection scaffolding + a sampled row + confirm delete.
+    // Bulk selection scaffolding + a real row + confirm delete.
     $response->assertSee('data-bulk', false);
     $response->assertSee('Barton Springs Dental');
     $response->assertSee('status--qualified', false);
@@ -268,13 +306,36 @@ it('renders the All leads screen with tabs, filters, bulk actions and modals', f
 });
 
 it('renders the Lead details screen with the verdict, signals, draft, timeline and side facts', function () {
+    Permission::findOrCreate('leads.view', 'web');
+    Permission::findOrCreate('leads.manage', 'web');
+
     $user = User::factory()->create([
         'name' => 'Amara',
         'is_active' => true,
         'email_verified_at' => now(),
     ]);
+    $user->givePermissionTo('leads.view', 'leads.manage');
 
-    $response = $this->actingAs($user)->get(route('user.leads.show', ['lead' => 'barton-springs-dental']));
+    $place = Place::query()->create([
+        'google_place_id' => 'p-barton-springs',
+        'name' => 'Barton Springs Dental',
+        'formatted_address' => '1401 S Lamar Blvd, Austin, TX',
+        'lat' => 30.2540,
+        'lng' => -97.7660,
+        'rating' => 4.7,
+        'review_count' => 312,
+        'website' => 'https://bartonspringsdental.com',
+    ]);
+    $lead = Lead::query()->create([
+        'user_id' => $user->id,
+        'place_id' => $place->id,
+        'status' => 'new',
+        'score' => 92,
+    ]);
+    LeadActivity::logScored($lead);
+    LeadActivity::logStatusChanged($lead, 'new', 'new', $user);
+
+    $response = $this->actingAs($user)->get(route('user.leads.show', $lead));
 
     $response->assertSuccessful();
 
@@ -296,19 +357,13 @@ it('renders the Lead details screen with the verdict, signals, draft, timeline a
     // The AI verdict + score-signal breakdown.
     $response->assertSee('verdict-card__score', false);
     $response->assertSee('signal-row', false);
-    $response->assertSee('meter--strong', false);
-    $response->assertSee('meter--weak', false);
-    $response->assertSee(route('user.scoring.index'));
 
     // The drafted email with copy button.
     $response->assertSee('data-copy-target="#draft-body"', false);
-    $response->assertSee(route('user.campaigns.index'));
 
     // Activity timeline.
     $response->assertSee('timeline__item', false);
     $response->assertSee('timeline__dot--ai', false);
-    $response->assertSee('timeline__dot--act', false);
-    $response->assertSee(route('user.search.history'));
 
     // Side column: map card + facts + tags.
     $response->assertSee('mapcard', false);
@@ -325,11 +380,26 @@ it('renders the Lead details screen with the verdict, signals, draft, timeline a
     $response->assertSee('id="confirmDialog"', false);
 });
 
-it('renders the Map view screen with the Leaflet map and results rail', function () {
+it('renders the Map view screen with the map and results rail', function () {
+    Permission::findOrCreate('leads.view', 'web');
+
     $user = User::factory()->create([
         'name' => 'Amara',
         'is_active' => true,
         'email_verified_at' => now(),
+    ]);
+    $user->givePermissionTo('leads.view');
+
+    $place = Place::query()->create([
+        'google_place_id' => 'p-barton-springs',
+        'name' => 'Barton Springs Dental',
+        'lat' => 30.2540,
+        'lng' => -97.7660,
+    ]);
+    Lead::query()->create([
+        'user_id' => $user->id,
+        'place_id' => $place->id,
+        'score' => 92,
     ]);
 
     $response = $this->actingAs($user)->get(route('user.leads.map'));
@@ -340,7 +410,7 @@ it('renders the Map view screen with the Leaflet map and results rail', function
     $response->assertSee('app-sidebar', false);
     $response->assertSee('app-content', false);
 
-    // Leaflet map scaffolding fed by the pins data attribute.
+    // Map scaffolding fed by the pins data attribute.
     $response->assertSee('data-map', false);
     $response->assertSee('data-map-pins', false);
     $response->assertSee('data-map-center', false);
@@ -350,7 +420,7 @@ it('renders the Map view screen with the Leaflet map and results rail', function
     $response->assertSee('data-list-search', false);
     $response->assertSee('data-map-count', false);
 
-    // A sampled rail row keyed for the map filter.
+    // A real rail row keyed for the map filter.
     $response->assertSee('Barton Springs Dental');
     $response->assertSee('data-lead-name', false);
 
@@ -359,10 +429,19 @@ it('renders the Map view screen with the Leaflet map and results rail', function
 });
 
 it('renders the Lists & tags screen with tab panels and CRUD modals', function () {
+    Permission::findOrCreate('leads.manage', 'web');
+
     $user = User::factory()->create([
         'name' => 'Amara',
         'is_active' => true,
         'email_verified_at' => now(),
+    ]);
+    $user->givePermissionTo('leads.manage');
+
+    LeadList::query()->create([
+        'user_id' => $user->id,
+        'name' => 'Austin dentists — Q3',
+        'source' => 'manual',
     ]);
 
     $response = $this->actingAs($user)->get(route('user.leads.lists'));
@@ -379,7 +458,7 @@ it('renders the Lists & tags screen with tab panels and CRUD modals', function (
     $response->assertSee('data-tab="tags"', false);
     $response->assertSee('data-tab-panel="list', false);
 
-    // A sampled list row with delete confirm.
+    // A real list row with delete confirm.
     $response->assertSee('Austin dentists — Q3');
     $response->assertSee('data-confirm', false);
 
@@ -706,12 +785,17 @@ it('renders the Export center screen with the choices and past exports', functio
     $response->assertSee(route('user.export.index'));
 });
 
-it('renders the Credits & billing screen with the KPIs, chart and itemised ledger', function () {
+it('renders the Credits & billing screen with the balance and itemised ledger', function () {
+    Permission::findOrCreate('credits.view', 'web');
+
     $user = User::factory()->create([
         'name' => 'Amara',
         'is_active' => true,
         'email_verified_at' => now(),
     ]);
+    $user->givePermissionTo('credits.view');
+
+    app(CreditLedger::class)->grant($user, 100, 'starter_grant');
 
     $response = $this->actingAs($user)->get(route('user.credits.index'));
 
@@ -724,49 +808,27 @@ it('renders the Credits & billing screen with the KPIs, chart and itemised ledge
     // The balance KPI strip.
     $response->assertSee('kpi__value', false);
     $response->assertSee('Credits remaining');
-    $response->assertSee('Spent this month');
-    $response->assertSee('Returned');
-    $response->assertSee('Renews');
+    $response->assertSee('100');
 
-    // The daily bar chart canvas is data-driven (Chart.js).
-    $response->assertSee('data-chart="bar"', false);
-    $response->assertSee('data-chart-values', false);
-
-    // The ledger tabs + search + period dropdown drive the list.
-    $response->assertSee('data-list-tab="all"', false);
-    $response->assertSee('data-list-tab="spend"', false);
-    $response->assertSee('data-list-tab="return"', false);
-    $response->assertSee('data-list-search', false);
-    $response->assertSee('data-list-filter="period"', false);
+    // The itemised ledger table.
     $response->assertSee('data-list-table', false);
-    $response->assertSee('data-list-empty', false);
-
-    // A sampled ledger row with its spend/return hooks.
-    $response->assertSee('data-list-key="spend"', false);
-    $response->assertSee('data-list-key="return"', false);
-    $response->assertSee('ledger__act--ai', false);
-    $response->assertSee('Contact enrichment');
-    $response->assertSee('orthodontists in Dallas, TX');
-
-    // The ledger footer + remaining total.
-    $response->assertSee('ledger__foot', false);
     $response->assertSee('ledger__total', false);
     $response->assertSee('Remaining');
-
-    // Row links resolve to the search history screen.
-    $response->assertSee(route('user.search.history'));
 
     // The sidebar carries the "Credits & billing" item under Account.
     $response->assertSee('Credits & billing');
     $response->assertSee(route('user.credits.index'));
 });
 
-it('renders the Buy credits screen with the balance, top-up packs and plan tiers', function () {
+it('renders the Buy credits screen with the balance and top-up packs', function () {
+    Permission::findOrCreate('credits.view', 'web');
+
     $user = User::factory()->create([
         'name' => 'Amara',
         'is_active' => true,
         'email_verified_at' => now(),
     ]);
+    $user->givePermissionTo('credits.view');
 
     $response = $this->actingAs($user)->get(route('user.credits.buy'));
 
@@ -776,33 +838,15 @@ it('renders the Buy credits screen with the balance, top-up packs and plan tiers
     $response->assertSee('app-sidebar', false);
     $response->assertSee('app-content', false);
 
-    // Balance / plan strip.
+    // Balance strip.
     $response->assertSee('bal', false);
     $response->assertSee('Credits remaining');
-    $response->assertSee('Your plan');
-    $response->assertSee('bal__roll', false);
 
     // Top-up packs with radio cards and per-credit pricing.
     $response->assertSee('Top up now');
     $response->assertSee('packs', false);
     $response->assertSee('pack__radio', false);
     $response->assertSee('Most bought');
-    $response->assertSee('Continue to payment');
-
-    // The three plan tiers with the current one marked.
-    $response->assertSee('Or change your plan');
-    $response->assertSee('tier', false);
-    $response->assertSee('tier--current', false);
-    $response->assertSee('Starter');
-    $response->assertSee('Growth');
-    $response->assertSee('Scale');
-    $response->assertSee('You are on this plan');
-    $response->assertSee('tiers__note', false);
-
-    // Downgrade confirm + upgrade links resolve.
-    $response->assertSee('data-confirm-title="Move to Starter?"', false);
-    $response->assertSee(route('user.api.keys'));
-    $response->assertSee('id="confirmDialog"', false);
 });
 
 it('renders the API keys screen with the plan lock and key modal', function () {

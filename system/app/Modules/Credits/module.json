@@ -1,0 +1,19 @@
+{
+    "name": "Credits",
+    "alias": "credits",
+    "description": "Per-user credit ledger: balance, spend, starter grant",
+    "version": "1.0.0",
+    "priority": 25,
+    "providers": [
+        "App\\Modules\\Credits\\Providers\\CreditsServiceProvider"
+    ],
+    "routes": {
+        "user": "Routes/user.php"
+    },
+    "requires": [],
+    "packages": {
+        "require": {},
+        "require-dev": {}
+    },
+    "active": true
+}

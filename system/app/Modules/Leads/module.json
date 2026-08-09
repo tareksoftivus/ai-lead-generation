@@ -1,0 +1,22 @@
+{
+    "name": "Leads",
+    "alias": "leads",
+    "description": "Google Places search, lead management (pipeline, tags, lists, notes, activity), and stubbed AI scoring/outreach",
+    "version": "1.0.0",
+    "priority": 30,
+    "providers": [
+        "App\\Modules\\Leads\\Providers\\LeadsServiceProvider"
+    ],
+    "routes": {
+        "user": "Routes/user.php"
+    },
+    "requires": [
+        "Credits",
+        "GoogleMapsSettings"
+    ],
+    "packages": {
+        "require": {},
+        "require-dev": {}
+    },
+    "active": true
+}

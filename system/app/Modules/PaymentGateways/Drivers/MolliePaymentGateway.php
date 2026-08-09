@@ -126,14 +126,16 @@ class MolliePaymentGateway implements PaymentGatewayInterface
             $reference = $result['metadata']['reference'] ?? $result['id'];
 
             return match ($result['status'] ?? '') {
-                'paid' => PaymentResponse::completed($reference, [
+                'paid' => PaymentResponse::completed($result['id'], [
+                    'reference' => $reference,
                     'mollie_id' => $result['id'],
                     'amount' => $result['amount']['value'] ?? null,
                     'currency' => $result['amount']['currency'] ?? null,
                     'method' => $result['method'] ?? null,
                     'paid_at' => $result['paidAt'] ?? null,
                 ]),
-                'open', 'pending', 'authorized' => PaymentResponse::pending($reference, [
+                'open', 'pending', 'authorized' => PaymentResponse::pending($result['id'], [
+                    'reference' => $reference,
                     'mollie_id' => $result['id'],
                     'status' => $result['status'],
                 ]),
@@ -224,7 +226,7 @@ class MolliePaymentGateway implements PaymentGatewayInterface
         };
 
         return new WebhookResult(
-            gatewayPaymentId: $result['metadata']['reference'] ?? $result['id'],
+            gatewayPaymentId: $result['id'],
             status: $status,
             eventType: $result['status'] ?? 'payment',
             metadata: $result,

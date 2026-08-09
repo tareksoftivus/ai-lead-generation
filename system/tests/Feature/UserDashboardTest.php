@@ -7,6 +7,7 @@ use App\Modules\Leads\Models\LeadActivity;
 use App\Modules\Leads\Models\LeadList;
 use App\Modules\Leads\Models\Place;
 use App\Modules\Leads\Models\SearchRun;
+use App\Modules\PricingPlan\Models\PricingPlan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -19,6 +20,7 @@ it('renders the LeadAtlas user dashboard', function () {
         'name' => 'Amara',
         'is_active' => true,
         'email_verified_at' => now(),
+        'credits_balance' => 2480,
     ]);
 
     $response = $this->actingAs($user)->get(route('user.dashboard'));
@@ -67,6 +69,8 @@ it('renders every account option in the topbar profile dropdown', function () {
     $response->assertSee(route('user.settings.index'));
     $response->assertSee('Credits & billing');
     $response->assertSee(route('user.credits.index'));
+    $response->assertSee('badge-discover', false);
+    $response->assertSee('2,480');
     $response->assertSee('Support');
     $response->assertSee(route('user.support-tickets.index'));
     $response->assertSee('Sign out');
@@ -823,6 +827,21 @@ it('renders the Credits & billing screen with the balance and itemised ledger', 
 it('renders the Buy credits screen with the balance and top-up packs', function () {
     Permission::findOrCreate('credits.view', 'web');
 
+    PricingPlan::query()->create([
+        'name' => 'Growth',
+        'slug' => 'growth',
+        'tagline' => 'For teams ready to turn scored leads into outreach.',
+        'icon' => 'ph-sparkle',
+        'price_monthly' => 89,
+        'price_yearly' => 890,
+        'credits_monthly' => 5000,
+        'features' => ['AI summaries and drafted emails'],
+        'cta_label' => 'Start free',
+        'is_active' => true,
+        'is_featured' => true,
+        'sort_order' => 1,
+    ]);
+
     $user = User::factory()->create([
         'name' => 'Amara',
         'is_active' => true,
@@ -842,11 +861,16 @@ it('renders the Buy credits screen with the balance and top-up packs', function 
     $response->assertSee('bal', false);
     $response->assertSee('Credits remaining');
 
-    // Top-up packs with radio cards and per-credit pricing.
-    $response->assertSee('Top up now');
+    // Pricing-plan cards with radio selection and per-credit pricing.
+    $response->assertSee('Available plans');
     $response->assertSee('packs', false);
     $response->assertSee('pack__radio', false);
+    $response->assertSee('Growth');
+    $response->assertSee('5,000');
+    $response->assertSee('$89');
+    $response->assertSee('Checkout');
     $response->assertSee('Most bought');
+    $response->assertDontSee('Coming soon');
 });
 
 it('renders the API keys screen with the plan lock and key modal', function () {

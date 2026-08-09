@@ -1,4 +1,8 @@
 <x-layouts.user :title="__('Credits & billing')">
+    @php
+        $formatPrice = fn (int $price) => $price > 0 ? '$'.number_format($price) : __('Free');
+    @endphp
+
     <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
             <h2 class="heading-3">{{ __('Credit usage') }}</h2>
@@ -43,6 +47,39 @@
             </p>
         </article>
     </div>
+
+    @if ($plans->isNotEmpty())
+        <section class="panel">
+            <div class="panel__head">
+                <h3 class="panel__title">{{ __('Current credit plans') }}</h3>
+                <span class="panel__meta">
+                    <span class="numeric">{{ $plans->count() }}</span> {{ __('active') }}
+                </span>
+            </div>
+
+            <div class="packs">
+                @foreach ($plans as $plan)
+                    <article class="pack">
+                        <div class="pack__body">
+                            @if ($plan->is_featured)
+                                <span class="badge badge-accent mb-2 self-start text-[0.6875rem]">{{ __('Most bought') }}</span>
+                            @endif
+
+                            <span class="font-title text-[1rem] font-bold text-title">{{ $plan->name }}</span>
+
+                            @if ($plan->tagline)
+                                <span class="mt-1 text-[0.8125rem] leading-snug text-body">{{ $plan->tagline }}</span>
+                            @endif
+
+                            <span class="mt-3 font-title text-[1.375rem] leading-none font-bold text-title numeric">{{ number_format($plan->credits_monthly) }}</span>
+                            <span class="mt-1 text-[0.875rem] text-body">{{ __('credits / month') }}</span>
+                            <span class="mt-3 font-title text-[1.125rem] font-bold text-title numeric">{{ $formatPrice((int) $plan->price_monthly) }}<span class="text-[0.8125rem] font-medium text-body">{{ __(' / mo') }}</span></span>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+        </section>
+    @endif
 
     <div class="panel" data-list>
         <div class="panel__head">

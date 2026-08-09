@@ -10,7 +10,11 @@
     "routes": {
         "user": "Routes/user.php"
     },
-    "requires": [],
+    "requires": [
+        "PricingPlans",
+        "PaymentGatewaySettings",
+        "PaymentGateways"
+    ],
     "packages": {
         "require": {},
         "require-dev": {}

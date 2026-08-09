@@ -124,13 +124,15 @@ class MercadoPagoPaymentGateway implements PaymentGatewayInterface
             $reference = $result['external_reference'] ?? (string) $result['id'];
 
             return match ($result['status'] ?? '') {
-                'approved' => PaymentResponse::completed($reference, [
+                'approved' => PaymentResponse::completed((string) $result['id'], [
+                    'reference' => $reference,
                     'mercadopago_id' => $result['id'],
                     'amount' => $result['transaction_amount'] ?? null,
                     'currency' => $result['currency_id'] ?? null,
                     'status_detail' => $result['status_detail'] ?? null,
                 ]),
-                'pending', 'in_process', 'authorized' => PaymentResponse::pending($reference, [
+                'pending', 'in_process', 'authorized' => PaymentResponse::pending((string) $result['id'], [
+                    'reference' => $reference,
                     'mercadopago_id' => $result['id'],
                     'status' => $result['status'],
                 ]),
@@ -235,7 +237,7 @@ class MercadoPagoPaymentGateway implements PaymentGatewayInterface
         };
 
         return new WebhookResult(
-            gatewayPaymentId: $payment['external_reference'] ?? (isset($payment['id']) ? (string) $payment['id'] : null),
+            gatewayPaymentId: isset($payment['id']) ? (string) $payment['id'] : ($payment['external_reference'] ?? null),
             status: $status,
             eventType: $type,
             metadata: $payment ?? [],

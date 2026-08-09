@@ -5,6 +5,7 @@ use App\Modules\Credits\Exceptions\InsufficientCreditsException;
 use App\Modules\Credits\Listeners\GrantStarterCredits;
 use App\Modules\Credits\Models\CreditTransaction;
 use App\Modules\Credits\Services\CreditLedger;
+use App\Modules\PricingPlan\Models\PricingPlan;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
@@ -103,4 +104,96 @@ it('shows the credits index page with balance and transaction history', function
         ->get(route('user.credits.index'))
         ->assertSuccessful()
         ->assertSee('42');
+});
+
+it('shows active pricing plans on the credits buy page', function () {
+    $user = creditsUser();
+
+    PricingPlan::query()->create([
+        'name' => 'Growth',
+        'slug' => 'growth',
+        'tagline' => 'For teams ready to turn scored leads into outreach.',
+        'icon' => 'ph-sparkle',
+        'price_monthly' => 89,
+        'price_yearly' => 890,
+        'credits_monthly' => 5000,
+        'features' => ['AI summaries and drafted emails'],
+        'cta_label' => 'Start free',
+        'is_active' => true,
+        'is_featured' => true,
+        'sort_order' => 1,
+    ]);
+
+    PricingPlan::query()->create([
+        'name' => 'Archived',
+        'slug' => 'archived',
+        'price_monthly' => 9,
+        'price_yearly' => 90,
+        'credits_monthly' => 100,
+        'is_active' => false,
+        'sort_order' => 2,
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('user.credits.buy'))
+        ->assertSuccessful()
+        ->assertSee('Growth')
+        ->assertSee('5,000')
+        ->assertSee('$89')
+        ->assertSee('Checkout')
+        ->assertSee('Most bought')
+        ->assertSee('AI summaries and drafted emails')
+        ->assertDontSee('Archived');
+});
+
+it('shows a checkout page for a selected pricing plan', function () {
+    $user = creditsUser(['credits_balance' => 25]);
+
+    $plan = PricingPlan::query()->create([
+        'name' => 'Scale',
+        'slug' => 'scale',
+        'tagline' => 'For agencies and teams running searches at volume.',
+        'price_monthly' => 249,
+        'price_yearly' => 2490,
+        'credits_monthly' => 20000,
+        'features' => ['REST API and webhooks'],
+        'is_active' => true,
+    ]);
+
+    $this->actingAs($user)
+        ->post(route('user.credits.checkout.start'), ['plan' => $plan->slug])
+        ->assertRedirect(route('user.credits.checkout', $plan->slug));
+
+    $this->actingAs($user)
+        ->get(route('user.credits.checkout', $plan->slug))
+        ->assertSuccessful()
+        ->assertSee('Checkout')
+        ->assertSee('Scale')
+        ->assertSee('20,000')
+        ->assertSee('$249')
+        ->assertSee('Payment method')
+        ->assertSee('Development gateway')
+        ->assertSee('Gateway charge')
+        ->assertSee('Total payable')
+        ->assertSee('Continue checkout');
+});
+
+it('completes a pricing plan purchase and grants plan credits once', function () {
+    $user = creditsUser(['credits_balance' => 10]);
+
+    $plan = PricingPlan::query()->create([
+        'name' => 'Growth',
+        'slug' => 'growth',
+        'price_monthly' => 89,
+        'price_yearly' => 890,
+        'credits_monthly' => 5000,
+        'is_active' => true,
+    ]);
+
+    $this->actingAs($user)
+        ->post(route('user.credits.checkout.complete', $plan->slug), ['gateway' => 'log'])
+        ->assertRedirect(route('user.credits.index'));
+
+    expect($user->fresh()->credits_balance)->toBe(5010)
+        ->and(CreditTransaction::query()->forUser($user->id)->where('reason', 'pricing_plan_purchase')->count())->toBe(1);
 });

@@ -106,13 +106,15 @@ class XenditPaymentGateway implements PaymentGatewayInterface
             $reference = $result['external_id'] ?? $result['id'];
 
             return match ($result['status'] ?? '') {
-                'PAID', 'SETTLED' => PaymentResponse::completed($reference, [
+                'PAID', 'SETTLED' => PaymentResponse::completed($result['id'], [
+                    'reference' => $reference,
                     'xendit_id' => $result['id'],
                     'amount' => $result['amount'] ?? null,
                     'currency' => $result['currency'] ?? null,
                     'paid_at' => $result['paid_at'] ?? null,
                 ]),
-                'PENDING' => PaymentResponse::pending($reference, [
+                'PENDING' => PaymentResponse::pending($result['id'], [
+                    'reference' => $reference,
                     'xendit_id' => $result['id'],
                     'status' => $result['status'],
                 ]),
@@ -179,7 +181,7 @@ class XenditPaymentGateway implements PaymentGatewayInterface
         };
 
         return new WebhookResult(
-            gatewayPaymentId: $payload['external_id'] ?? ($payload['id'] ?? null),
+            gatewayPaymentId: $payload['id'] ?? ($payload['external_id'] ?? null),
             status: $status,
             eventType: $payload['status'] ?? 'invoice',
             metadata: $payload,

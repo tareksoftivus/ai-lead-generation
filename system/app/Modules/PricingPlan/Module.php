@@ -29,6 +29,8 @@ class Module extends BasePanelModule
         $navigation
             ->group('Billing')
             ->item(label: 'Pricing Plans', route: 'admin.pricing-plans.*', icon: 'ph-currency-dollar', permission: 'pricing-plans.view')
-            ->order(90);
+            ->order(90)
+            ->item(label: 'Subscribers', route: 'admin.pricing-plan-subscribers.index', icon: 'ph-users-three', permission: 'pricing-plans.view')
+            ->order(91);
     }
 }

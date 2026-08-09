@@ -133,11 +133,13 @@ class CoinbaseCommercePaymentGateway implements PaymentGatewayInterface
         $latest = end($timeline)['status'] ?? '';
 
         return match ($latest) {
-            'COMPLETED', 'RESOLVED' => PaymentResponse::completed($reference, [
+            'COMPLETED', 'RESOLVED' => PaymentResponse::completed($charge['id'], [
+                'reference' => $reference,
                 'coinbase_id' => $charge['id'],
                 'code' => $charge['code'] ?? null,
             ]),
-            'NEW', 'PENDING' => PaymentResponse::pending($reference, [
+            'NEW', 'PENDING' => PaymentResponse::pending($charge['id'], [
+                'reference' => $reference,
                 'coinbase_id' => $charge['id'],
                 'status' => $latest,
             ]),
@@ -179,7 +181,7 @@ class CoinbaseCommercePaymentGateway implements PaymentGatewayInterface
         };
 
         return new WebhookResult(
-            gatewayPaymentId: $charge['metadata']['reference'] ?? ($charge['id'] ?? null),
+            gatewayPaymentId: $charge['id'] ?? ($charge['metadata']['reference'] ?? null),
             status: $status,
             eventType: $eventType,
             metadata: $charge,

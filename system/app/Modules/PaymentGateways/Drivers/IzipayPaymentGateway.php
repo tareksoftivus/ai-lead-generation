@@ -96,6 +96,7 @@ class IzipayPaymentGateway implements PaymentGatewayInterface
             return PaymentResponse::clientAction($reference, [
                 'form_token' => $formToken,
                 'public_key' => payment_gateway_setting('izipay_public_key', ''),
+                'sandbox' => (bool) payment_gateway_setting('izipay_sandbox', true),
             ]);
         } catch (\Exception $e) {
             return PaymentResponse::failed($e->getMessage());
@@ -124,12 +125,14 @@ class IzipayPaymentGateway implements PaymentGatewayInterface
             $transaction = $answer['transactions'][0] ?? [];
 
             return match ($answer['orderStatus'] ?? '') {
-                'PAID' => PaymentResponse::completed((string) ($reference ?? $transaction['uuid'] ?? ''), [
+                'PAID' => PaymentResponse::completed((string) ($transaction['uuid'] ?? $reference ?? ''), [
+                    'reference' => $reference,
                     'izipay_uuid' => $transaction['uuid'] ?? null,
                     'amount' => isset($transaction['amount']) ? $transaction['amount'] / 100 : null,
                     'currency' => $transaction['currency'] ?? null,
                 ]),
-                'RUNNING', 'PARTIALLY_PAID' => PaymentResponse::pending((string) ($reference ?? ''), [
+                'RUNNING', 'PARTIALLY_PAID' => PaymentResponse::pending((string) ($transaction['uuid'] ?? $reference ?? ''), [
+                    'reference' => $reference,
                     'order_status' => $answer['orderStatus'],
                 ]),
                 default => PaymentResponse::failed("Izipay order status: {$answer['orderStatus']}"),
@@ -211,7 +214,7 @@ class IzipayPaymentGateway implements PaymentGatewayInterface
         };
 
         return new WebhookResult(
-            gatewayPaymentId: $answer['orderDetails']['orderId'] ?? ($transaction['uuid'] ?? null),
+            gatewayPaymentId: $transaction['uuid'] ?? ($answer['orderDetails']['orderId'] ?? null),
             status: $status,
             eventType: $orderStatus,
             metadata: $answer,
@@ -237,6 +240,7 @@ class IzipayPaymentGateway implements PaymentGatewayInterface
     public function getClientConfig(): array
     {
         return [
+            'type' => 'embedded',
             'public_key' => payment_gateway_setting('izipay_public_key', ''),
             'sandbox' => (bool) payment_gateway_setting('izipay_sandbox', true),
         ];

@@ -3,15 +3,20 @@
 namespace App\Modules\PricingPlan\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Credits\Models\CreditTransaction;
+use App\Modules\PaymentGateways\Models\Payment;
 use App\Modules\PricingPlan\Http\Requests\StorePricingPlanRequest;
 use App\Modules\PricingPlan\Http\Requests\UpdatePricingPlanRequest;
 use App\Modules\PricingPlan\Services\PricingPlanService;
 use App\Modules\PricingPlan\Tables\PricingPlansTable;
+use App\Modules\PricingPlan\Tables\SubscribersTable;
 use App\Modules\Shared\Support\Tables\TableDefinition;
 use App\Modules\Shared\Traits\HasCrudActions;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\View\View;
 
 class PricingPlanController extends Controller implements HasMiddleware
@@ -26,7 +31,10 @@ class PricingPlanController extends Controller implements HasMiddleware
 
     public static function middleware(): array
     {
-        return static::crudMiddleware('pricing-plans');
+        return array_merge(
+            static::crudMiddleware('pricing-plans'),
+            [new Middleware('permission:pricing-plans.view', only: ['subscribers'])]
+        );
     }
 
     public function __construct(protected PricingPlanService $service) {}
@@ -56,6 +64,60 @@ class PricingPlanController extends Controller implements HasMiddleware
         return redirect()
             ->route("{$this->routePrefix}.index")
             ->with('success', __('Pricing plan updated successfully.'));
+    }
+
+    public function subscribers(Request $request): View|JsonResponse
+    {
+        $latestPlanTransactionIds = CreditTransaction::query()
+            ->selectRaw('MAX(id)')
+            ->where('reason', 'pricing_plan_purchase')
+            ->groupBy('user_id');
+
+        $baseQuery = CreditTransaction::query()
+            ->whereIn('id', $latestPlanTransactionIds)
+            ->when($request->filled('search'), function ($query) use ($request): void {
+                $search = (string) $request->input('search');
+
+                $query->whereHas('user', function ($userQuery) use ($search): void {
+                    $userQuery
+                        ->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                });
+            });
+
+        $stats = [
+            'total' => (clone $baseQuery)->count(),
+            'paid' => (clone $baseQuery)->whereHasMorph('reference', [Payment::class])->count(),
+            'credits_granted' => (clone $baseQuery)->sum('amount'),
+        ];
+        $stats['free'] = $stats['total'] - $stats['paid'];
+
+        $sortOrder = $request->input('sort_order') === 'asc' ? 'asc' : 'desc';
+
+        $subscribers = (clone $baseQuery)
+            ->with(['user', 'reference'])
+            ->orderBy('created_at', $sortOrder)
+            ->paginate($request->integer('per_page') ?: 15)
+            ->withQueryString();
+
+        $table = SubscribersTable::make();
+
+        if ($request->ajax()) {
+            $html = view('components.tables.resource-rows', ['definition' => $table, 'items' => $subscribers])->render();
+            $pagination = view('components.tables.pagination', ['paginator' => $subscribers])->render();
+
+            return response()->json([
+                'html' => $html,
+                'pagination' => $pagination,
+                'total' => $subscribers->total(),
+            ]);
+        }
+
+        return view("{$this->viewPath}.subscribers", [
+            'subscribers' => $subscribers,
+            'stats' => $stats,
+            'table' => $table,
+        ]);
     }
 
     /**

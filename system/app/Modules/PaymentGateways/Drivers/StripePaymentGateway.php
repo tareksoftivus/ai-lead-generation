@@ -58,6 +58,7 @@ class StripePaymentGateway implements PaymentGatewayInterface
             $params = [
                 'amount' => (int) round($data->amount * 100),
                 'currency' => strtolower($data->currency),
+                'payment_method_types' => ['card'],
                 'metadata' => array_merge($data->metadata, array_filter([
                     'user_id' => $data->userId,
                     'user_type' => $data->userType,
@@ -202,8 +203,13 @@ class StripePaymentGateway implements PaymentGatewayInterface
 
     public function getClientConfig(): array
     {
+        $secretKey = payment_gateway_setting('stripe_secret_key', '');
+        $publishableKey = payment_gateway_setting('stripe_publishable_key', '');
+
         return [
-            'publishable_key' => payment_gateway_setting('stripe_publishable_key', ''),
+            'type' => 'embedded',
+            'mode' => str_starts_with($secretKey, 'sk_test_') || str_starts_with($publishableKey, 'pk_test_') ? 'test' : 'live',
+            'publishable_key' => $publishableKey,
         ];
     }
 }

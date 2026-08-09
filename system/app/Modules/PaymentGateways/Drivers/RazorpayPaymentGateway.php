@@ -119,13 +119,17 @@ class RazorpayPaymentGateway implements PaymentGatewayInterface
 
             return match ($payment->status) {
                 'captured' => PaymentResponse::completed($paymentId, [
+                    'razorpay_order_id' => $orderId,
                     'order_id' => $orderId,
+                    'razorpay_payment_id' => $paymentId,
                     'amount' => $payment->amount / 100,
                     'currency' => $payment->currency,
                     'method' => $payment->method,
                 ]),
                 'authorized' => PaymentResponse::completed($paymentId, [
+                    'razorpay_order_id' => $orderId,
                     'order_id' => $orderId,
+                    'razorpay_payment_id' => $paymentId,
                     'note' => 'Payment authorized, capture may be pending.',
                 ]),
                 default => PaymentResponse::failed("Razorpay payment status: {$payment->status}"),
@@ -206,6 +210,7 @@ class RazorpayPaymentGateway implements PaymentGatewayInterface
     public function getClientConfig(): array
     {
         return [
+            'type' => 'embedded',
             'key_id' => payment_gateway_setting('razorpay_key_id', ''),
         ];
     }

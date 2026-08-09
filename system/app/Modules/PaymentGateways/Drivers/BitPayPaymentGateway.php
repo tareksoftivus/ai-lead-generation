@@ -133,12 +133,14 @@ class BitPayPaymentGateway implements PaymentGatewayInterface
         $reference = $invoice['orderId'] ?? $invoice['id'];
 
         return match ($invoice['status'] ?? '') {
-            'complete', 'confirmed' => PaymentResponse::completed($reference, [
+            'complete', 'confirmed' => PaymentResponse::completed($invoice['id'], [
+                'reference' => $reference,
                 'bitpay_id' => $invoice['id'],
                 'amount' => $invoice['price'] ?? null,
                 'currency' => $invoice['currency'] ?? null,
             ]),
-            'paid', 'new' => PaymentResponse::pending($reference, [
+            'paid', 'new' => PaymentResponse::pending($invoice['id'], [
+                'reference' => $reference,
                 'bitpay_id' => $invoice['id'],
                 'status' => $invoice['status'],
             ]),
@@ -201,7 +203,7 @@ class BitPayPaymentGateway implements PaymentGatewayInterface
         };
 
         return new WebhookResult(
-            gatewayPaymentId: $invoice['orderId'] ?? ($invoice['id'] ?? null),
+            gatewayPaymentId: $invoice['id'] ?? ($invoice['orderId'] ?? null),
             status: $status,
             eventType: $invoice['status'] ?? 'invoice',
             metadata: $invoice,

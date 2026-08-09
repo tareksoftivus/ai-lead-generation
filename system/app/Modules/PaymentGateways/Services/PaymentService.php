@@ -53,6 +53,10 @@ class PaymentService
     public function charge(float $amount, string $currency = '', array $options = []): array
     {
         $currency = $currency ?: payment_gateway_setting('payment_currency', 'USD');
+        $paymentUuid = (string) Str::uuid();
+        $metadata = array_merge($options['metadata'] ?? [], [
+            'payment_uuid' => $paymentUuid,
+        ]);
 
         $user = auth()->user();
         $data = new PaymentData(
@@ -62,15 +66,15 @@ class PaymentService
             paymentMethod: $options['payment_method'] ?? null,
             userId: $options['user_id'] ?? $user?->getKey(),
             userType: $options['user_type'] ?? $user?->getMorphClass(),
-            metadata: $options['metadata'] ?? [],
-            returnUrl: $options['return_url'] ?? null,
-            cancelUrl: $options['cancel_url'] ?? null,
+            metadata: $metadata,
+            returnUrl: $this->appendQueryParameters($options['return_url'] ?? null, ['payment_uuid' => $paymentUuid]),
+            cancelUrl: $this->appendQueryParameters($options['cancel_url'] ?? null, ['payment_uuid' => $paymentUuid]),
         );
 
         $gateway = $this->manager->driver($options['gateway'] ?? null);
 
         $payment = Payment::create([
-            'uuid' => (string) Str::uuid(),
+            'uuid' => $paymentUuid,
             'user_id' => $data->userId,
             'user_type' => $data->userType,
             'gateway' => $gateway->name(),
@@ -121,18 +125,30 @@ class PaymentService
     public function verify(Request $request, ?string $gateway = null): Payment
     {
         $driver = $this->manager->driver($gateway);
+        $payment = $this->paymentFromRequest($request);
+
+        if ($payment?->gateway_payment_id && ! $request->filled('gateway_payment_id')) {
+            $request->merge(['gateway_payment_id' => $payment->gateway_payment_id]);
+        }
+
         $response = $driver->verifyPayment($request);
 
         if (! $response->gatewayPaymentId) {
             throw new PaymentException('No gateway payment ID in verification response.', $driver->name());
         }
 
-        $payment = Payment::where('gateway_payment_id', $response->gatewayPaymentId)->firstOrFail();
+        $payment ??= Payment::where('gateway_payment_id', $response->gatewayPaymentId)->firstOrFail();
+        $metadata = array_merge($payment->metadata ?? [], $response->metadata);
+
+        if ($response->gatewayPaymentId !== $payment->gateway_payment_id) {
+            $metadata['initial_gateway_payment_id'] = $payment->gateway_payment_id;
+        }
 
         $payment->update([
+            'gateway_payment_id' => $response->gatewayPaymentId,
             'status' => $response->status,
             'paid_at' => $response->isComplete() ? now() : $payment->paid_at,
-            'metadata' => array_merge($payment->metadata ?? [], $response->metadata),
+            'metadata' => $metadata,
         ]);
 
         if ($response->isComplete()) {
@@ -142,6 +158,29 @@ class PaymentService
         }
 
         return $payment->fresh();
+    }
+
+    protected function appendQueryParameters(?string $url, array $parameters): ?string
+    {
+        if (! $url) {
+            return $url;
+        }
+
+        $query = http_build_query($parameters);
+        $separator = str_contains($url, '?') ? '&' : '?';
+
+        return $url.$separator.$query;
+    }
+
+    protected function paymentFromRequest(Request $request): ?Payment
+    {
+        $uuid = $request->get('payment_uuid');
+
+        if (! $uuid) {
+            return null;
+        }
+
+        return Payment::where('uuid', $uuid)->first();
     }
 
     /**

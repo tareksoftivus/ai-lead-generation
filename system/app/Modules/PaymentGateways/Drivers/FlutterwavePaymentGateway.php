@@ -112,7 +112,8 @@ class FlutterwavePaymentGateway implements PaymentGatewayInterface
             $gatewayStatus = $data['status'] ?? '';
 
             if ($gatewayStatus === 'successful') {
-                return PaymentResponse::completed($txRef ?? (string) $transactionId, [
+                return PaymentResponse::completed((string) $transactionId, [
+                    'tx_ref' => $txRef,
                     'flw_transaction_id' => $transactionId,
                     'amount' => $data['amount'] ?? null,
                     'currency' => $data['currency'] ?? null,

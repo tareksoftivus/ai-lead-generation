@@ -7,6 +7,9 @@
     $initials = strtoupper(substr($currentUser->name ?? 'U', 0, 2));
 
     $panelKey = app('current.panel')['key'] ?? 'user';
+    $creditBalance = $currentUser instanceof \App\Models\User
+        ? app(\App\Modules\Credits\Services\CreditLedger::class)->balance($currentUser)
+        : null;
     $bellConfig = [
         'unreadCountUrl' => route($panelKey . '.system-notifications.unread-count'),
         'recentUrl' => route($panelKey . '.system-notifications.recent'),
@@ -27,10 +30,12 @@
     <h1 class="heading-4 truncate">{{ $title }}</h1>
 
     <div class="ml-auto f-start gap-1 sm:gap-2">
-        <span class="badge badge-discover max-sm:hidden">
-            <i class="ph-fill ph-coins"></i>
-            <span class="numeric">2,480</span> {{ __('credits') }}
-        </span>
+        @if($creditBalance !== null && Route::has($panelKey . '.credits.index'))
+            <a href="{{ route($panelKey . '.credits.index') }}" class="badge badge-discover max-sm:hidden">
+                <i class="ph-fill ph-coins"></i>
+                <span class="numeric">{{ number_format($creditBalance) }}</span> {{ __('credits') }}
+            </a>
+        @endif
 
         {{-- Notifications (bell icon) --}}
         <div class="relative" x-data="notificationBell({{ Js::from($bellConfig) }})">

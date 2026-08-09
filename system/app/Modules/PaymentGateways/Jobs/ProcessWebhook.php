@@ -36,6 +36,7 @@ class ProcessWebhook implements ShouldQueue
         // Update payment status if the webhook references a payment
         if ($result->gatewayPaymentId && $result->status) {
             $payment = Payment::where('gateway_payment_id', $result->gatewayPaymentId)->first();
+            $payment ??= $this->findPaymentByWebhookAliases($result->metadata);
 
             if ($payment) {
                 $oldStatus = $payment->status;
@@ -59,5 +60,23 @@ class ProcessWebhook implements ShouldQueue
         }
 
         $this->webhookLog->update(['processed_at' => now()]);
+    }
+
+    protected function findPaymentByWebhookAliases(array $metadata): ?Payment
+    {
+        $aliases = array_filter([
+            $metadata['order_id'] ?? null,
+            $metadata['external_reference'] ?? null,
+            $metadata['reference'] ?? null,
+            $metadata['tx_ref'] ?? null,
+            $metadata['orderId'] ?? null,
+            $metadata['orderDetails']['orderId'] ?? null,
+        ]);
+
+        if ($aliases === []) {
+            return null;
+        }
+
+        return Payment::whereIn('gateway_payment_id', $aliases)->first();
     }
 }

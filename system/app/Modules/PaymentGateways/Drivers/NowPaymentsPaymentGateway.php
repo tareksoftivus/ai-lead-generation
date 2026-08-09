@@ -115,12 +115,14 @@ class NowPaymentsPaymentGateway implements PaymentGatewayInterface
         $reference = $result['order_id'] ?? (string) ($result['payment_id'] ?? '');
 
         return match ($result['payment_status'] ?? '') {
-            'finished', 'confirmed' => PaymentResponse::completed($reference, [
+            'finished', 'confirmed' => PaymentResponse::completed((string) ($result['payment_id'] ?? $reference), [
+                'reference' => $reference,
                 'nowpayments_id' => $result['payment_id'] ?? null,
                 'pay_currency' => $result['pay_currency'] ?? null,
                 'actually_paid' => $result['actually_paid'] ?? null,
             ]),
-            'waiting', 'confirming', 'sending', 'partially_paid' => PaymentResponse::pending($reference, [
+            'waiting', 'confirming', 'sending', 'partially_paid' => PaymentResponse::pending((string) ($result['payment_id'] ?? $reference), [
+                'reference' => $reference,
                 'nowpayments_id' => $result['payment_id'] ?? null,
                 'status' => $result['payment_status'],
             ]),
@@ -167,7 +169,7 @@ class NowPaymentsPaymentGateway implements PaymentGatewayInterface
         };
 
         return new WebhookResult(
-            gatewayPaymentId: $payload['order_id'] ?? (isset($payload['payment_id']) ? (string) $payload['payment_id'] : null),
+            gatewayPaymentId: isset($payload['payment_id']) ? (string) $payload['payment_id'] : ($payload['order_id'] ?? null),
             status: $status,
             eventType: $paymentStatus ?: 'payment',
             metadata: $payload,

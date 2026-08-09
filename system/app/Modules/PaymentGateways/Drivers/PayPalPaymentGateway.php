@@ -7,9 +7,9 @@ use App\Modules\PaymentGateways\DataObjects\PaymentData;
 use App\Modules\PaymentGateways\DataObjects\PaymentResponse;
 use App\Modules\PaymentGateways\DataObjects\RefundResult;
 use App\Modules\PaymentGateways\DataObjects\WebhookResult;
-use Blendbyte\PayPal\Services\PayPal;
 use Illuminate\Http\Request;
 use RuntimeException;
+use Srmklive\PayPal\Services\PayPal;
 
 class PayPalPaymentGateway implements PaymentGatewayInterface
 {
@@ -135,6 +135,7 @@ class PayPalPaymentGateway implements PaymentGatewayInterface
             if ($status === 'COMPLETED') {
                 return PaymentResponse::completed($captureId, [
                     'order_id' => $token,
+                    'paypal_capture_id' => $captureId,
                     'payer' => $result['payer'] ?? [],
                 ]);
             }

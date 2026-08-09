@@ -17,7 +17,7 @@ class LoginRequest extends FormRequest
         return [
             'email' => 'required|email',
             'password' => 'required|string',
-            'remember' => 'nullable|boolean',
+            'remember' => 'nullable|in:on,1,true',
             'cf-turnstile-response' => [new TurnstileValid],
         ];
     }

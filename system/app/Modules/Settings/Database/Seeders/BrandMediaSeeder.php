@@ -20,13 +20,13 @@ class BrandMediaSeeder extends Seeder
 
         $defaults = [
             'site_logo' => [
-                'path' => 'brand/softivus-logo.png',
+                'path' => 'brand/leadatlas-logo.png',
                 'name' => 'Default Logo',
                 'mime_type' => 'image/png',
                 'extension' => 'png',
             ],
             'site_favicon' => [
-                'path' => 'brand/favicon.png',
+                'path' => 'brand/leadatlas-favicon.png',
                 'name' => 'Default Favicon',
                 'mime_type' => 'image/png',
                 'extension' => 'png',

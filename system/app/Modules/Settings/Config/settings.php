@@ -16,7 +16,7 @@ return [
                 'type' => 'text',
                 'label' => 'Site Name',
                 'hint' => 'The name displayed across the platform',
-                'default' => 'Admin Panel',
+                'default' => 'LeadAtlas',
                 'rules' => 'required|string|max:255',
                 'public' => true,
             ],

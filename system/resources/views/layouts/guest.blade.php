@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Welcome') - {{ setting('site_name', config('app.name', 'Admin Panel')) }}</title>
+    <title>@yield('title', 'Welcome') - {{ setting('site_name', config('app.name', 'LeadAtlas')) }}</title>
     <link rel="stylesheet" href="{{ asset('assets/global/fonts/phosphor/regular/style.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/leadatlas.js'])
     @include('components.layouts.partials.branding')
@@ -15,7 +15,7 @@
 
     <body class="overflow-x-hidden bg-neutral-0">
         @php
-            $siteName = setting('site_name', config('app.name', 'Admin Panel'));
+            $siteName = setting('site_name', config('app.name', 'LeadAtlas'));
             $settingLogo = setting('site_logo') && media_url(setting('site_logo')) ? media_url(setting('site_logo')) : null;
             $brandLogo = $settingLogo ?? asset('assets/frontend/leadatlas/images/logo-lockup.png');
         @endphp
@@ -43,23 +43,7 @@
                         <img src="{{ $brandLogo }}" alt="{{ $siteName }}" width="482" height="140" class="h-9 w-auto" />
                     </a>
 
-                    @if (session('success'))
-                        <div class="mb-4 rounded-xl border border-success/30 bg-success/10 p-3 text-sm text-success">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-
-                    @if (session('error'))
-                        <div class="mb-4 rounded-xl border border-error/30 bg-error/10 p-3 text-sm text-error">
-                            {{ session('error') }}
-                        </div>
-                    @endif
-
-                    @if (session('status'))
-                        <div class="mb-4 rounded-xl border border-primary/30 bg-primary/10 p-3 text-sm text-primary">
-                            {{ session('status') }}
-                        </div>
-                    @endif
+                    @include('components.layouts.partials.session-flash')
 
                     @yield('content')
                 </div>
@@ -77,7 +61,7 @@
             $settingLogo = setting('site_logo') && media_url(setting('site_logo')) ? media_url(setting('site_logo')) : null;
             // Prefer the uploaded site logo (a wide wordmark); it renders at its
             // natural aspect. Only the packaged square mark uses the rounded badge.
-            $brandLogo = $settingLogo ?? asset('assets/uploads/brand/softivus-logo.png');
+            $brandLogo = $settingLogo ?? asset('assets/uploads/brand/leadatlas-logo.png');
         @endphp
 
         <div class="section-card w-full max-w-md">
@@ -86,23 +70,7 @@
                 <img src="{{ $brandLogo }}" alt="{{ $siteName }}" class="h-12 w-auto max-w-48 object-contain">
             </div>
 
-            @if (session('success'))
-                <div class="mb-4 rounded-xl border border-success/30 bg-success/10 p-3 text-sm text-success">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="mb-4 rounded-xl border border-error/30 bg-error/10 p-3 text-sm text-error">
-                    {{ session('error') }}
-                </div>
-            @endif
-
-            @if (session('status'))
-                <div class="mb-4 rounded-xl border border-primary/30 bg-primary/10 p-3 text-sm text-primary">
-                    {{ session('status') }}
-                </div>
-            @endif
+            @include('components.layouts.partials.session-flash')
 
             @yield('content')
         </div>

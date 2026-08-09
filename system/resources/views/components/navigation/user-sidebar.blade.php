@@ -5,7 +5,7 @@
     $siteName = setting('site_name', config('app.name', 'LeadAtlas'));
     $brandLogo = setting('site_logo') && media_url(setting('site_logo'))
         ? media_url(setting('site_logo'))
-        : asset('assets/uploads/brand/softivus-logo.png');
+        : asset('assets/uploads/brand/leadatlas-logo.png');
 
     // Group navigation items by their 'group' key
     $groups = [];
@@ -23,7 +23,7 @@
 <aside class="app-sidebar" data-sidebar>
     <div class="f-between h-[72px] shrink-0 border-b border-r border-neutral-200 bg-neutral-0 px-5">
         <a href="{{ $dashboardUrl }}" class="ml-1 flex min-w-0 items-center" aria-label="{{ __('Go to dashboard') }}">
-            <img src="{{ $brandLogo }}" alt="{{ $siteName }}" class="max-w-[150px]" data-live-logo="site_logo" data-default-src="{{ asset('assets/uploads/brand/softivus-logo.png') }}">
+            <img src="{{ $brandLogo }}" alt="{{ $siteName }}" class="max-w-[150px]" data-live-logo="site_logo" data-default-src="{{ asset('assets/uploads/brand/leadatlas-logo.png') }}">
         </a>
         <button type="button"
                 class="f-center h-9 w-9 shrink-0 rounded-lg text-body hover:bg-neutral-100 lg:hidden"

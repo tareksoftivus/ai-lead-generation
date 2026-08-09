@@ -29,7 +29,7 @@ it('renders the improved admin dashboard', function () {
     // Sidebar logo links to the admin dashboard and ships a dark-mode inverse
     // (packaged fallback applies when no custom logo is set).
     $response->assertSee('href="'.route('admin.dashboard').'"', false);
-    $response->assertSee('softivus-logo-inverse.png');
+    $response->assertSee('leadatlas-logo.png');
     $response->assertSee('dark:hidden');
     $response->assertSee('dark:block');
 });

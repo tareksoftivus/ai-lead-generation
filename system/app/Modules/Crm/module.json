@@ -1,0 +1,21 @@
+{
+    "name": "CRM",
+    "alias": "crm",
+    "description": "User CRM workspace for pipeline, lead contacts, notes, and activities.",
+    "version": "1.0.0",
+    "priority": 45,
+    "providers": [
+        "App\\Modules\\Crm\\Providers\\CrmServiceProvider"
+    ],
+    "routes": {
+        "user": "Routes/user.php"
+    },
+    "requires": [
+        "Leads"
+    ],
+    "packages": {
+        "require": {},
+        "require-dev": {}
+    },
+    "active": true
+}

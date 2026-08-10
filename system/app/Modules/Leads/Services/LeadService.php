@@ -3,6 +3,7 @@
 namespace App\Modules\Leads\Services;
 
 use App\Models\User;
+use App\Modules\Crm\Services\LeadContactService;
 use App\Modules\Leads\Contracts\LeadScorer;
 use App\Modules\Leads\Models\Lead;
 use App\Modules\Leads\Models\LeadActivity;
@@ -114,7 +115,11 @@ class LeadService
 
         if ($existing && $existing->trashed()) {
             $existing->restore();
-            $existing->update(['search_run_id' => $searchRun?->id ?? $existing->search_run_id]);
+            $existing->update([
+                'search_run_id' => $searchRun?->id ?? $existing->search_run_id,
+                'is_in_pipeline' => true,
+                'pipeline_entered_at' => $existing->pipeline_entered_at ?? now(),
+            ]);
 
             return [$existing, true];
         }
@@ -124,6 +129,8 @@ class LeadService
             'place_id' => $place->id,
             'search_run_id' => $searchRun?->id,
             'status' => Lead::STATUS_NEW,
+            'is_in_pipeline' => true,
+            'pipeline_entered_at' => now(),
         ]);
 
         return [$lead, true];
@@ -144,11 +151,15 @@ class LeadService
 
             $lead->update([
                 'email' => $enrichment['email'],
+                'is_in_pipeline' => true,
+                'pipeline_entered_at' => $lead->pipeline_entered_at ?? now(),
                 'enriched_at' => now(),
                 'enrichment_credit_spent' => false,
                 'score' => $scoreResult['score'],
                 'score_signals' => $scoreResult['signals'],
             ]);
+
+            app(LeadContactService::class)->syncPrimaryFromLead($lead->setRelation('place', $place));
 
             if ($searchRun) {
                 LeadActivity::logFoundInSearch($lead, $searchRun);

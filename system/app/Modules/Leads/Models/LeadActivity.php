@@ -30,6 +30,8 @@ class LeadActivity extends Model
 
     public const TYPE_LIST_REMOVED = 'list_removed';
 
+    public const TYPE_PIPELINE_REMOVED = 'pipeline_removed';
+
     protected $fillable = [
         'lead_id',
         'type',
@@ -104,12 +106,15 @@ class LeadActivity extends Model
         ]);
     }
 
-    public static function logNoteAdded(Lead $lead, ?User $actor = null): self
+    public static function logNoteAdded(Lead $lead, ?User $actor = null, ?string $kind = null, ?string $body = null): self
     {
         return static::create([
             'lead_id' => $lead->id,
             'type' => self::TYPE_NOTE_ADDED,
-            'payload' => [],
+            'payload' => array_filter([
+                'kind' => $kind,
+                'body' => $body,
+            ], fn ($value) => $value !== null && $value !== ''),
             'caused_by_user_id' => $actor?->id ?? $lead->user_id,
         ]);
     }
@@ -140,6 +145,16 @@ class LeadActivity extends Model
             'lead_id' => $lead->id,
             'type' => self::TYPE_LIST_REMOVED,
             'payload' => ['list' => $list->name],
+            'caused_by_user_id' => $actor?->id ?? $lead->user_id,
+        ]);
+    }
+
+    public static function logPipelineRemoved(Lead $lead, ?User $actor = null): self
+    {
+        return static::create([
+            'lead_id' => $lead->id,
+            'type' => self::TYPE_PIPELINE_REMOVED,
+            'payload' => [],
             'caused_by_user_id' => $actor?->id ?? $lead->user_id,
         ]);
     }

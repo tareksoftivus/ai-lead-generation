@@ -23,7 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
       let shown = 0;
 
       rows.forEach((row) => {
-        const matchKey = key === "all" || row.dataset.listKey === key;
+        const rowKeys = (row.dataset.listKey || "").split(/\s+/).filter(Boolean);
+        const matchKey = key === "all" || row.dataset.listKey === key || rowKeys.includes(key);
         const matchQuery =
           !query || row.textContent.toLowerCase().includes(query);
 

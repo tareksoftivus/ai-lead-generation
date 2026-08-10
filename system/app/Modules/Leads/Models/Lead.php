@@ -3,6 +3,7 @@
 namespace App\Modules\Leads\Models;
 
 use App\Models\User;
+use App\Modules\Crm\Models\LeadContact;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -29,6 +30,8 @@ class Lead extends Model
         'place_id',
         'search_run_id',
         'status',
+        'is_in_pipeline',
+        'pipeline_entered_at',
         'email',
         'enriched_at',
         'enrichment_credit_spent',
@@ -41,6 +44,8 @@ class Lead extends Model
         return [
             'enriched_at' => 'datetime',
             'enrichment_credit_spent' => 'boolean',
+            'is_in_pipeline' => 'boolean',
+            'pipeline_entered_at' => 'datetime',
             'score' => 'integer',
             'score_signals' => 'array',
             'deleted_at' => 'datetime',
@@ -75,6 +80,11 @@ class Lead extends Model
     public function notes(): HasMany
     {
         return $this->hasMany(LeadNote::class);
+    }
+
+    public function contacts(): HasMany
+    {
+        return $this->hasMany(LeadContact::class);
     }
 
     public function activities(): HasMany

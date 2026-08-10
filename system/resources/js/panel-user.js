@@ -36,6 +36,7 @@ import "./components/leadatlas/scoring-preview.js";
 import "./components/leadatlas/copy.js";
 
 // Sales pipeline screen — drag cards between stages
+import "./components/leadatlas/crm-forms.js";
 import "./components/leadatlas/pipeline.js";
 
 // Notes & activities screen — day headings hide when filters empty them

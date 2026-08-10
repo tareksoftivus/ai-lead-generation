@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Modules\Credits\Models\CreditTransaction;
+use App\Modules\Crm\Models\LeadContact;
 use App\Modules\Leads\Models\Lead;
 use App\Modules\Leads\Models\LeadActivity;
 use App\Modules\Leads\Models\LeadBank;
@@ -280,6 +281,8 @@ class DemoLeadsSeeder extends Seeder
             $lead->fill([
                 'search_run_id' => $runs[$data['run_key']]->id,
                 'status' => $data['status'],
+                'is_in_pipeline' => $data['status'] !== Lead::STATUS_LOST,
+                'pipeline_entered_at' => now()->subDays($data['days_ago']),
                 'email' => $data['email'],
                 'enriched_at' => $data['email'] ? now()->subDays($data['days_ago']) : null,
                 'enrichment_credit_spent' => false,
@@ -292,11 +295,11 @@ class DemoLeadsSeeder extends Seeder
             $lead->save();
 
             $lead->lists()->syncWithoutDetaching(
-                collect($data['lists'])->map(fn (string $key) => $lists[$key]->id)->all()
+                collect($data['lists'])->map(fn(string $key) => $lists[$key]->id)->all()
             );
 
             $lead->tags()->syncWithoutDetaching(
-                collect($data['tags'])->map(fn (string $key) => $tags[$key]->id)->all()
+                collect($data['tags'])->map(fn(string $key) => $tags[$key]->id)->all()
             );
 
             LeadNote::query()->firstOrCreate([
@@ -304,6 +307,23 @@ class DemoLeadsSeeder extends Seeder
                 'user_id' => $user->id,
                 'body' => $data['note'],
             ]);
+
+            if ($data['email'] || $place->phone) {
+                LeadContact::query()->updateOrCreate([
+                    'lead_id' => $lead->id,
+                    'user_id' => $user->id,
+                    'name' => $data['contact_name'],
+                ], [
+                    'role' => $data['contact_role'],
+                    'email' => $data['email'],
+                    'phone' => $place->phone,
+                    'note' => $data['contact_note'],
+                    'is_primary' => true,
+                    'last_contacted_at' => in_array($data['status'], [Lead::STATUS_CONTACTED, Lead::STATUS_REPLIED, Lead::STATUS_QUALIFIED], true)
+                        ? now()->subDays(max(1, $data['days_ago'] - 1))
+                        : null,
+                ]);
+            }
 
             LeadActivity::query()->firstOrCreate([
                 'lead_id' => $lead->id,
@@ -322,16 +342,31 @@ class DemoLeadsSeeder extends Seeder
                 'payload' => ['score' => $lead->score, 'demo' => true],
                 'created_at' => $lead->created_at,
             ]);
+
+            LeadActivity::query()->firstOrCreate([
+                'lead_id' => $lead->id,
+                'type' => LeadActivity::TYPE_NOTE_ADDED,
+                'caused_by_user_id' => $user->id,
+            ], [
+                'payload' => [
+                    'kind' => $data['activity_kind'],
+                    'body' => $data['activity_body'],
+                    'demo' => true,
+                ],
+                'created_at' => now()->subDays(max(0, $data['days_ago'] - 1)),
+            ]);
         }
     }
 
     protected function grantDemoCreditsOnce(User $user, int $amount): void
     {
-        if (CreditTransaction::query()
-            ->where('user_id', $user->id)
-            ->where('type', 'grant')
-            ->where('reason', 'demo_leads_seed')
-            ->exists()) {
+        if (
+            CreditTransaction::query()
+                ->where('user_id', $user->id)
+                ->where('type', 'grant')
+                ->where('reason', 'demo_leads_seed')
+                ->exists()
+        ) {
             return;
         }
 
@@ -350,13 +385,15 @@ class DemoLeadsSeeder extends Seeder
 
     protected function recordGenerationSpend(User $user, SearchRun $run, int $amount): void
     {
-        if ($amount <= 0 || CreditTransaction::query()
-            ->where('user_id', $user->id)
-            ->where('type', 'spend')
-            ->where('reason', 'lead_generation')
-            ->where('reference_type', $run->getMorphClass())
-            ->where('reference_id', $run->id)
-            ->exists()) {
+        if (
+            $amount <= 0 || CreditTransaction::query()
+                ->where('user_id', $user->id)
+                ->where('type', 'spend')
+                ->where('reason', 'lead_generation')
+                ->where('reference_type', $run->getMorphClass())
+                ->where('reference_id', $run->id)
+                ->exists()
+        ) {
             return;
         }
 
@@ -454,15 +491,15 @@ class DemoLeadsSeeder extends Seeder
     protected function savedLeads(): array
     {
         return [
-            'smile_craft' => ['run_key' => 'dhaka_dentists', 'status' => Lead::STATUS_QUALIFIED, 'email' => 'hello@smilecraft.example.com', 'score' => 96, 'signals' => ['review_volume' => 'Strong', 'booking_presence' => 'Strong', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['dhaka_dentists_august', 'high_intent_clinics', 'call_this_week'], 'tags' => ['warm_lead', 'call_first', 'has_website', 'dhaka'], 'days_ago' => 1, 'note' => 'Strong review count and a clear website. Call first for cosmetic dentistry offer.'],
-            'gulshan_dental' => ['run_key' => 'dhaka_dentists', 'status' => Lead::STATUS_CONTACTED, 'email' => 'contact@gulshandental.example.com', 'score' => 88, 'signals' => ['review_volume' => 'Strong', 'booking_presence' => 'Fair', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['dhaka_dentists_august', 'high_intent_clinics'], 'tags' => ['warm_lead', 'has_website', 'dhaka'], 'days_ago' => 2, 'note' => 'Sent intro email. Follow up with clinic manager this week.'],
-            'dhanmondi_smile' => ['run_key' => 'dhaka_dentists', 'status' => Lead::STATUS_REPLIED, 'email' => 'info@dhanmondismile.example.com', 'score' => 86, 'signals' => ['review_volume' => 'Fair', 'booking_presence' => 'Strong', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['dhaka_dentists_august', 'call_this_week'], 'tags' => ['warm_lead', 'call_first', 'has_website', 'dhaka'], 'days_ago' => 3, 'note' => 'They replied asking for pricing. Prepare a short proposal.'],
-            'uttara_family' => ['run_key' => 'dhaka_dentists', 'status' => Lead::STATUS_NEW, 'email' => 'appointments@uttaradental.example.com', 'score' => 80, 'signals' => ['review_volume' => 'Fair', 'booking_presence' => 'Fair', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['dhaka_dentists_august'], 'tags' => ['has_website', 'dhaka'], 'days_ago' => 4, 'note' => 'Good fit for family dentistry campaign.'],
-            'mirpur_dental' => ['run_key' => 'dhaka_dentists', 'status' => Lead::STATUS_NEW, 'email' => null, 'score' => 61, 'signals' => ['review_volume' => 'Fair', 'booking_presence' => 'Weak', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['dhaka_dentists_august'], 'tags' => ['needs_email', 'dhaka'], 'days_ago' => 4, 'note' => 'Phone only. Needs manual email lookup before campaign.'],
-            'bashundhara_point' => ['run_key' => 'dhaka_dentists', 'status' => Lead::STATUS_CONTACTED, 'email' => 'care@bdentalpoint.example.com', 'score' => 78, 'signals' => ['review_volume' => 'Fair', 'booking_presence' => 'Fair', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['dhaka_dentists_august', 'high_intent_clinics'], 'tags' => ['has_website', 'dhaka'], 'days_ago' => 5, 'note' => 'Mention Bashundhara residential area campaign angle.'],
-            'banani_orthodontics' => ['run_key' => 'gulshan_orthodontists', 'status' => Lead::STATUS_QUALIFIED, 'email' => 'team@bananiortho.example.com', 'score' => 95, 'signals' => ['review_volume' => 'Strong', 'booking_presence' => 'Strong', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['high_intent_clinics', 'call_this_week'], 'tags' => ['warm_lead', 'call_first', 'has_website', 'dhaka'], 'days_ago' => 2, 'note' => 'Premium orthodontics positioning. Ask about invisalign lead volume.'],
-            'gulshan_ortho' => ['run_key' => 'gulshan_orthodontists', 'status' => Lead::STATUS_NEW, 'email' => 'hello@gulshanortho.example.com', 'score' => 93, 'signals' => ['review_volume' => 'Strong', 'booking_presence' => 'Strong', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['high_intent_clinics'], 'tags' => ['warm_lead', 'has_website', 'dhaka'], 'days_ago' => 2, 'note' => 'Strong score and niche service. Add to orthodontics campaign.'],
-            'austin_medspa' => ['run_key' => 'austin_med_spas', 'status' => Lead::STATUS_CONTACTED, 'email' => 'bookings@lakeviewmedspa.example.com', 'score' => 89, 'signals' => ['review_volume' => 'Strong', 'booking_presence' => 'Fair', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['high_intent_clinics'], 'tags' => ['warm_lead', 'has_website'], 'days_ago' => 6, 'note' => 'Useful cross-market example for map and list filters.'],
+            'smile_craft' => ['run_key' => 'dhaka_dentists', 'status' => Lead::STATUS_QUALIFIED, 'email' => 'hello@smilecraft.example.com', 'score' => 96, 'signals' => ['review_volume' => 'Strong', 'booking_presence' => 'Strong', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['dhaka_dentists_august', 'high_intent_clinics', 'call_this_week'], 'tags' => ['warm_lead', 'call_first', 'has_website', 'dhaka'], 'days_ago' => 1, 'note' => 'Strong review count and a clear website. Call first for cosmetic dentistry offer.', 'contact_name' => 'Nadia Rahman', 'contact_role' => 'Practice manager', 'contact_note' => 'Primary clinic manager', 'activity_kind' => 'call', 'activity_body' => 'Called the front desk and asked for Nadia. Follow up tomorrow.'],
+            'gulshan_dental' => ['run_key' => 'dhaka_dentists', 'status' => Lead::STATUS_CONTACTED, 'email' => 'contact@gulshandental.example.com', 'score' => 88, 'signals' => ['review_volume' => 'Strong', 'booking_presence' => 'Fair', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['dhaka_dentists_august', 'high_intent_clinics'], 'tags' => ['warm_lead', 'has_website', 'dhaka'], 'days_ago' => 2, 'note' => 'Sent intro email. Follow up with clinic manager this week.', 'contact_name' => 'Farhan Chowdhury', 'contact_role' => 'Clinic manager', 'contact_note' => 'Asked for email first', 'activity_kind' => 'note', 'activity_body' => 'Sent intro email with the booking-system angle.'],
+            'dhanmondi_smile' => ['run_key' => 'dhaka_dentists', 'status' => Lead::STATUS_REPLIED, 'email' => 'info@dhanmondismile.example.com', 'score' => 86, 'signals' => ['review_volume' => 'Fair', 'booking_presence' => 'Strong', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['dhaka_dentists_august', 'call_this_week'], 'tags' => ['warm_lead', 'call_first', 'has_website', 'dhaka'], 'days_ago' => 3, 'note' => 'They replied asking for pricing. Prepare a short proposal.', 'contact_name' => 'Ayesha Karim', 'contact_role' => 'Owner', 'contact_note' => 'Interested in pricing', 'activity_kind' => 'note', 'activity_body' => 'They replied asking for package pricing.'],
+            'uttara_family' => ['run_key' => 'dhaka_dentists', 'status' => Lead::STATUS_NEW, 'email' => 'appointments@uttaradental.example.com', 'score' => 80, 'signals' => ['review_volume' => 'Fair', 'booking_presence' => 'Fair', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['dhaka_dentists_august'], 'tags' => ['has_website', 'dhaka'], 'days_ago' => 4, 'note' => 'Good fit for family dentistry campaign.', 'contact_name' => 'Front desk', 'contact_role' => 'Reception', 'contact_note' => 'Appointments inbox', 'activity_kind' => 'note', 'activity_body' => 'Add to the next family dentistry outreach batch.'],
+            'mirpur_dental' => ['run_key' => 'dhaka_dentists', 'status' => Lead::STATUS_NEW, 'email' => null, 'score' => 61, 'signals' => ['review_volume' => 'Fair', 'booking_presence' => 'Weak', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['dhaka_dentists_august'], 'tags' => ['needs_email', 'dhaka'], 'days_ago' => 4, 'note' => 'Phone only. Needs manual email lookup before campaign.', 'contact_name' => 'Phone desk', 'contact_role' => 'Reception', 'contact_note' => 'Phone only', 'activity_kind' => 'call', 'activity_body' => 'Phone listed, no email found. Call before adding to campaign.'],
+            'bashundhara_point' => ['run_key' => 'dhaka_dentists', 'status' => Lead::STATUS_CONTACTED, 'email' => 'care@bdentalpoint.example.com', 'score' => 78, 'signals' => ['review_volume' => 'Fair', 'booking_presence' => 'Fair', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['dhaka_dentists_august', 'high_intent_clinics'], 'tags' => ['has_website', 'dhaka'], 'days_ago' => 5, 'note' => 'Mention Bashundhara residential area campaign angle.', 'contact_name' => 'Care team', 'contact_role' => 'Front desk', 'contact_note' => 'General care inbox', 'activity_kind' => 'note', 'activity_body' => 'Mention Bashundhara local appointment demand in follow up.'],
+            'banani_orthodontics' => ['run_key' => 'gulshan_orthodontists', 'status' => Lead::STATUS_QUALIFIED, 'email' => 'team@bananiortho.example.com', 'score' => 95, 'signals' => ['review_volume' => 'Strong', 'booking_presence' => 'Strong', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['high_intent_clinics', 'call_this_week'], 'tags' => ['warm_lead', 'call_first', 'has_website', 'dhaka'], 'days_ago' => 2, 'note' => 'Premium orthodontics positioning. Ask about invisalign lead volume.', 'contact_name' => 'Samira Hossain', 'contact_role' => 'Treatment coordinator', 'contact_note' => 'Best contact for orthodontics offer', 'activity_kind' => 'call', 'activity_body' => 'Coordinator is available after 2 PM.'],
+            'gulshan_ortho' => ['run_key' => 'gulshan_orthodontists', 'status' => Lead::STATUS_NEW, 'email' => 'hello@gulshanortho.example.com', 'score' => 93, 'signals' => ['review_volume' => 'Strong', 'booking_presence' => 'Strong', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['high_intent_clinics'], 'tags' => ['warm_lead', 'has_website', 'dhaka'], 'days_ago' => 2, 'note' => 'Strong score and niche service. Add to orthodontics campaign.', 'contact_name' => 'Ortho team', 'contact_role' => 'Office manager', 'contact_note' => 'Shared inbox', 'activity_kind' => 'note', 'activity_body' => 'Strong score and niche service. Add to orthodontics campaign.'],
+            'austin_medspa' => ['run_key' => 'austin_med_spas', 'status' => Lead::STATUS_CONTACTED, 'email' => 'bookings@lakeviewmedspa.example.com', 'score' => 89, 'signals' => ['review_volume' => 'Strong', 'booking_presence' => 'Fair', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['high_intent_clinics'], 'tags' => ['warm_lead', 'has_website'], 'days_ago' => 6, 'note' => 'Useful cross-market example for map and list filters.', 'contact_name' => 'Booking team', 'contact_role' => 'Spa manager', 'contact_note' => 'Demo cross-market contact', 'activity_kind' => 'note', 'activity_body' => 'Useful cross-market example for map and list filters.'],
         ];
     }
 }

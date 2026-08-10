@@ -182,6 +182,19 @@
                         </td>
                         <td data-card-actions class="text-right">
                             <div class="row-actions">
+                                @if (! $lead->is_in_pipeline && \Illuminate\Support\Facades\Route::has('user.pipeline.update-status'))
+                                    <form action="{{ route('user.pipeline.update-status', $lead) }}" method="post" class="inline-flex">
+                                        @csrf
+                                        @method('patch')
+                                        <input type="hidden" name="status" value="{{ $lead->status }}" />
+                                        <button type="submit" class="btn btn-sm btn-outline">
+                                            <span class="btn__label">
+                                                <span>{{ __('Add to pipeline') }}</span>
+                                                <span aria-hidden="true">{{ __('Add to pipeline') }}</span>
+                                            </span>
+                                        </button>
+                                    </form>
+                                @endif
                                 <a href="{{ route('user.leads.show', $lead) }}" class="btn btn-sm btn-outline">
                                     <span class="btn__label">
                                         <span>{{ __('Open') }}</span>

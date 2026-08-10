@@ -88,27 +88,6 @@ return [
                 'order' => 32,
             ],
             [
-                'label' => 'Sales pipeline',
-                'icon' => 'ph-kanban',
-                'route' => 'user.pipeline.index',
-                'group' => 'CRM',
-                'order' => 40,
-            ],
-            [
-                'label' => 'Contacts',
-                'icon' => 'ph-address-book',
-                'route' => 'user.contacts.index',
-                'group' => 'CRM',
-                'order' => 41,
-            ],
-            [
-                'label' => 'Notes & activities',
-                'icon' => 'ph-note-pencil',
-                'route' => 'user.activities.index',
-                'group' => 'CRM',
-                'order' => 42,
-            ],
-            [
                 'label' => 'Email campaigns',
                 'icon' => 'ph-paper-plane-tilt',
                 'route' => 'user.campaigns.index',

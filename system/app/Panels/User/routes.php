@@ -2,15 +2,12 @@
 
 use App\Http\Controllers\Auth\PhoneVerificationController;
 use App\Http\Controllers\Auth\TwoFactorController;
-use App\Panels\User\Controllers\ActivitiesController;
 use App\Panels\User\Controllers\AnalysisController;
 use App\Panels\User\Controllers\ApiController;
 use App\Panels\User\Controllers\CampaignsController;
-use App\Panels\User\Controllers\ContactsController;
 use App\Panels\User\Controllers\DashboardController;
 use App\Panels\User\Controllers\EmailController;
 use App\Panels\User\Controllers\ExportController;
-use App\Panels\User\Controllers\PipelineController;
 use App\Panels\User\Controllers\ProfileController;
 use App\Panels\User\Controllers\ScoringController;
 use App\Panels\User\Controllers\SettingsController;
@@ -43,11 +40,6 @@ Route::get('analysis', [AnalysisController::class, 'index'])->name('analysis.ind
 Route::get('scoring', [ScoringController::class, 'index'])->name('scoring.index');
 Route::post('scoring', [ScoringController::class, 'apply'])->name('scoring.apply');
 Route::get('email', [EmailController::class, 'index'])->name('email.index');
-
-// CRM
-Route::get('pipeline', [PipelineController::class, 'index'])->name('pipeline.index');
-Route::get('contacts', [ContactsController::class, 'index'])->name('contacts.index');
-Route::get('activities', [ActivitiesController::class, 'index'])->name('activities.index');
 
 // Outreach
 Route::get('campaigns', [CampaignsController::class, 'index'])->name('campaigns.index');

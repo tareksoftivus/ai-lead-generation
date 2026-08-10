@@ -55,6 +55,10 @@ document.addEventListener("DOMContentLoaded", () => {
         pendingTrigger.dispatchEvent(
           new CustomEvent("confirm:accepted", { bubbles: true }),
         );
+
+        if (pendingTrigger.dataset.submitForm) {
+          document.getElementById(pendingTrigger.dataset.submitForm)?.submit();
+        }
       }
       closeDialog();
     }

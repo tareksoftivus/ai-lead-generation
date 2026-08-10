@@ -254,7 +254,7 @@ class LeadsController extends Controller implements HasMiddleware
             'body' => $request->validated('body'),
         ]);
 
-        LeadActivity::logNoteAdded($lead, $request->user());
+        LeadActivity::logNoteAdded($lead, $request->user(), 'note', $request->validated('body'));
 
         return redirect()
             ->route('user.leads.show', $lead)

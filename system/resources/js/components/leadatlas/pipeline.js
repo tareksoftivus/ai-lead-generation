@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!board) return;
 
   const emptyClass = "is-empty";
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.content || "";
   let dragCard = null;
 
   const columns = () => [...board.querySelectorAll("[data-stage]")];
@@ -33,15 +34,62 @@ document.addEventListener("DOMContentLoaded", () => {
     if (label) pill.textContent = label.textContent.trim();
   }
 
-  function moveTo(card, stage) {
+  async function persist(card, stage) {
+    const url = card?.dataset.updateUrl;
+    if (!url) return true;
+
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "X-CSRF-TOKEN": csrf,
+      },
+      body: JSON.stringify({ status: stage }),
+    });
+
+    return response.ok;
+  }
+
+  async function remove(card) {
+    const url = card?.dataset.removeUrl;
+    if (!url) return true;
+
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "X-CSRF-TOKEN": csrf,
+      },
+    });
+
+    return response.ok;
+  }
+
+  async function moveTo(card, stage) {
     const target = board.querySelector(
       `[data-stage="${stage}"] [data-stage-drop]`,
     );
     if (!target || !card) return;
 
+    const previous = card.closest("[data-stage-drop]");
+    const previousStage = card.closest("[data-stage]")?.dataset.stage;
+    if (previousStage === stage) return;
+
     target.appendChild(card);
     restamp(card, stage);
     recount();
+
+    try {
+      const ok = await persist(card, stage);
+      if (!ok) throw new Error("Pipeline update failed");
+      window.showToast?.("Pipeline updated", "Lead stage saved.", "success");
+    } catch (error) {
+      previous?.appendChild(card);
+      if (previousStage) restamp(card, previousStage);
+      recount();
+      window.showToast?.("Could not update", "Please try again.", "error");
+    }
   }
 
   /* --- Drag ---------------------------------------------------------- */
@@ -102,8 +150,19 @@ document.addEventListener("DOMContentLoaded", () => {
   board.addEventListener("confirm:accepted", (e) => {
     const trigger = e.target.closest("[data-remove-card]");
     if (!trigger) return;
-    trigger.closest("[data-card]")?.remove();
-    recount();
+    const card = trigger.closest("[data-card]");
+    if (!card) return;
+
+    remove(card)
+      .then((ok) => {
+        if (!ok) throw new Error("Pipeline remove failed");
+        card.remove();
+        recount();
+        window.showToast?.("Pipeline updated", "Lead removed from the board.", "success");
+      })
+      .catch(() => {
+        window.showToast?.("Could not remove", "Please try again.", "error");
+      });
   });
 
   recount();

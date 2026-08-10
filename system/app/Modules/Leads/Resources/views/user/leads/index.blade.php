@@ -1,9 +1,13 @@
 <x-layouts.user :title="__('All leads')">
     <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-            <h2 class="heading-3">{{ __('All leads') }}</h2>
+            <h2 class="heading-3">{{ $activeList?->name ?? __('All leads') }}</h2>
             <p class="m-text mt-1">
-                {{ __('Every business you have found and enriched. Exporting is free — a lead you already hold is yours to download as often as you like.') }}
+                @if ($activeList)
+                    {{ __('Leads saved under this list. You can still manage status, tags, and notes from here.') }}
+                @else
+                    {{ __('Every business you have saved. Exporting is free — a lead you already hold is yours to download as often as you like.') }}
+                @endif
             </p>
         </div>
 
@@ -120,7 +124,7 @@
                 <button type="button" class="row-icon row-icon--danger" aria-label="{{ __('Delete selected leads') }}"
                         form="bulk-delete-form" formaction="{{ route('user.leads.bulk-delete') }}"
                         data-confirm data-confirm-title="{{ __('Delete the selected leads?') }}"
-                        data-confirm-body="{{ __('They are removed from your account and from any list they belong to. Credits already spent enriching them are not returned.') }}"
+                        data-confirm-body="{{ __('They are removed from your account and from any list they belong to. Credits already spent generating them are not returned.') }}"
                         data-confirm-label="{{ __('Delete leads') }}" data-confirm-variant="error">
                     <i class="ph ph-trash" aria-hidden="true"></i>
                 </button>

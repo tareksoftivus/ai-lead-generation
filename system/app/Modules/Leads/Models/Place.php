@@ -4,6 +4,7 @@ namespace App\Modules\Leads\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Place extends Model
 {
@@ -37,6 +38,11 @@ class Place extends Model
     public function leads(): HasMany
     {
         return $this->hasMany(Lead::class);
+    }
+
+    public function leadBank(): HasOne
+    {
+        return $this->hasOne(LeadBank::class);
     }
 
     public function hasWebsite(): bool

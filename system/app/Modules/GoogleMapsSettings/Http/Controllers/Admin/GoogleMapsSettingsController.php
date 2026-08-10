@@ -3,6 +3,7 @@
 namespace App\Modules\GoogleMapsSettings\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Modules\GoogleMapsSettings\Models\GoogleMapsApiLog;
 use App\Modules\GoogleMapsSettings\Services\GoogleMapsSettingsService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,6 +29,45 @@ class GoogleMapsSettingsController extends Controller implements HasMiddleware
         return view('google-maps-settings::admin.edit', [
             'settings' => $this->service->all(),
         ]);
+    }
+
+    public function logs(Request $request): View
+    {
+        $logs = GoogleMapsApiLog::query()
+            ->when($request->filled('status'), function ($query) use ($request) {
+                $request->input('status') === 'successful'
+                    ? $query->where('successful', true)
+                    : $query->where('successful', false);
+            })
+            ->when($request->filled('action'), fn ($query) => $query->where('action', $request->input('action')))
+            ->latest()
+            ->paginate(25)
+            ->withQueryString();
+
+        return view('google-maps-settings::admin.logs', [
+            'logs' => $logs,
+            'actions' => GoogleMapsApiLog::query()->distinct()->orderBy('action')->pluck('action'),
+            'stats' => $this->logStats(),
+        ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function logStats(): array
+    {
+        $today = GoogleMapsApiLog::query()->whereDate('created_at', today());
+        $todayTotal = $today->count();
+        $todayFailed = (clone $today)->where('successful', false)->count();
+
+        return [
+            'total' => GoogleMapsApiLog::query()->count(),
+            'today' => $todayTotal,
+            'success_rate' => $todayTotal > 0
+                ? round((($todayTotal - $todayFailed) / $todayTotal) * 100)
+                : 100,
+            'avg_duration' => (int) GoogleMapsApiLog::query()->whereDate('created_at', today())->avg('duration_ms'),
+        ];
     }
 
     public function update(Request $request): RedirectResponse

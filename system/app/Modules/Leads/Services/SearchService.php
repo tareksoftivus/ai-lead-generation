@@ -3,6 +3,8 @@
 namespace App\Modules\Leads\Services;
 
 use App\Models\User;
+use App\Modules\Credits\Exceptions\InsufficientCreditsException;
+use App\Modules\Credits\Services\CreditLedger;
 use App\Modules\Leads\Jobs\RunPlacesSearchJob;
 use App\Modules\Leads\Models\Lead;
 use App\Modules\Leads\Models\Place;
@@ -10,13 +12,23 @@ use App\Modules\Leads\Models\Search;
 use App\Modules\Leads\Models\SearchRun;
 use App\Modules\Leads\Services\GooglePlaces\GooglePlacesClient;
 use App\Modules\Leads\Services\GooglePlaces\PlacesResultMapper;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Sleep;
 use Throwable;
 
 class SearchService
 {
+    protected const DEFAULT_TARGET_COUNT = 5;
+
+    protected const MAX_TARGET_COUNT = 30;
+
+    protected const MAX_GOOGLE_PAGES = 3;
+
     public function __construct(
-        protected GooglePlacesClient $client
+        protected GooglePlacesClient $client,
+        protected LeadBankService $leadBank,
+        protected CreditLedger $ledger
     ) {}
 
     /**
@@ -29,6 +41,8 @@ class SearchService
      */
     public function run(User $user, array $filters, ?string $searchName = null): SearchRun
     {
+        $this->ensureCanGenerate($user, $filters);
+
         $search = null;
 
         if ($searchName) {
@@ -73,38 +87,53 @@ class SearchService
             $filters = $searchRun->filters;
             $keywords = array_filter((array) ($filters['keyword'] ?? []));
             $locations = array_filter((array) ($filters['location'] ?? []));
+            $targetCount = $this->targetCount($filters);
+            $orderedPlaces = [];
+
+            $bankPlaces = $this->leadBank->matchingPlaces($filters, $searchRun->user_id, $targetCount);
+
+            foreach ($bankPlaces as $place) {
+                $orderedPlaces[$place->google_place_id] = $place;
+            }
 
             $places = [];
 
-            foreach ($keywords as $keyword) {
-                foreach ($locations as $location) {
-                    $query = "{$keyword} in {$location}";
-                    $raw = $this->client->textSearchAllPages($query);
-
-                    foreach ($raw as $rawPlace) {
-                        $mapped = PlacesResultMapper::mapTextSearchResult($rawPlace);
-
-                        if (! $mapped['google_place_id']) {
-                            continue;
-                        }
-
-                        $places[$mapped['google_place_id']] = $mapped;
-                    }
-                }
+            if (count($orderedPlaces) < $targetCount) {
+                $places = $this->fetchGooglePlacesUntilTarget(
+                    $keywords,
+                    $locations,
+                    $filters,
+                    $searchRun->user_id,
+                    $orderedPlaces,
+                    $targetCount
+                );
             }
 
             $places = $this->postFilter($places, $filters, $searchRun->user_id);
 
-            DB::transaction(function () use ($places, $searchRun) {
+            $neededFromGoogle = max(0, $targetCount - count($orderedPlaces));
+            $places = $neededFromGoogle > 0
+                ? array_slice($places, 0, $neededFromGoogle, true)
+                : [];
+
+            DB::transaction(function () use ($places, $searchRun, &$orderedPlaces, $targetCount) {
                 foreach ($places as $mapped) {
-                    $place = Place::findOrCreateFromPlacesResult($mapped);
-                    $searchRun->places()->syncWithoutDetaching([$place->id]);
+                    $place = Place::findOrCreateFromPlacesResult(Arr::except($mapped, ['_search_keyword', '_search_location']));
+                    $this->leadBank->remember($place, $mapped);
+                    $orderedPlaces[$place->google_place_id] = $place;
                 }
+
+                $orderedPlaces = array_slice($orderedPlaces, 0, $targetCount, true);
+
+                $searchRun->places()->sync(collect($orderedPlaces)->pluck('id')->all());
             });
+
+            $creditsSpent = $this->spendGenerationCredits($searchRun, count($orderedPlaces));
 
             $searchRun->update([
                 'status' => SearchRun::STATUS_DONE,
-                'results_count' => count($places),
+                'results_count' => count($orderedPlaces),
+                'credits_spent' => $creditsSpent,
                 'finished_at' => now(),
             ]);
         } catch (Throwable $exception) {
@@ -116,6 +145,121 @@ class SearchService
                 'finished_at' => now(),
             ]);
         }
+    }
+
+    /**
+     * @param  array<string, mixed>  $filters
+     */
+    public function generationCreditCost(array $filters): int
+    {
+        return $this->targetCount($filters);
+    }
+
+    /**
+     * @param  array<string, mixed>  $filters
+     */
+    public function canGenerate(User $user, array $filters): bool
+    {
+        return $this->ledger->canAfford($user->fresh(), $this->generationCreditCost($filters));
+    }
+
+    /**
+     * @param  array<string, mixed>  $filters
+     */
+    protected function ensureCanGenerate(User $user, array $filters): void
+    {
+        $cost = $this->generationCreditCost($filters);
+
+        if ($cost > 0 && ! $this->ledger->canAfford($user->fresh(), $cost)) {
+            throw new InsufficientCreditsException($user->fresh(), $cost);
+        }
+    }
+
+    protected function spendGenerationCredits(SearchRun $searchRun, int $resultCount): int
+    {
+        if ($resultCount <= 0) {
+            return 0;
+        }
+
+        if ((int) $searchRun->credits_spent > 0) {
+            return (int) $searchRun->credits_spent;
+        }
+
+        $this->ledger->spend($searchRun->user, $resultCount, 'lead_generation', $searchRun, [
+            'results_count' => $resultCount,
+            'filters' => $searchRun->filters,
+        ]);
+
+        return $resultCount;
+    }
+
+    /**
+     * Pull Google one page at a time and stop as soon as the already-filtered
+     * candidate pool can fill the missing lead count. This keeps quota usage
+     * small: bank first, then at most the Google pages needed to complete the
+     * requested/default target.
+     *
+     * @param  array<int, string>  $keywords
+     * @param  array<int, string>  $locations
+     * @param  array<string, mixed>  $filters
+     * @param  array<string, Place>  $existingPlaces
+     * @return array<string, array<string, mixed>>
+     */
+    protected function fetchGooglePlacesUntilTarget(
+        array $keywords,
+        array $locations,
+        array $filters,
+        int $userId,
+        array $existingPlaces,
+        int $targetCount
+    ): array {
+        $places = [];
+        $remaining = max(0, $targetCount - count($existingPlaces));
+
+        if ($remaining === 0) {
+            return [];
+        }
+
+        foreach ($keywords as $keyword) {
+            foreach ($locations as $location) {
+                $query = "{$keyword} in {$location}";
+                $pageToken = null;
+
+                for ($page = 0; $page < self::MAX_GOOGLE_PAGES; $page++) {
+                    $result = $this->client->textSearch($query, pageToken: $pageToken);
+
+                    foreach ($result->places as $rawPlace) {
+                        $mapped = PlacesResultMapper::mapTextSearchResult($rawPlace);
+
+                        if (! $mapped['google_place_id']) {
+                            continue;
+                        }
+
+                        if (isset($existingPlaces[$mapped['google_place_id']]) || isset($places[$mapped['google_place_id']])) {
+                            continue;
+                        }
+
+                        $mapped['_search_keyword'] = $keyword;
+                        $mapped['_search_location'] = $location;
+
+                        $places[$mapped['google_place_id']] = $mapped;
+                    }
+
+                    if (count($this->postFilter($places, $filters, $userId)) >= $remaining) {
+                        return $places;
+                    }
+
+                    if (! $result->hasMorePages()) {
+                        break;
+                    }
+
+                    $pageToken = $result->nextPageToken;
+                    Sleep::for(2)->seconds();
+                }
+            }
+        }
+
+        return $places;
     }
 
     /**
@@ -143,6 +287,11 @@ class SearchService
         $minReviews = $this->resolveMinReviews($filters);
         if ($minReviews !== null) {
             $places = array_filter($places, fn ($p) => ($p['review_count'] ?? 0) >= $minReviews);
+        }
+
+        if (! empty($filters['min_reviews_to'])) {
+            $maxReviews = (int) $filters['min_reviews_to'];
+            $places = array_filter($places, fn ($p) => ($p['review_count'] ?? 0) <= $maxReviews);
         }
 
         if (! empty($filters['exclude_keyword'])) {
@@ -209,5 +358,17 @@ class SearchService
         $locations = max(1, count(array_filter((array) ($filters['location'] ?? []))));
 
         return $keywords * $locations;
+    }
+
+    /**
+     * @param  array<string, mixed>  $filters
+     */
+    protected function targetCount(array $filters): int
+    {
+        if (empty($filters['requested_count'])) {
+            return self::DEFAULT_TARGET_COUNT;
+        }
+
+        return min(self::MAX_TARGET_COUNT, max(1, (int) $filters['requested_count']));
     }
 }

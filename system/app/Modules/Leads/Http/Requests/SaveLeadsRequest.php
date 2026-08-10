@@ -3,6 +3,7 @@
 namespace App\Modules\Leads\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class SaveLeadsRequest extends FormRequest
 {
@@ -18,7 +19,8 @@ class SaveLeadsRequest extends FormRequest
     {
         return [
             'search_run_id' => ['nullable', 'integer', 'exists:search_runs,id'],
-            'place_id' => ['required', 'array', 'min:1'],
+            'save_all' => ['nullable', 'boolean'],
+            'place_id' => [Rule::requiredIf(fn () => ! $this->boolean('save_all')), 'array', 'min:1'],
             'place_id.*' => ['integer', 'exists:places,id'],
         ];
     }

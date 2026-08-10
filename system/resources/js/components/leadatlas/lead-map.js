@@ -23,13 +23,43 @@ document.addEventListener("DOMContentLoaded", () => {
     return LO;
   }
 
+  function parseLeads(raw) {
+    if (!raw) return [];
+
+    try {
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return [];
+
+      return parsed
+        .map((lead) => {
+          const lat = Number(lead.lat);
+          const lng = Number(lead.lng);
+          if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+          return {
+            ...lead,
+            id: String(lead.id),
+            lat,
+            lng,
+            score:
+              lead.score === null || lead.score === undefined
+                ? null
+                : Number(lead.score),
+          };
+        })
+        .filter(Boolean);
+    } catch {
+      return [];
+    }
+  }
+
   function parsePins(raw) {
     if (!raw) return [];
     return raw
       .split(";")
       .map((chunk) => chunk.trim())
       .filter(Boolean)
-      .map((chunk) => {
+      .map((chunk, index) => {
         const parts = chunk.split(",");
         const lat = Number(parts[0]);
         const lng = Number(parts[1]);
@@ -37,9 +67,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const score =
           parts[2] === undefined || parts[2] === "" ? null : Number(parts[2]);
         const name = parts.slice(3).join(",").trim();
-        return { lat, lng, score, name };
+        return { id: `pin-${index}`, lat, lng, score, name };
       })
       .filter(Boolean);
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
   }
 
   function markerFor(pin) {
@@ -56,7 +95,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   holders.forEach((holder) => {
-    const pins = parsePins(holder.dataset.mapPins);
+    const pins = holder.dataset.mapLeads
+      ? parseLeads(holder.dataset.mapLeads)
+      : parsePins(holder.dataset.mapPins);
+    const empty = holder.querySelector("[data-map-empty]");
+
+    if (!pins.length) {
+      empty?.classList.remove("is-hidden");
+    }
 
     const centerAttr = (holder.dataset.mapCenter || "").split(",");
     const center =
@@ -87,8 +133,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const group = L.featureGroup();
 
-    const detailHref = holder.dataset.mapDetail;
-
     pins.forEach((pin) => {
       const marker = L.marker([pin.lat, pin.lng], { icon: markerFor(pin) });
 
@@ -98,12 +142,24 @@ document.addEventListener("DOMContentLoaded", () => {
             ? "<span class='mpop__meta'>Not scored yet</span>"
             : `<span class='mpop__score numeric'>${pin.score}</span>`;
 
-        const open = detailHref
-          ? `<a class="mpop__link" href="${detailHref}">Open lead</a>`
+        const status = pin.status_label
+          ? `<span class="status status--${escapeHtml(pin.status)}">${escapeHtml(pin.status_label)}</span>`
           : "";
+        const contact = pin.contact_label
+          ? `<span class="mpop__meta">${escapeHtml(pin.contact_label)}</span>`
+          : "";
+        const address = pin.address
+          ? `<span class="mpop__addr">${escapeHtml(pin.address)}</span>`
+          : "";
+        const open = pin.url
+          ? `<a class="mpop__link" href="${escapeHtml(pin.url)}">Open lead</a>`
+          : "";
+        const maps = pin.maps_url
+          ? `<a class="mpop__link" href="${escapeHtml(pin.maps_url)}" target="_blank" rel="noopener">Open in Google Maps</a>`
+            : "";
 
         marker.bindPopup(
-          `<span class="mpop"><span class="mpop__head"><span class="mpop__name">${pin.name}</span>${score}</span>${open}</span>`,
+          `<span class="mpop"><span class="mpop__head"><span class="mpop__name">${escapeHtml(pin.name)}</span>${score}</span>${address}<span class="mpop__line">${status}${contact}</span><span class="mpop__actions">${open}${maps}</span></span>`,
         );
       }
 
@@ -130,15 +186,32 @@ document.addEventListener("DOMContentLoaded", () => {
           map.removeLayer(marker);
         }
       });
+      empty?.classList.toggle("is-hidden", shown > 0);
+
       if (shown > 1) {
         const visible = L.featureGroup(
           group.getLayers().filter((m) => map.hasLayer(m)),
         );
-        map.fitBounds(visible.getBounds().pad(0.15));
+        map.fitBounds(visible.getBounds().pad(0.15), { maxZoom: 14 });
       }
       return shown;
     }
 
-    holder._leadMap = { map, group, markerFor, filter };
+    holder._leadMap = {
+      map,
+      group,
+      markerFor,
+      filter,
+      focus(id) {
+        let focused = false;
+        group.eachLayer((marker) => {
+          if (String(marker._pin?.id) !== String(id)) return;
+          map.setView(marker.getLatLng(), 15, { animate: true });
+          marker.openPopup();
+          focused = true;
+        });
+        return focused;
+      },
+    };
   });
 });

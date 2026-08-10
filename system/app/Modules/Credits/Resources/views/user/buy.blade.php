@@ -94,7 +94,7 @@
                 <p class="packs__note">
                     <i class="ph ph-info" aria-hidden="true"></i>
                     <span>
-                        {{ __('A credit is spent when a business is enriched. Checkout uses the active payment gateway configured in the admin panel.') }}
+                        {{ __('A credit is spent when a lead is generated. Checkout uses the active payment gateway configured in the admin panel.') }}
                     </span>
                 </p>
 

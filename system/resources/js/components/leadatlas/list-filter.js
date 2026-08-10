@@ -31,7 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
         filters.forEach((filter) => {
           const value = filter.dataset.value;
           if (!value || value === "all") return;
-          if (row.dataset[filter.dataset.listFilter] !== value) {
+          const rowValue = row.dataset[filter.dataset.listFilter] || "";
+          const rowValues = rowValue.split(/\s+/).filter(Boolean);
+          if (rowValue !== value && !rowValues.includes(value)) {
             matchFilters = false;
           }
         });

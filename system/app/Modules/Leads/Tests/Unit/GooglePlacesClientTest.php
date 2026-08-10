@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\GoogleMapsSettings\Models\GoogleMapsApiLog;
 use App\Modules\GoogleMapsSettings\Services\GoogleMapsSettingsService;
 use App\Modules\Leads\Models\Place;
 use App\Modules\Leads\Services\GooglePlaces\GooglePlacesClient;
@@ -89,6 +90,28 @@ it('maps a text search response into place records', function () {
             && $request->method() === 'POST'
             && $request->hasHeader('X-Goog-Api-Key', 'test-key');
     });
+});
+
+it('logs Google Places requests and summarized responses without storing the api key', function () {
+    configureGoogleMapsKey('secret-test-key');
+
+    Http::fake([
+        'places.googleapis.com/*' => Http::response(fakeTextSearchResponse([fakePlace()])),
+    ]);
+
+    $client = app(GooglePlacesClient::class);
+    $client->textSearch('dentists in Austin, TX');
+
+    $log = GoogleMapsApiLog::query()->first();
+
+    expect($log)->not->toBeNull()
+        ->and($log->action)->toBe('text_search')
+        ->and($log->method)->toBe('POST')
+        ->and($log->successful)->toBeTrue()
+        ->and($log->status_code)->toBe(200)
+        ->and($log->request_payload)->toHaveKey('textQuery', 'dentists in Austin, TX')
+        ->and(json_encode($log->request_payload))->not->toContain('secret-test-key')
+        ->and($log->response_body['places_count'])->toBe(1);
 });
 
 it('paginates text search using the next page token, sleeping between pages', function () {

@@ -48,7 +48,7 @@
                         @foreach ($lists as $list)
                             <tr>
                                 <td data-card-title>
-                                    <a href="{{ route('user.leads.index') }}" class="d-table__id">{{ $list->name }}</a>
+                                    <a href="{{ route('user.leads.index', ['list' => $list]) }}" class="d-table__id">{{ $list->name }}</a>
                                     @if ($list->note)
                                         <p class="d-table__place">{{ $list->note }}</p>
                                     @endif
@@ -62,7 +62,7 @@
                                 <td data-label="{{ __('Updated') }}">{{ $list->updated_at->diffForHumans() }}</td>
                                 <td data-card-actions class="text-right">
                                     <div class="row-actions">
-                                        <a href="{{ route('user.leads.index') }}" class="btn btn-outline btn-sm">
+                                        <a href="{{ route('user.leads.index', ['list' => $list]) }}" class="btn btn-outline btn-sm">
                                             <span class="btn__label">
                                                 <span>{{ __('Open') }}</span>
                                                 <span aria-hidden="true">{{ __('Open') }}</span>

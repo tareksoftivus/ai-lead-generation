@@ -3,40 +3,44 @@
 namespace App\Modules\Leads\Services;
 
 use App\Models\User;
-use App\Modules\Credits\Exceptions\InsufficientCreditsException;
-use App\Modules\Credits\Services\CreditLedger;
 use App\Modules\Leads\Contracts\LeadScorer;
 use App\Modules\Leads\Models\Lead;
 use App\Modules\Leads\Models\LeadActivity;
+use App\Modules\Leads\Models\LeadList;
 use App\Modules\Leads\Models\Place;
 use App\Modules\Leads\Models\SearchRun;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class LeadService
 {
-    protected const ENRICHMENT_CREDIT_COST = 1;
-
     public function __construct(
-        protected CreditLedger $ledger,
         protected LeadEnrichmentService $enrichmentService,
         protected LeadScorer $scorer
     ) {}
 
     /**
-     * Save a batch of search results as leads, enriching (and charging) each
-     * genuinely new one. Charges on enrichment *attempt*, not success — see
-     * the module's design notes for why. Insufficient balance skips that
-     * one place rather than failing the whole batch.
+     * Save a batch of generated search results as leads. Generation already
+     * spent credits, so this action persists/list-attaches without charging.
      *
      * @param  array<int, int>  $placeIds
-     * @return array{saved: Collection<int, Lead>, already_saved: int, insufficient_credits: bool}
+     * @return array{saved: Collection<int, Lead>, already_saved: int, insufficient_credits: bool, list: LeadList|null}
      */
     public function saveFromSearch(User $user, ?SearchRun $searchRun, array $placeIds): array
     {
         $saved = collect();
         $alreadySaved = 0;
         $insufficientCredits = false;
+        $list = null;
+        $placeIds = collect($placeIds)
+            ->map(fn ($placeId) => (int) $placeId)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $list = $searchRun ? $this->findOrCreateSearchList($user, $searchRun) : null;
 
         $places = Place::query()->whereIn('id', $placeIds)->get()->keyBy('id');
 
@@ -51,25 +55,43 @@ class LeadService
 
             if (! $isNew) {
                 $alreadySaved++;
+                $this->attachToList($lead, $list, $user);
 
                 continue;
             }
 
-            try {
-                $lead = $this->enrichAndSave($user, $lead, $place, $searchRun);
-                $saved->push($lead);
-            } catch (InsufficientCreditsException) {
-                $lead->delete();
-                $lead->forceDelete();
-                $insufficientCredits = true;
-            }
+            $lead = $this->enrichAndSave($user, $lead, $place, $searchRun);
+            $saved->push($lead);
+            $this->attachToList($lead, $list, $user);
         }
 
         return [
             'saved' => $saved,
             'already_saved' => $alreadySaved,
             'insufficient_credits' => $insufficientCredits,
+            'list' => $list,
         ];
+    }
+
+    /**
+     * @param  array<int, int>  $placeIds
+     */
+    public function canSaveFromSearch(User $user, array $placeIds): bool
+    {
+        // Saving generated leads is free; credits were checked/spent when the
+        // search generated results. Kept for callers/tests that still ask.
+        return true;
+    }
+
+    /**
+     * Saving generated leads no longer spends credits. Kept as a stable API
+     * for older call sites while the credit gate lives in SearchService.
+     *
+     * @param  array<int, int>  $placeIds
+     */
+    public function requiredCreditsForSave(User $user, array $placeIds): int
+    {
+        return 0;
     }
 
     /**
@@ -108,21 +130,12 @@ class LeadService
     }
 
     /**
-     * Charge one credit, enrich the place, and persist the lead's contact +
-     * score in a single transaction. Throws InsufficientCreditsException
-     * (uncaught) if the user can't afford it — the caller decides what to
-     * do with that place.
+     * Enrich the place and persist the lead's contact + score. Credits are
+     * charged during generation, not during this save/list action.
      */
     protected function enrichAndSave(User $user, Lead $lead, Place $place, ?SearchRun $searchRun): Lead
     {
         return DB::transaction(function () use ($user, $lead, $place, $searchRun) {
-            $this->ledger->spend(
-                $user,
-                self::ENRICHMENT_CREDIT_COST,
-                reason: 'enrichment',
-                reference: $lead
-            );
-
             $enrichment = $this->enrichmentService->enrich($place);
             $lead->refresh(); // enrich() may have updated $place; keep $lead's place relation fresh too.
             $place->refresh();
@@ -132,20 +145,62 @@ class LeadService
             $lead->update([
                 'email' => $enrichment['email'],
                 'enriched_at' => now(),
-                'enrichment_credit_spent' => true,
+                'enrichment_credit_spent' => false,
                 'score' => $scoreResult['score'],
                 'score_signals' => $scoreResult['signals'],
             ]);
 
             if ($searchRun) {
                 LeadActivity::logFoundInSearch($lead, $searchRun);
-                $searchRun->increment('credits_spent', self::ENRICHMENT_CREDIT_COST);
             }
 
-            LeadActivity::logContactFound($lead, self::ENRICHMENT_CREDIT_COST, found: (bool) $enrichment['email']);
+            LeadActivity::logContactFound($lead, 0, found: (bool) $enrichment['email']);
             LeadActivity::logScored($lead);
 
             return $lead;
         });
+    }
+
+    protected function findOrCreateSearchList(User $user, SearchRun $searchRun): LeadList
+    {
+        return LeadList::query()->firstOrCreate([
+            'user_id' => $user->id,
+            'search_run_id' => $searchRun->id,
+        ], [
+            'name' => $this->searchListName($searchRun),
+            'source' => LeadList::SOURCE_SEARCH,
+            'note' => __('Generated from search results.'),
+        ]);
+    }
+
+    protected function attachToList(Lead $lead, ?LeadList $list, User $user): void
+    {
+        if (! $list) {
+            return;
+        }
+
+        if ($lead->lists()->whereKey($list->id)->exists()) {
+            return;
+        }
+
+        $lead->lists()->attach($list);
+        $list->touch();
+        LeadActivity::logListAdded($lead, $list, $user);
+    }
+
+    protected function searchListName(SearchRun $searchRun): string
+    {
+        $filters = $searchRun->filters ?? [];
+        $prompt = trim((string) ($filters['prompt'] ?? ''));
+
+        if ($prompt !== '') {
+            return Str::limit($prompt, 80);
+        }
+
+        $keyword = collect((array) ($filters['keyword'] ?? []))->filter()->first();
+        $location = collect((array) ($filters['location'] ?? []))->filter()->first();
+        $parts = array_filter([$keyword, $location]);
+
+        return $parts ? Str::limit(implode(' · ', $parts), 80) : __('Search #:id', ['id' => $searchRun->id]);
     }
 }

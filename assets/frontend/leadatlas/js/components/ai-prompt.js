@@ -1,7 +1,6 @@
-/* AI search — reads a sentence and fills the filter rail from it.
-
-   It sets CRITERIA only. It never runs the search: running is what spends
-   credits, and that stays an explicit act behind the Run button (rule 1).
+/* AI search — reads a sentence, fills the filter rail, then submits the
+   search form. The backend also parses the prompt, so this remains workable
+   even when the front-end parser is stale or unavailable.
 
    The parsing here is a front-end stand-in so the control is demonstrable.
    The backend replaces it by posting the prompt to the model and returning
@@ -51,6 +50,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (el) el.checked = true;
   }
 
+  function setCustomReviews(value) {
+    const custom = form.querySelector(`input[name="min_reviews"][value="custom"]`);
+    const from = form.querySelector(`input[name="min_reviews_from"]`);
+    if (!custom || !from) return false;
+
+    custom.checked = true;
+    from.disabled = false;
+    from.value = value;
+    return true;
+  }
+
   // Open a filter whose value we just set, so the change is visible rather
   // than hidden behind a collapsed row.
   function reveal(el) {
@@ -63,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function parse(text) {
-    const out = { keywords: [], locations: [], rating: null, reviews: null };
+    const out = { keywords: [], locations: [], rating: null, reviews: null, requestedCount: null };
 
     // "<type> in <place>" — the shape every Maps search takes.
     const inMatch = text.match(/^\s*(.+?)\s+in\s+(.+?)\s*$/i);
@@ -79,6 +89,8 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     }
     const kw = head
+      .replace(/^\s*(find|get|generate|search for|show me)\s+/i, "")
+      .replace(/^\s*(the|a|an)\s+/i, "")
       .replace(/\s+with\s+.*$/i, "")
       .replace(/[.,]\s*$/, "")
       .trim();
@@ -89,6 +101,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const reviews = text.match(/([0-9]{1,5})\s*\+?\s*reviews?/i);
     if (reviews) out.reviews = reviews[1];
+
+    const count = text.match(
+      /(?:at\s*least\s+|atleast\s+|atleat\s+|atlest\s+|minimum\s+|min\s+)?([0-9]{1,3})\s*\+?\s*(?:leads?|businesses?|results?)/i,
+    );
+    if (count) out.requestedCount = String(Math.min(30, Math.max(1, Number(count[1]))));
 
     return out;
   }
@@ -105,9 +122,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return String(under.length ? under[under.length - 1] : values[0]);
   }
 
-  btn.addEventListener("click", () => {
+  btn.addEventListener("click", (event) => {
     const text = input.value.trim();
     if (!text) {
+      event.preventDefault();
       input.focus();
       return;
     }
@@ -127,14 +145,22 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     if (got.reviews) {
-      const v = nearestBucket("min_reviews", Number(got.reviews));
-      if (v) {
-        pickRadio("min_reviews", v);
+      if (setCustomReviews(got.reviews)) {
         reveal(form.querySelector("input[name='min_reviews']"));
+      } else {
+        const v = nearestBucket("min_reviews", Number(got.reviews));
+        if (v) {
+          pickRadio("min_reviews", v);
+          reveal(form.querySelector("input[name='min_reviews']"));
+        }
       }
     }
-
-    input.value = "";
+    if (got.requestedCount) {
+      const requestedCount = form.querySelector("[data-ai-requested-count]");
+      if (requestedCount) {
+        requestedCount.value = got.requestedCount;
+      }
+    }
 
     // One dispatch drives the count, the estimate, and the results together.
     form.dispatchEvent(new Event("change", { bubbles: true }));
@@ -143,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   input.addEventListener("keydown", (e) => {
     if (e.key !== "Enter") return;
-    e.preventDefault(); // never submit the form from here
+    e.preventDefault();
     btn.click();
   });
 });

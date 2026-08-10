@@ -29,5 +29,12 @@ class Module extends BasePanelModule
             ->icon('ph-map-trifold')
             ->permission('google-maps-settings.manage')
             ->order(135);
+
+        $navigation
+            ->group('System')
+            ->item(label: 'Google Maps Logs', route: 'admin.google-maps-settings.logs')
+            ->icon('ph-list-magnifying-glass')
+            ->permission('google-maps-settings.manage')
+            ->order(136);
     }
 }

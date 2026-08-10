@@ -63,7 +63,7 @@
                 @method('delete')
                 <button type="submit" class="row-icon row-icon--danger" aria-label="{{ __('Delete this lead') }}"
                         data-confirm data-confirm-title="{{ __('Delete this lead?') }}"
-                        data-confirm-body="{{ __('It is removed from your account and from any list it belongs to. The credit already spent enriching it is not returned.') }}"
+                        data-confirm-body="{{ __('It is removed from your account and from any list it belongs to. Credits already spent generating it are not returned.') }}"
                         data-confirm-label="{{ __('Delete lead') }}" data-confirm-variant="error">
                     <i class="ph ph-trash" aria-hidden="true"></i>
                 </button>

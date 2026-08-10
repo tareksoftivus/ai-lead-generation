@@ -2,6 +2,7 @@
 
 namespace App\Modules\Leads\Services\GooglePlaces;
 
+use App\Modules\GoogleMapsSettings\Services\GoogleMapsApiLogService;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Sleep;
@@ -22,6 +23,10 @@ class GooglePlacesClient
      * Miles-to-meters conversion, capped at the Places API's max radius.
      */
     protected const MAX_RADIUS_METERS = 50000;
+
+    public function __construct(
+        protected GoogleMapsApiLogService $apiLog
+    ) {}
 
     protected function ensureConfigured(): void
     {
@@ -54,10 +59,12 @@ class GooglePlacesClient
             ];
         }
 
-        $response = $this->request(fn () => Http::withHeaders([
+        $url = self::BASE_URL.'/places:searchText';
+
+        $response = $this->request('text_search', 'POST', $url, $payload, fn () => Http::withHeaders([
             'X-Goog-Api-Key' => google_maps_setting('google_maps_api_key'),
             'X-Goog-FieldMask' => self::TEXT_SEARCH_FIELD_MASK,
-        ])->post(self::BASE_URL.'/places:searchText', $payload));
+        ])->post($url, $payload));
 
         $body = $response->json() ?? [];
 
@@ -102,10 +109,12 @@ class GooglePlacesClient
     {
         $this->ensureConfigured();
 
-        $response = $this->request(fn () => Http::withHeaders([
+        $url = self::BASE_URL.'/places/'.$placeId;
+
+        $response = $this->request('place_details', 'GET', $url, ['place_id' => $placeId], fn () => Http::withHeaders([
             'X-Goog-Api-Key' => google_maps_setting('google_maps_api_key'),
             'X-Goog-FieldMask' => self::DETAILS_FIELD_MASK,
-        ])->get(self::BASE_URL.'/places/'.$placeId));
+        ])->get($url));
 
         return $response->json() ?? [];
     }
@@ -115,23 +124,58 @@ class GooglePlacesClient
      * synchronous search path's error budget (the queued job path gets its
      * own native queue retries instead).
      */
-    protected function request(callable $call): Response
+    protected function request(string $action, string $method, string $url, ?array $payload, callable $call): Response
     {
+        $startedAt = microtime(true);
+        $attempts = 1;
+        $response = null;
+
         try {
             $response = $call();
 
             if ($response->serverError()) {
                 Sleep::for(1)->second();
+                $attempts++;
                 $response = $call();
             }
 
             $response->throw();
+            $this->logRequest($action, $method, $url, $payload, $response, true, $attempts, $startedAt);
 
             return $response;
         } catch (Throwable $exception) {
+            $this->logRequest($action, $method, $url, $payload, $response, false, $attempts, $startedAt, $exception);
             report($exception);
 
             throw $exception;
         }
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $payload
+     */
+    protected function logRequest(
+        string $action,
+        string $method,
+        string $url,
+        ?array $payload,
+        ?Response $response,
+        bool $successful,
+        int $attempts,
+        float $startedAt,
+        ?Throwable $exception = null
+    ): void {
+        $this->apiLog->record([
+            'action' => $action,
+            'method' => $method,
+            'url' => $url,
+            'request_payload' => $payload,
+            'status_code' => $response?->status(),
+            'successful' => $successful,
+            'attempts' => $attempts,
+            'duration_ms' => (int) round((microtime(true) - $startedAt) * 1000),
+            'response_body' => $response?->json(),
+            'error_message' => $exception?->getMessage(),
+        ]);
     }
 }

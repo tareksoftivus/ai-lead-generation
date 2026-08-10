@@ -36,6 +36,7 @@ return [
                 'icon' => 'ph-house',
                 'route' => 'admin.dashboard',
                 'group' => 'Main Menu',
+                'order' => 0,
             ],
             [
                 'label' => 'Users',
@@ -43,6 +44,7 @@ return [
                 'route' => 'admin.users.*',
                 'group' => 'Management',
                 'permission' => 'users.view',
+                'order' => 30,
             ],
         ],
     ],

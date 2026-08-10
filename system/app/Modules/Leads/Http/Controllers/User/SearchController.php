@@ -3,19 +3,24 @@
 namespace App\Modules\Leads\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Credits\Exceptions\InsufficientCreditsException;
 use App\Modules\Leads\Contracts\LeadScorer;
 use App\Modules\Leads\Http\Requests\RunSearchRequest;
 use App\Modules\Leads\Models\Lead;
+use App\Modules\Leads\Models\LeadBank;
 use App\Modules\Leads\Models\Place;
 use App\Modules\Leads\Models\Search;
 use App\Modules\Leads\Models\SearchRun;
 use App\Modules\Leads\Services\SearchEstimateService;
+use App\Modules\Leads\Services\SearchPromptParser;
 use App\Modules\Leads\Services\SearchService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class SearchController extends Controller implements HasMiddleware
@@ -35,9 +40,9 @@ class SearchController extends Controller implements HasMiddleware
     /**
      * The "New search" screen — filters rail + cost estimate + results.
      */
-    public function new(): View
+    public function new(Request $request): View
     {
-        return view('leads::user.search.new');
+        return view('leads::user.search.new', $this->viewData($request));
     }
 
     /**
@@ -48,7 +53,13 @@ class SearchController extends Controller implements HasMiddleware
     {
         $filters = $this->filtersFromRequest($request);
 
-        $searchRun = $this->service->run($request->user(), $filters);
+        try {
+            $searchRun = $this->service->run($request->user(), $filters);
+        } catch (InsufficientCreditsException) {
+            return back()
+                ->withInput()
+                ->with('error', __('You dont have sufficient credits please upgrade your plan'));
+        }
 
         if (! $searchRun->isTerminal()) {
             return redirect()
@@ -68,10 +79,10 @@ class SearchController extends Controller implements HasMiddleware
             ];
         });
 
-        return view('leads::user.search.new', [
+        return view('leads::user.search.new', $this->viewData($request, $searchRun, [
             'searchRun' => $searchRun,
             'results' => $results,
-        ]);
+        ]));
     }
 
     /**
@@ -140,10 +151,10 @@ class SearchController extends Controller implements HasMiddleware
             ];
         });
 
-        return view('leads::user.search.new', [
+        return view('leads::user.search.new', $this->viewData($request, $searchRun, [
             'searchRun' => $searchRun,
             'results' => $results,
-        ]);
+        ]));
     }
 
     /**
@@ -155,7 +166,12 @@ class SearchController extends Controller implements HasMiddleware
     {
         $this->authorizeOwnership($request, $searchRun);
 
-        $this->service->run($request->user(), $searchRun->filters);
+        try {
+            $this->service->run($request->user(), $searchRun->filters);
+        } catch (InsufficientCreditsException) {
+            return back()
+                ->with('error', __('You dont have sufficient credits please upgrade your plan'));
+        }
 
         return redirect()
             ->route('user.search.history')
@@ -186,24 +202,124 @@ class SearchController extends Controller implements HasMiddleware
     }
 
     /**
+     * @param  array<string, mixed>  $extra
+     * @return array<string, mixed>
+     */
+    protected function viewData(Request $request, ?SearchRun $searchRun = null, array $extra = []): array
+    {
+        $userId = $request->user()->id;
+
+        $savedSearches = Search::query()
+            ->forUser($userId)
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        $recentSearches = SearchRun::query()
+            ->forUser($userId)
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        return array_merge([
+            'activeFilters' => $searchRun?->filters ?? [],
+            'savedSearches' => $savedSearches,
+            'recentSearches' => $recentSearches,
+            'filterOptions' => $this->filterOptions($savedSearches, $recentSearches),
+        ], $extra);
+    }
+
+    /**
+     * @return array{keywords: array<int, string>, locations: array<int, string>, excludes: array<int, string>, categories: array<int, string>}
+     */
+    protected function filterOptions(Collection $savedSearches, Collection $recentSearches): array
+    {
+        $filters = $savedSearches
+            ->pluck('filters')
+            ->merge($recentSearches->pluck('filters'));
+
+        $keywords = $this->valuesFromFilters($filters, 'keyword', ['dentists', 'orthodontists', 'dental clinics', 'cosmetic dentists']);
+        $locations = $this->valuesFromFilters($filters, 'location', ['Austin, TX', 'Dallas, TX', 'Houston, TX', 'San Antonio, TX']);
+        $excludes = $this->valuesFromFilters($filters, 'exclude_keyword', ['franchise', 'permanently closed', 'hospital']);
+        $categories = $this->valuesFromFilters($filters, 'category', ['Dentist', 'Orthodontist', 'Dental clinic', 'Cosmetic dentist']);
+
+        if (Schema::hasTable('leads_bank')) {
+            $keywords = $this->mergeOptions($keywords, LeadBank::query()->whereNotNull('business_type')->distinct()->limit(20)->pluck('business_type')->all());
+            $locations = $this->mergeOptions($locations, LeadBank::query()->whereNotNull('location')->distinct()->limit(20)->pluck('location')->all());
+            $categories = $this->mergeOptions($categories, LeadBank::query()->whereNotNull('google_category')->distinct()->limit(20)->pluck('google_category')->all());
+        }
+
+        return [
+            'keywords' => $keywords,
+            'locations' => $locations,
+            'excludes' => $excludes,
+            'categories' => $categories,
+        ];
+    }
+
+    /**
+     * @param  Collection<int, array<string, mixed>|null>  $filters
+     * @param  array<int, string>  $fallback
+     * @return array<int, string>
+     */
+    protected function valuesFromFilters(Collection $filters, string $key, array $fallback): array
+    {
+        $values = $filters
+            ->flatMap(fn (?array $filter) => (array) ($filter[$key] ?? []))
+            ->filter(fn ($value) => is_string($value) && trim($value) !== '')
+            ->values()
+            ->all();
+
+        return $this->mergeOptions($fallback, $values);
+    }
+
+    /**
+     * @param  array<int, string>  $base
+     * @param  array<int, string>  $extra
+     * @return array<int, string>
+     */
+    protected function mergeOptions(array $base, array $extra): array
+    {
+        return collect($base)
+            ->merge($extra)
+            ->map(fn ($value) => trim((string) $value))
+            ->filter()
+            ->unique(fn ($value) => mb_strtolower($value))
+            ->take(20)
+            ->values()
+            ->all();
+    }
+
+    /**
      * @return array<string, mixed>
      */
     protected function filtersFromRequest(Request $request): array
     {
+        $prompt = trim((string) $request->input('prompt', ''));
+        $parsed = $prompt !== ''
+            ? app(SearchPromptParser::class)->parse($prompt)
+            : [];
+
+        $value = fn (string $key, mixed $default = null) => $request->filled($key)
+            ? $request->input($key)
+            : ($parsed[$key] ?? $default);
+
         return [
-            'keyword' => (array) $request->input('keyword', []),
-            'location' => (array) $request->input('location', []),
+            'keyword' => (array) $value('keyword', []),
+            'location' => (array) $value('location', []),
             'radius' => $request->input('radius'),
             'exclude_keyword' => (array) $request->input('exclude_keyword', []),
-            'min_rating' => $request->input('min_rating'),
-            'min_reviews' => $request->input('min_reviews'),
-            'min_reviews_from' => $request->input('min_reviews_from'),
+            'min_rating' => $value('min_rating'),
+            'min_reviews' => $value('min_reviews'),
+            'min_reviews_from' => $value('min_reviews_from'),
             'min_reviews_to' => $request->input('min_reviews_to'),
+            'requested_count' => $value('requested_count'),
             'has_website' => $request->boolean('has_website'),
             'has_phone' => $request->boolean('has_phone'),
             'category' => (array) $request->input('category', []),
             'skip_owned' => $request->boolean('skip_owned'),
             'one_per_business' => $request->boolean('one_per_business'),
+            'prompt' => $prompt !== '' ? $prompt : null,
         ];
     }
 }

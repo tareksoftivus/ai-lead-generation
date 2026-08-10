@@ -117,7 +117,7 @@ it('bulk-sets status for selected leads', function () {
         ->and($leadB->fresh()->status)->toBe('qualified');
 });
 
-it('soft-deletes a lead without refunding its enrichment credit', function () {
+it('soft-deletes a lead without refunding its generation credit', function () {
     $user = crudUser(['credits_balance' => 5]);
     $lead = crudLead($user, ['enrichment_credit_spent' => true]);
 

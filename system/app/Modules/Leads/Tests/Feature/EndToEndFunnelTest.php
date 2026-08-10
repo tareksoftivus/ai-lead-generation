@@ -14,7 +14,7 @@ use Tests\TestCase;
 
 uses(TestCase::class, RefreshDatabase::class);
 
-it('walks the full funnel: search, estimate, save (credit spend), status change, tag, note, list, and the timeline reflects all of it in order', function () {
+it('walks the full funnel: search generation spend, save, status change, tag, note, list, and the timeline reflects all of it in order', function () {
     foreach (['leads.search', 'leads.view', 'leads.manage'] as $permission) {
         Permission::findOrCreate($permission, 'web');
     }
@@ -58,7 +58,7 @@ it('walks the full funnel: search, estimate, save (credit spend), status change,
     $estimateResponse->assertSuccessful()->assertJsonStructure(['count', 'cost', 'credits_left']);
     expect($user->fresh()->credits_balance)->toBe(10);
 
-    // 2. Run search — free, returns the business, no credit change.
+    // 2. Run search — generation spends credits before results are shown.
     $this->actingAs($user)->post(route('user.search.run'), [
         'keyword' => ['dentists'],
         'location' => ['Austin, TX'],
@@ -68,11 +68,12 @@ it('walks the full funnel: search, estimate, save (credit spend), status change,
     $searchRun = SearchRun::first();
     expect($searchRun->status)->toBe('done')
         ->and($searchRun->results_count)->toBe(1)
-        ->and($user->fresh()->credits_balance)->toBe(10);
+        ->and($searchRun->credits_spent)->toBe(1)
+        ->and($user->fresh()->credits_balance)->toBe(9);
 
     $place = $searchRun->places->first();
 
-    // 3. Save to leads — charged: enrichment happens here.
+    // 3. Save to leads — free: generation already spent the credit.
     $this->actingAs($user)->post(route('user.leads.save-from-search'), [
         'search_run_id' => $searchRun->id,
         'place_id' => [$place->id],
@@ -80,7 +81,7 @@ it('walks the full funnel: search, estimate, save (credit spend), status change,
 
     $lead = Lead::first();
     expect($lead->email)->toBe('hello@bartonsprings.com')
-        ->and($lead->enrichment_credit_spent)->toBeTrue()
+        ->and($lead->enrichment_credit_spent)->toBeFalse()
         ->and($user->fresh()->credits_balance)->toBe(9)
         ->and(app(CreditLedger::class)->balance($user->fresh()))->toBe(9);
 

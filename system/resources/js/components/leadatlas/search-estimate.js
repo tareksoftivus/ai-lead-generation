@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!countEl || !costEl || !submit) return;
 
   const balance = Number(form.dataset.balance || 0);
+  const defaultSearchCount = 5;
 
   const fmt = (n) => n.toLocaleString("en-US");
 
@@ -33,34 +34,23 @@ document.addEventListener("DOMContentLoaded", () => {
     return el.value || "";
   }
 
+  function requestedCount() {
+    const n = Number(form.elements.requested_count?.value || 0);
+    if (!Number.isFinite(n) || n <= 0) return null;
+
+    return Math.min(30, Math.max(1, Math.round(n)));
+  }
+
   function estimateSearch() {
-    const radius = Number(form.elements.radius?.value || 10);
     const keywords = chipCount("keyword[]");
     const locations = chipCount("location[]");
+    const requested = requestedCount();
 
-    if (!keywords || !locations) return 0;
+    if (!keywords || !locations) return requested || 0;
 
-    // Each extra term and each extra place widens the search.
-    let n = Math.round(18 * radius * keywords * locations);
+    if (requested) return requested;
 
-    if (pickedValue("min_rating")) n = Math.round(n * 0.7);
-
-    const reviews = pickedValue("min_reviews");
-    if (reviews === "custom") {
-      const from = Number(form.elements.min_reviews_from?.value || 0);
-      const to = Number(form.elements.min_reviews_to?.value || 0);
-      if (from || to) n = Math.round(n * 0.6);
-    } else if (reviews) {
-      n = Math.round(n * 0.6);
-    }
-
-    if (form.elements.has_website?.checked) n = Math.round(n * 0.75);
-
-    // Excluding terms drops listings before we spend on them.
-    const excluded = chipCount("exclude_keyword[]");
-    if (excluded) n = Math.round(n * Math.pow(0.88, excluded));
-
-    return n;
+    return defaultSearchCount;
   }
 
   function estimateSelection() {
@@ -100,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const pct = ((Number(range.value) - min) / (max - min)) * 100;
       range.style.setProperty("--range-fill", `${pct}%`);
     }
-    const cost = n; // one credit per enriched business
+    const cost = n; // one credit per generated lead
     const after = balance - cost;
     const tooExpensive = cost > balance;
 

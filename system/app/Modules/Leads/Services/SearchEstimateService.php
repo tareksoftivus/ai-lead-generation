@@ -6,17 +6,15 @@ use App\Models\User;
 use App\Modules\Credits\Services\CreditLedger;
 
 /**
- * A free, instant, purely-local projection of "if you ran this search and
- * enriched everything it found, roughly what would it cost" — deliberately
- * never calls the Places API (that would burn Google quota on every filter
- * keystroke and contradict "searching is free"). Constants below are a
- * heuristic v1 and can be tuned freely without touching the real search flow.
+ * A free, instant, purely-local projection of the lead target and enrichment
+ * cost. It deliberately never calls the Places API; filters without an
+ * explicit requested count default to five leads.
  */
 class SearchEstimateService
 {
-    protected const BASE_RESULTS_PER_COMBINATION = 20;
+    protected const DEFAULT_RESULTS_COUNT = 5;
 
-    protected const MAX_RESULTS_PER_COMBINATION = 60;
+    protected const MAX_RESULTS_COUNT = 30;
 
     public function __construct(
         protected CreditLedger $ledger
@@ -28,12 +26,19 @@ class SearchEstimateService
      */
     public function estimate(User $user, array $filters): array
     {
-        $keywordCount = max(1, count(array_filter((array) ($filters['keyword'] ?? []))));
-        $locationCount = max(1, count(array_filter((array) ($filters['location'] ?? []))));
+        if (! empty($filters['requested_count'])) {
+            $count = min(self::MAX_RESULTS_COUNT, max(1, (int) $filters['requested_count']));
 
-        $count = $keywordCount * $locationCount * self::BASE_RESULTS_PER_COMBINATION;
-        $count = (int) round($count * $this->restrictiveness($filters));
-        $count = min($count, $keywordCount * $locationCount * self::MAX_RESULTS_PER_COMBINATION);
+            return [
+                'count' => $count,
+                'cost' => $count,
+                'credits_left' => $this->ledger->balance($user) - $count,
+            ];
+        }
+
+        $hasKeyword = count(array_filter((array) ($filters['keyword'] ?? []))) > 0;
+        $hasLocation = count(array_filter((array) ($filters['location'] ?? []))) > 0;
+        $count = $hasKeyword && $hasLocation ? self::DEFAULT_RESULTS_COUNT : 0;
 
         // Cost mirrors the UI's worst-case framing: "if every result gets
         // enriched, this is what it costs" — not a claim about this exact run.
@@ -44,48 +49,5 @@ class SearchEstimateService
             'cost' => $cost,
             'credits_left' => $this->ledger->balance($user) - $cost,
         ];
-    }
-
-    /**
-     * @param  array<string, mixed>  $filters
-     */
-    protected function restrictiveness(array $filters): float
-    {
-        $multiplier = 1.0;
-
-        if (! empty($filters['has_website'])) {
-            $multiplier *= 0.7;
-        }
-
-        if (! empty($filters['has_phone'])) {
-            $multiplier *= 0.85;
-        }
-
-        $minRating = (float) ($filters['min_rating'] ?? 0);
-        if ($minRating >= 4.5) {
-            $multiplier *= 0.5;
-        } elseif ($minRating >= 4) {
-            $multiplier *= 0.7;
-        } elseif ($minRating >= 3) {
-            $multiplier *= 0.85;
-        }
-
-        if (! empty($filters['min_reviews']) && $filters['min_reviews'] !== 'custom') {
-            $minReviews = (int) $filters['min_reviews'];
-            $multiplier *= match (true) {
-                $minReviews >= 200 => 0.5,
-                $minReviews >= 50 => 0.7,
-                $minReviews >= 10 => 0.85,
-                default => 1.0,
-            };
-        } elseif (! empty($filters['min_reviews_from'])) {
-            $multiplier *= 0.7;
-        }
-
-        if (! empty($filters['exclude_keyword'])) {
-            $multiplier *= 0.9;
-        }
-
-        return $multiplier;
     }
 }

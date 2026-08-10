@@ -7,7 +7,7 @@
         <div>
             <h2 class="heading-3">{{ __('Credit usage') }}</h2>
             <p class="m-text mt-1">
-                {{ __('Every credit this account has spent, and every one granted. Searching is free — credits are spent when a business is enriched.') }}
+                {{ __('Every credit this account has spent, and every one granted. Credits are spent when leads are generated.') }}
             </p>
         </div>
 
@@ -137,7 +137,7 @@
     <p class="ledger__note">
         <i class="ph ph-info" aria-hidden="true"></i>
         <span>
-            {{ __('Running a search and viewing results costs nothing — a credit is spent only when a business is enriched. Re-opening a lead and exporting are always free.') }}
+            {{ __('Generating leads spends credits. Saving generated leads to your lists, re-opening a lead, and exporting are always free.') }}
         </span>
     </p>
 </x-layouts.user>

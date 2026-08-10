@@ -47,6 +47,7 @@ class DatabaseSeeder extends Seeder
             // records that reference them. Each is idempotent (safe to re-run).
             DemoUsersSeeder::class,
             DemoPaymentsSeeder::class,
+            DemoLeadsSeeder::class,
             DemoSupportTicketsSeeder::class,
             DemoActivityLogsSeeder::class,
             DemoBlogSeeder::class,

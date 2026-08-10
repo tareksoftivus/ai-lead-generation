@@ -12,6 +12,9 @@
         <link rel="icon" href="{{ asset('assets/frontend/leadatlas/images/logo-32.png') }}" type="image/png" sizes="32x32" />
     @endif
     <link rel="apple-touch-icon" href="{{ asset('assets/frontend/leadatlas/images/logo-180.png') }}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     @vite(['resources/js/leadatlas.js'])
 </head>
 

@@ -1,0 +1,22 @@
+{
+    "name": "Outreach",
+    "alias": "outreach",
+    "description": "User email campaign planning and lead exports.",
+    "version": "1.0.0",
+    "priority": 50,
+    "providers": [
+        "App\\Modules\\Outreach\\Providers\\OutreachServiceProvider"
+    ],
+    "routes": {
+        "user": "Routes/user.php"
+    },
+    "requires": [
+        "Leads",
+        "Crm"
+    ],
+    "packages": {
+        "require": {},
+        "require-dev": {}
+    },
+    "active": true
+}

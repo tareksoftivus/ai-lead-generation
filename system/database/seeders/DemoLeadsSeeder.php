@@ -14,10 +14,12 @@ use App\Modules\Leads\Models\Place;
 use App\Modules\Leads\Models\Search;
 use App\Modules\Leads\Models\SearchRun;
 use App\Modules\Leads\Models\Tag;
+use App\Modules\Outreach\Models\LeadCampaign;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 /**
@@ -58,6 +60,7 @@ class DemoLeadsSeeder extends Seeder
                 $runs = $this->seedSearchRuns($user, $searches, $places);
 
                 $this->seedSavedLeads($user, $places, $runs, $lists, $tags);
+                $this->seedCampaigns($user, $places, $runs, $lists);
                 $this->recordGenerationSpend($user, $runs['dhaka_dentists'], 10);
                 $this->recordGenerationSpend($user, $runs['gulshan_orthodontists'], 4);
                 $this->recordGenerationSpend($user, $runs['austin_med_spas'], 3);
@@ -358,6 +361,101 @@ class DemoLeadsSeeder extends Seeder
         }
     }
 
+    /**
+     * @param  array<string, Place>  $places
+     * @param  array<string, SearchRun>  $runs
+     * @param  array<string, LeadList>  $lists
+     */
+    protected function seedCampaigns(User $user, array $places, array $runs, array $lists): void
+    {
+        if (! Schema::hasTable('lead_campaigns') || ! Schema::hasTable('lead_campaign_recipients')) {
+            return;
+        }
+
+        foreach ($this->campaigns() as $key => $data) {
+            $createdAt = CarbonImmutable::parse($data['created_at']);
+            $sourceId = match ($data['source_type']) {
+                'list' => $lists[$data['source_key']]->id,
+                'search' => $runs[$data['source_key']]->id,
+                default => null,
+            };
+
+            $campaign = LeadCampaign::query()->firstOrNew([
+                'user_id' => $user->id,
+                'name' => $data['name'],
+            ]);
+
+            $campaign->fill([
+                'status' => $data['status'],
+                'source_type' => $data['source_type'],
+                'source_id' => $sourceId,
+                'daily_limit' => $data['daily_limit'],
+                'recipients_count' => count($data['lead_keys']),
+                'sent_count' => $data['sent_count'],
+                'opened_count' => $data['opened_count'],
+                'replied_count' => $data['replied_count'],
+                'approved_at' => $data['approved_at'] ? CarbonImmutable::parse($data['approved_at']) : null,
+                'started_at' => $data['started_at'] ? CarbonImmutable::parse($data['started_at']) : null,
+                'finished_at' => $data['finished_at'] ? CarbonImmutable::parse($data['finished_at']) : null,
+            ]);
+            $campaign->created_at = $createdAt;
+            $campaign->updated_at = $data['updated_at'] ? CarbonImmutable::parse($data['updated_at']) : $createdAt;
+            $campaign->deleted_at = null;
+            $campaign->save();
+
+            $sync = [];
+            $sentRemaining = $data['sent_count'];
+            $openedRemaining = $data['opened_count'];
+            $repliedRemaining = $data['replied_count'];
+
+            foreach ($data['lead_keys'] as $leadKey) {
+                $lead = Lead::query()
+                    ->forUser($user->id)
+                    ->where('place_id', $places[$leadKey]->id)
+                    ->first();
+
+                if (! $lead) {
+                    continue;
+                }
+
+                $status = 'pending';
+                $sentAt = null;
+                $openedAt = null;
+                $repliedAt = null;
+
+                if ($sentRemaining > 0) {
+                    $status = 'sent';
+                    $sentAt = $data['started_at'] ? CarbonImmutable::parse($data['started_at'])->addHours(count($sync)) : $createdAt;
+                    $sentRemaining--;
+                }
+
+                if ($openedRemaining > 0 && $sentAt) {
+                    $status = 'opened';
+                    $openedAt = $sentAt->addHours(4);
+                    $openedRemaining--;
+                }
+
+                if ($repliedRemaining > 0 && $openedAt) {
+                    $status = 'replied';
+                    $repliedAt = $openedAt->addHours(8);
+                    $repliedRemaining--;
+                }
+
+                $sync[$lead->id] = [
+                    'status' => $status,
+                    'sent_at' => $sentAt,
+                    'opened_at' => $openedAt,
+                    'replied_at' => $repliedAt,
+                    'created_at' => $createdAt,
+                    'updated_at' => now(),
+                ];
+            }
+
+            $campaign->leads()->sync($sync);
+            $campaign->updateQuietly(['recipients_count' => count($sync)]);
+        }
+    }
+
     protected function grantDemoCreditsOnce(User $user, int $amount): void
     {
         if (
@@ -500,6 +598,79 @@ class DemoLeadsSeeder extends Seeder
             'banani_orthodontics' => ['run_key' => 'gulshan_orthodontists', 'status' => Lead::STATUS_QUALIFIED, 'email' => 'team@bananiortho.example.com', 'score' => 95, 'signals' => ['review_volume' => 'Strong', 'booking_presence' => 'Strong', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['high_intent_clinics', 'call_this_week'], 'tags' => ['warm_lead', 'call_first', 'has_website', 'dhaka'], 'days_ago' => 2, 'note' => 'Premium orthodontics positioning. Ask about invisalign lead volume.', 'contact_name' => 'Samira Hossain', 'contact_role' => 'Treatment coordinator', 'contact_note' => 'Best contact for orthodontics offer', 'activity_kind' => 'call', 'activity_body' => 'Coordinator is available after 2 PM.'],
             'gulshan_ortho' => ['run_key' => 'gulshan_orthodontists', 'status' => Lead::STATUS_NEW, 'email' => 'hello@gulshanortho.example.com', 'score' => 93, 'signals' => ['review_volume' => 'Strong', 'booking_presence' => 'Strong', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['high_intent_clinics'], 'tags' => ['warm_lead', 'has_website', 'dhaka'], 'days_ago' => 2, 'note' => 'Strong score and niche service. Add to orthodontics campaign.', 'contact_name' => 'Ortho team', 'contact_role' => 'Office manager', 'contact_note' => 'Shared inbox', 'activity_kind' => 'note', 'activity_body' => 'Strong score and niche service. Add to orthodontics campaign.'],
             'austin_medspa' => ['run_key' => 'austin_med_spas', 'status' => Lead::STATUS_CONTACTED, 'email' => 'bookings@lakeviewmedspa.example.com', 'score' => 89, 'signals' => ['review_volume' => 'Strong', 'booking_presence' => 'Fair', 'website_age' => 'Fair', 'local_competition' => 'Fair'], 'lists' => ['high_intent_clinics'], 'tags' => ['warm_lead', 'has_website'], 'days_ago' => 6, 'note' => 'Useful cross-market example for map and list filters.', 'contact_name' => 'Booking team', 'contact_role' => 'Spa manager', 'contact_note' => 'Demo cross-market contact', 'activity_kind' => 'note', 'activity_body' => 'Useful cross-market example for map and list filters.'],
+        ];
+    }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    protected function campaigns(): array
+    {
+        return [
+            'dhaka_dentists_review' => [
+                'name' => 'Dhaka dentists - booking follow-up',
+                'status' => LeadCampaign::STATUS_REVIEW,
+                'source_type' => 'list',
+                'source_key' => 'dhaka_dentists_august',
+                'lead_keys' => ['smile_craft', 'gulshan_dental', 'dhanmondi_smile', 'uttara_family', 'bashundhara_point'],
+                'daily_limit' => 40,
+                'sent_count' => 0,
+                'opened_count' => 0,
+                'replied_count' => 0,
+                'approved_at' => null,
+                'started_at' => null,
+                'finished_at' => null,
+                'created_at' => '2026-08-10 09:15:00',
+                'updated_at' => '2026-08-10 09:15:00',
+            ],
+            'gulshan_orthodontists_active' => [
+                'name' => 'Gulshan orthodontists - first touch',
+                'status' => LeadCampaign::STATUS_ACTIVE,
+                'source_type' => 'search',
+                'source_key' => 'gulshan_orthodontists',
+                'lead_keys' => ['banani_orthodontics', 'gulshan_ortho', 'smile_craft'],
+                'daily_limit' => 25,
+                'sent_count' => 2,
+                'opened_count' => 1,
+                'replied_count' => 0,
+                'approved_at' => '2026-08-09 16:00:00',
+                'started_at' => '2026-08-10 08:00:00',
+                'finished_at' => null,
+                'created_at' => '2026-08-09 15:35:00',
+                'updated_at' => '2026-08-10 08:40:00',
+            ],
+            'high_intent_done' => [
+                'name' => 'High intent clinics - August opener',
+                'status' => LeadCampaign::STATUS_DONE,
+                'source_type' => 'list',
+                'source_key' => 'high_intent_clinics',
+                'lead_keys' => ['smile_craft', 'gulshan_dental', 'dhanmondi_smile', 'bashundhara_point', 'banani_orthodontics', 'gulshan_ortho', 'austin_medspa'],
+                'daily_limit' => 50,
+                'sent_count' => 7,
+                'opened_count' => 4,
+                'replied_count' => 2,
+                'approved_at' => '2026-08-06 11:00:00',
+                'started_at' => '2026-08-06 12:00:00',
+                'finished_at' => '2026-08-08 17:00:00',
+                'created_at' => '2026-08-06 10:30:00',
+                'updated_at' => '2026-08-08 17:00:00',
+            ],
+            'austin_paused' => [
+                'name' => 'Austin med spas - cross-market test',
+                'status' => LeadCampaign::STATUS_PAUSED,
+                'source_type' => 'search',
+                'source_key' => 'austin_med_spas',
+                'lead_keys' => ['austin_medspa'],
+                'daily_limit' => 10,
+                'sent_count' => 1,
+                'opened_count' => 1,
+                'replied_count' => 0,
+                'approved_at' => '2026-08-07 10:00:00',
+                'started_at' => '2026-08-07 11:00:00',
+                'finished_at' => null,
+                'created_at' => '2026-08-07 09:45:00',
+                'updated_at' => '2026-08-07 14:20:00',
+            ],
         ];
     }
 }

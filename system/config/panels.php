@@ -88,20 +88,6 @@ return [
                 'order' => 32,
             ],
             [
-                'label' => 'Email campaigns',
-                'icon' => 'ph-paper-plane-tilt',
-                'route' => 'user.campaigns.index',
-                'group' => 'Outreach',
-                'order' => 50,
-            ],
-            [
-                'label' => 'Export center',
-                'icon' => 'ph-download-simple',
-                'route' => 'user.export.index',
-                'group' => 'Outreach',
-                'order' => 51,
-            ],
-            [
                 'label' => 'API & integrations',
                 'icon' => 'ph-plugs-connected',
                 'route' => 'user.api.*',

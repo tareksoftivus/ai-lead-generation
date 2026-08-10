@@ -41,6 +41,7 @@ Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 // AI Tools
 Route::get('analysis', [AnalysisController::class, 'index'])->name('analysis.index');
 Route::get('scoring', [ScoringController::class, 'index'])->name('scoring.index');
+Route::post('scoring', [ScoringController::class, 'apply'])->name('scoring.apply');
 Route::get('email', [EmailController::class, 'index'])->name('email.index');
 
 // CRM

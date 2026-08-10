@@ -1,3 +1,15 @@
+@php
+    $weights = $weights ?? [
+        'reviews' => 30,
+        'booking' => 40,
+        'age' => 20,
+        'competition' => 10,
+    ];
+    $leadCount = $leadCount ?? 0;
+    $sampleLeads = $sampleLeads ?? collect();
+    $lists = $lists ?? collect();
+@endphp
+
 <x-layouts.user :title="__('Lead scoring')">
     <div class="mb-4">
         <h2 class="heading-3">{{ __('Lead scoring') }}</h2>
@@ -6,7 +18,8 @@
         </p>
     </div>
 
-    <form action="#" method="post" class="scr" data-scoring>
+    <form action="{{ route('user.scoring.apply') }}" method="post" class="scr" data-scoring>
+        @csrf
         <div class="scr__grid">
             {{-- Left: what you sell, and the weights --}}
             <div class="scr__main">
@@ -26,7 +39,7 @@
                             class="form-input min-h-[9.5rem] @lg:min-h-[7rem]"
                             rows="3"
                             placeholder="{{ __('We build booking systems for dental practices — they usually come to us when the phone is the only way to book.') }}"
-                        >{{ __('We build booking systems for dental practices — they usually come to us when the phone is the only way to book.') }}</textarea>
+                        >{{ old('offer', __('We build booking systems for dental practices — they usually come to us when the phone is the only way to book.')) }}</textarea>
                         <p class="form-hint">
                             {{ __('The clearer the gap you close, the better the ordering.') }}
                         </p>
@@ -45,7 +58,7 @@
                             <label for="w-reviews" class="form-label">
                                 {{ __('Review volume') }}
                                 <span class="field__val">
-                                    <span class="numeric" data-weight-out="reviews">30</span>
+                                    <span class="numeric" data-weight-out="reviews">{{ old('w_reviews', $weights['reviews']) }}</span>
                                 </span>
                             </label>
                             <p class="mt-0.5 text-[0.8125rem] text-body">
@@ -59,7 +72,7 @@
                                 min="0"
                                 max="100"
                                 step="5"
-                                value="30"
+                                value="{{ old('w_reviews', $weights['reviews']) }}"
                                 data-weight="reviews"
                             />
                         </div>
@@ -68,7 +81,7 @@
                             <label for="w-booking" class="form-label">
                                 {{ __('Online booking') }}
                                 <span class="field__val">
-                                    <span class="numeric" data-weight-out="booking">40</span>
+                                    <span class="numeric" data-weight-out="booking">{{ old('w_booking', $weights['booking']) }}</span>
                                 </span>
                             </label>
                             <p class="mt-0.5 text-[0.8125rem] text-body">
@@ -82,7 +95,7 @@
                                 min="0"
                                 max="100"
                                 step="5"
-                                value="40"
+                                value="{{ old('w_booking', $weights['booking']) }}"
                                 data-weight="booking"
                             />
                         </div>
@@ -91,7 +104,7 @@
                             <label for="w-age" class="form-label">
                                 {{ __('Website age') }}
                                 <span class="field__val">
-                                    <span class="numeric" data-weight-out="age">20</span>
+                                    <span class="numeric" data-weight-out="age">{{ old('w_age', $weights['age']) }}</span>
                                 </span>
                             </label>
                             <p class="mt-0.5 text-[0.8125rem] text-body">
@@ -105,7 +118,7 @@
                                 min="0"
                                 max="100"
                                 step="5"
-                                value="20"
+                                value="{{ old('w_age', $weights['age']) }}"
                                 data-weight="age"
                             />
                         </div>
@@ -114,7 +127,7 @@
                             <label for="w-competition" class="form-label">
                                 {{ __('Local competition') }}
                                 <span class="field__val">
-                                    <span class="numeric" data-weight-out="competition">10</span>
+                                    <span class="numeric" data-weight-out="competition">{{ old('w_competition', $weights['competition']) }}</span>
                                 </span>
                             </label>
                             <p class="mt-0.5 text-[0.8125rem] text-body">
@@ -128,7 +141,7 @@
                                 min="0"
                                 max="100"
                                 step="5"
-                                value="10"
+                                value="{{ old('w_competition', $weights['competition']) }}"
                                 data-weight="competition"
                             />
                         </div>
@@ -136,7 +149,12 @@
 
                     <p class="scr__total">
                         {{ __('Weights total') }}
-                        <span class="numeric" data-weight-total>100</span>
+                        <span class="numeric" data-weight-total>{{ array_sum([
+                            (int) old('w_reviews', $weights['reviews']),
+                            (int) old('w_booking', $weights['booking']),
+                            (int) old('w_age', $weights['age']),
+                            (int) old('w_competition', $weights['competition']),
+                        ]) }}</span>
                     </p>
                 </section>
             </div>
@@ -163,77 +181,48 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr data-sample data-now="92" data-signals="reviews:95,booking:100,age:80,competition:75">
-                                    <td data-card-title>{{ __('Barton Springs Dental') }}</td>
-                                    <td class="text-right" data-label="{{ __('Now') }}">
-                                        <span class="score score--hi numeric">92</span>
-                                    </td>
-                                    <td data-label="{{ __('New') }}" class="text-right">
-                                        <span class="score score--hi numeric" data-sample-new>92</span>
-                                    </td>
-                                    <td data-label="{{ __('Change') }}" class="text-right">
-                                        <span class="delta" data-sample-delta>{{ __('no change') }}</span>
-                                    </td>
-                                </tr>
-
-                                <tr data-sample data-now="88" data-signals="reviews:85,booking:100,age:75,competition:70">
-                                    <td data-card-title>{{ __('Lamar Family Dentistry') }}</td>
-                                    <td class="text-right" data-label="{{ __('Now') }}">
-                                        <span class="score score--hi numeric">88</span>
-                                    </td>
-                                    <td data-label="{{ __('New') }}" class="text-right">
-                                        <span class="score score--hi numeric" data-sample-new>88</span>
-                                    </td>
-                                    <td data-label="{{ __('Change') }}" class="text-right">
-                                        <span class="delta" data-sample-delta>{{ __('no change') }}</span>
-                                    </td>
-                                </tr>
-
-                                <tr data-sample data-now="84" data-signals="reviews:60,booking:100,age:90,competition:75">
-                                    <td data-card-title>{{ __('Hyde Park Dental Care') }}</td>
-                                    <td class="text-right" data-label="{{ __('Now') }}">
-                                        <span class="score score--hi numeric">84</span>
-                                    </td>
-                                    <td data-label="{{ __('New') }}" class="text-right">
-                                        <span class="score score--hi numeric" data-sample-new>84</span>
-                                    </td>
-                                    <td data-label="{{ __('Change') }}" class="text-right">
-                                        <span class="delta" data-sample-delta>{{ __('no change') }}</span>
-                                    </td>
-                                </tr>
-
-                                <tr data-sample data-now="79" data-signals="reviews:70,booking:80,age:90,competition:80">
-                                    <td data-card-title>{{ __('Zilker Smile Studio') }}</td>
-                                    <td data-label="{{ __('Now') }}" class="text-right">
-                                        <span class="score score--mid numeric">79</span>
-                                    </td>
-                                    <td data-label="{{ __('New') }}" class="text-right">
-                                        <span class="score score--mid numeric" data-sample-new>79</span>
-                                    </td>
-                                    <td data-label="{{ __('Change') }}" class="text-right">
-                                        <span class="delta" data-sample-delta>{{ __('no change') }}</span>
-                                    </td>
-                                </tr>
-
-                                <tr data-sample data-now="52" data-signals="reviews:40,booking:55,age:60,competition:60">
-                                    <td data-card-title>{{ __('Sunset Valley Dental') }}</td>
-                                    <td data-label="{{ __('Now') }}" class="text-right">
-                                        <span class="score score--lo numeric">52</span>
-                                    </td>
-                                    <td data-label="{{ __('New') }}" class="text-right">
-                                        <span class="score score--lo numeric" data-sample-new>52</span>
-                                    </td>
-                                    <td data-label="{{ __('Change') }}" class="text-right">
-                                        <span class="delta" data-sample-delta>{{ __('no change') }}</span>
-                                    </td>
-                                </tr>
+                                @forelse ($sampleLeads as $lead)
+                                    @php
+                                        $now = (int) ($lead->score ?? 0);
+                                        $bucket = \App\Modules\Leads\Models\Lead::scoreBucket($now);
+                                        $signals = collect($scoring->signalScores($lead))
+                                            ->map(fn ($value, $key) => $key.':'.$value)
+                                            ->implode(',');
+                                    @endphp
+                                    <tr data-sample data-now="{{ $now }}" data-signals="{{ $signals }}">
+                                        <td data-card-title>
+                                            {{ $lead->place?->name ?? __('Unknown business') }}
+                                            @if ($lead->place?->formatted_address)
+                                                <p class="d-table__muted mt-1">{{ $lead->place->formatted_address }}</p>
+                                            @endif
+                                        </td>
+                                        <td class="text-right" data-label="{{ __('Now') }}">
+                                            <span class="score score--{{ $bucket }} numeric">{{ $now }}</span>
+                                        </td>
+                                        <td data-label="{{ __('New') }}" class="text-right">
+                                            <span class="score score--{{ $bucket }} numeric" data-sample-new>{{ $now }}</span>
+                                        </td>
+                                        <td data-label="{{ __('Change') }}" class="text-right">
+                                            <span class="delta" data-sample-delta>{{ __('no change') }}</span>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4">
+                                            <p class="no-results m-0">
+                                                <i class="ph ph-chart-line-up" aria-hidden="true"></i>
+                                                {{ __('No saved leads yet. Generate leads first, then come back to tune their scoring.') }}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
 
-                    <p class="mt-4 text-[0.8125rem] text-body">
+                    <p class="mt-4 text-[0.8125rem] text-body" @if ($sampleLeads->isEmpty()) hidden @endif>
                         <span class="numeric" data-preview-moved>0</span>
-                        {{ __('of') }} <span class="numeric">5</span> {{ __('sampled leads move under this weighting.') }}
+                        {{ __('of') }} <span class="numeric">{{ $sampleLeads->count() }}</span> {{ __('sampled leads move under this weighting.') }}
                     </p>
                 </section>
 
@@ -246,12 +235,14 @@
                             {{ __('Re-score which leads') }}
                         </label>
                         <select id="scr-scope" name="scope" class="form-input">
-                            <option value="all" selected>
-                                {{ __('Every lead I have (1,284)') }}
+                            <option value="all" @selected(old('scope', 'all') === 'all')>
+                                {{ __('Every lead I have (:count)', ['count' => number_format($leadCount)]) }}
                             </option>
-                            <option value="1">{{ __('Austin dentists — Q3 (142)') }}</option>
-                            <option value="2">{{ __('Warm — follow up (38)') }}</option>
-                            <option value="3">{{ __('Chicago clinics (96)') }}</option>
+                            @foreach ($lists as $list)
+                                <option value="{{ $list->id }}" @selected((string) old('scope') === (string) $list->id)>
+                                    {{ __(':name (:count)', ['name' => $list->name, 'count' => number_format($list->leads_count)]) }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -265,6 +256,8 @@
                             type="submit"
                             class="btn btn-primary"
                             data-scoring-apply
+                            @if ($leadCount === 0) data-scoring-empty="1" @endif
+                            @disabled($leadCount === 0)
                         >
                             <span class="btn__label">
                                 <span>{{ __('Apply and re-score') }}</span>

@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function band(score) {
     if (score >= 80) return "hi";
-    if (score >= 60) return "mid";
+    if (score >= 50) return "mid";
     return "lo";
   }
 
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Nothing to commit when the weighting produces no movement.
     const apply = form.querySelector("[data-scoring-apply]");
-    if (apply) apply.disabled = total === 0;
+    if (apply) apply.disabled = total === 0 || apply.dataset.scoringEmpty === "1";
     form.classList.toggle("is-zeroed", total === 0);
   }
 

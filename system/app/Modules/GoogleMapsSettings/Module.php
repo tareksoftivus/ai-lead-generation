@@ -24,17 +24,17 @@ class Module extends BasePanelModule
     public function adminNavigation(NavigationBuilder $navigation): void
     {
         $navigation
-            ->group('System')
+            ->group('Settings')
             ->item(label: 'Google Maps API', route: 'admin.google-maps-settings.index')
             ->icon('ph-map-trifold')
             ->permission('google-maps-settings.manage')
-            ->order(135);
+            ->order(90);
 
         $navigation
-            ->group('System')
+            ->group('Settings')
             ->item(label: 'Google Maps Logs', route: 'admin.google-maps-settings.logs')
             ->icon('ph-list-magnifying-glass')
             ->permission('google-maps-settings.manage')
-            ->order(136);
+            ->order(91);
     }
 }

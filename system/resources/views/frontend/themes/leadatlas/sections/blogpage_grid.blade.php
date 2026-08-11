@@ -3,6 +3,8 @@
     $topics = $data['topics'] ?? [];
     $rawPosts = $data['posts'] ?? [];
     $pages = $data['pages'] ?? [];
+    $previousPageUrl = $data['previous_page_url'] ?? null;
+    $nextPageUrl = $data['next_page_url'] ?? null;
 
     $defaultThumbnails = [
         0 => asset('assets/frontend/leadatlas/images/blog/blog-thumb-02.jpg'),
@@ -36,7 +38,7 @@
     <div class="container">
         <nav class="flex flex-wrap items-center gap-2" aria-label="{{ __('Article categories') }}" data-anim-item>
             @foreach($topics as $topic)
-                <a href="{{ !empty($topic['value']) ? '?topic='.$topic['value'] : url('blog') }}" class="topic{{ !empty($topic['active']) ? ' is-active' : '' }}"@if(!empty($topic['active'])) aria-current="page"@endif>
+                <a href="{{ $topic['url'] ?? route('blog.index', !empty($topic['value']) ? ['category' => $topic['value']] : []) }}" class="topic{{ !empty($topic['active']) ? ' is-active' : '' }}"@if(!empty($topic['active'])) aria-current="page"@endif>
                     {{ $topic['label'] ?? '' }}
                 </a>
             @endforeach
@@ -132,23 +134,37 @@
 
         @if(!empty($pages))
             <nav class="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-neutral-200 pt-8 md:mt-14" aria-label="{{ __('Pagination') }}" data-anim-item>
-                <span class="pager__step is-disabled" aria-disabled="true">
-                    <i class="ph ph-caret-left" aria-hidden="true"></i>
-                    {{ __('Previous') }}
-                </span>
+                @if($previousPageUrl)
+                    <a href="{{ $previousPageUrl }}" class="pager__step">
+                        <i class="ph ph-caret-left" aria-hidden="true"></i>
+                        {{ __('Previous') }}
+                    </a>
+                @else
+                    <span class="pager__step is-disabled" aria-disabled="true">
+                        <i class="ph ph-caret-left" aria-hidden="true"></i>
+                        {{ __('Previous') }}
+                    </span>
+                @endif
 
                 <ol class="flex items-center gap-1">
                     @foreach($pages as $page)
                         <li>
-                            <a href="{{ !empty($page['active']) ? url('blog') : url('blog').'?page='.($page['number'] ?? '') }}" class="pager__num{{ !empty($page['active']) ? ' is-active' : '' }}"@if(!empty($page['active'])) aria-current="page"@endif>{{ $page['number'] ?? '' }}</a>
+                            <a href="{{ $page['url'] ?? route('blog.index', ['page' => $page['number'] ?? 1]) }}" class="pager__num{{ !empty($page['active']) ? ' is-active' : '' }}"@if(!empty($page['active'])) aria-current="page"@endif>{{ $page['number'] ?? '' }}</a>
                         </li>
                     @endforeach
                 </ol>
 
-                <a href="{{ url('blog') }}?page=2" class="pager__step">
-                    {{ __('Next') }}
-                    <i class="ph ph-caret-right" aria-hidden="true"></i>
-                </a>
+                @if($nextPageUrl)
+                    <a href="{{ $nextPageUrl }}" class="pager__step">
+                        {{ __('Next') }}
+                        <i class="ph ph-caret-right" aria-hidden="true"></i>
+                    </a>
+                @else
+                    <span class="pager__step is-disabled" aria-disabled="true">
+                        {{ __('Next') }}
+                        <i class="ph ph-caret-right" aria-hidden="true"></i>
+                    </span>
+                @endif
             </nav>
         @endif
     </div>

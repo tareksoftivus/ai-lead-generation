@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Auth\PhoneVerificationController;
 use App\Http\Controllers\Auth\TwoFactorController;
-use App\Panels\User\Controllers\AnalysisController;
 use App\Panels\User\Controllers\DashboardController;
 use App\Panels\User\Controllers\EmailController;
 use App\Panels\User\Controllers\ProfileController;
@@ -33,7 +32,6 @@ Route::withoutMiddleware(['phone.verified', 'verified', '2fa', 'panel:user'])->g
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 // AI Tools
-Route::get('analysis', [AnalysisController::class, 'index'])->name('analysis.index');
 Route::get('scoring', [ScoringController::class, 'index'])->name('scoring.index');
 Route::post('scoring', [ScoringController::class, 'apply'])->name('scoring.apply');
 Route::get('email', [EmailController::class, 'index'])->name('email.index');

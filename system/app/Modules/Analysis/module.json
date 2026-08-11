@@ -1,0 +1,19 @@
+{
+    "name": "Analysis",
+    "alias": "analysis",
+    "description": "Business analysis runs for saved lead lists.",
+    "version": "1.0.0",
+    "priority": 34,
+    "providers": [
+        "App\\Modules\\Analysis\\Providers\\AnalysisServiceProvider"
+    ],
+    "requires": [
+        "Credits",
+        "Leads"
+    ],
+    "packages": {
+        "require": {},
+        "require-dev": {}
+    },
+    "active": true
+}

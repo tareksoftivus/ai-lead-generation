@@ -46,27 +46,34 @@ document.addEventListener("DOMContentLoaded", () => {
     const locations = chipCount("location[]");
     const requested = requestedCount();
 
-    if (!keywords || !locations) return requested || 0;
+    if (!keywords || !locations) {
+      const count = requested || 0;
+      return { count, cost: count };
+    }
 
-    if (requested) return requested;
+    if (requested) return { count: requested, cost: requested };
 
-    return defaultSearchCount;
+    return { count: defaultSearchCount, cost: defaultSearchCount };
   }
 
   function estimateSelection() {
     const picker = form.elements.source;
-    if (!picker) return 0;
+    if (!picker) return { count: 0, cost: 0 };
 
     const opt = picker.selectedOptions
       ? picker.selectedOptions[0]
       : picker.options[picker.selectedIndex];
-    if (!opt) return 0;
+    if (!opt) return { count: 0, cost: 0 };
 
     const total = Number(opt.dataset.count || 0);
     const done = Number(opt.dataset.analysed || 0);
     const skip = form.elements.skip_analysed?.checked;
+    const newCount = Math.max(0, total - done);
 
-    return skip ? Math.max(0, total - done) : total;
+    return {
+      count: skip ? newCount : total,
+      cost: newCount,
+    };
   }
 
   const estimate =
@@ -77,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const radiusOut = form.querySelector("[data-radius-out]");
 
   function render() {
-    const n = estimate();
+    const { count, cost } = estimate();
 
     // Mirror the range value into its label, and feed the track fill.
     // Kept here rather than an inline oninput= so no JS lives in markup.
@@ -90,12 +97,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const pct = ((Number(range.value) - min) / (max - min)) * 100;
       range.style.setProperty("--range-fill", `${pct}%`);
     }
-    const cost = n; // one credit per generated lead
     const after = balance - cost;
     const tooExpensive = cost > balance;
 
     countEls.forEach((el) => {
-      el.textContent = fmt(n);
+      el.textContent = fmt(count);
     });
     costEl.textContent = fmt(cost);
     if (leftEl) leftEl.textContent = fmt(Math.max(0, after));
@@ -104,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (warnEl) warnEl.classList.toggle("is-shown", tooExpensive);
     form.classList.toggle("is-overbudget", tooExpensive);
 
-    submit.disabled = n === 0 || tooExpensive;
+    submit.disabled = count === 0 || tooExpensive;
   }
 
   form.addEventListener("input", render);

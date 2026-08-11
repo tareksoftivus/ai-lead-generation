@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!countEl || !costEl || !submit) return;
 
   const balance = Number(form.dataset.balance || 0);
+  const costPerItem = Math.max(0, Number(form.dataset.costPerItem || 1));
   const defaultSearchCount = 5;
 
   const fmt = (n) => n.toLocaleString("en-US");
@@ -72,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return {
       count: skip ? newCount : total,
-      cost: newCount,
+      cost: (skip ? newCount : total) * costPerItem,
     };
   }
 

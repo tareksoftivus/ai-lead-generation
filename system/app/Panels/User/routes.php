@@ -3,7 +3,6 @@
 use App\Http\Controllers\Auth\PhoneVerificationController;
 use App\Http\Controllers\Auth\TwoFactorController;
 use App\Panels\User\Controllers\DashboardController;
-use App\Panels\User\Controllers\EmailController;
 use App\Panels\User\Controllers\ProfileController;
 use App\Panels\User\Controllers\ScoringController;
 use App\Panels\User\Controllers\SettingsController;
@@ -34,7 +33,6 @@ Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 // AI Tools
 Route::get('scoring', [ScoringController::class, 'index'])->name('scoring.index');
 Route::post('scoring', [ScoringController::class, 'apply'])->name('scoring.apply');
-Route::get('email', [EmailController::class, 'index'])->name('email.index');
 
 // Account
 Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');

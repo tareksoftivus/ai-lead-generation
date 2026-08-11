@@ -67,25 +67,11 @@ return [
                 'order' => 0,
             ],
             [
-                'label' => 'Business analysis',
-                'icon' => 'ph-sparkle',
-                'route' => 'user.analysis.index',
-                'group' => 'AI Tools',
-                'order' => 30,
-            ],
-            [
                 'label' => 'Lead scoring',
                 'icon' => 'ph-gauge',
                 'route' => 'user.scoring.index',
                 'group' => 'AI Tools',
                 'order' => 31,
-            ],
-            [
-                'label' => 'Email generator',
-                'icon' => 'ph-envelope-simple',
-                'route' => 'user.email.index',
-                'group' => 'AI Tools',
-                'order' => 32,
             ],
             [
                 'label' => 'API & integrations',

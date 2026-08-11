@@ -1,0 +1,20 @@
+{
+    "name": "AI Tools",
+    "alias": "ai-tools",
+    "description": "Business analysis and outreach email generation tools.",
+    "version": "1.0.0",
+    "priority": 34,
+    "providers": [
+        "App\\Modules\\AiTools\\Providers\\AiToolsServiceProvider"
+    ],
+    "requires": [
+        "Credits",
+        "Leads",
+        "Outreach"
+    ],
+    "packages": {
+        "require": {},
+        "require-dev": {}
+    },
+    "active": true
+}

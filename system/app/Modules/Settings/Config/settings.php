@@ -340,6 +340,33 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | AI Tools
+    |--------------------------------------------------------------------------
+    */
+    'ai_tools' => [
+        'label' => 'AI Tools',
+        'icon' => 'ph ph-sparkle',
+        'description' => 'Credit costs for AI-powered workflow actions',
+        'settings' => [
+            'ai_tools_business_analysis_credit_cost' => [
+                'type' => 'number',
+                'label' => 'Business Analysis Cost',
+                'hint' => 'Credits charged for each business that is analysed or re-analysed.',
+                'default' => 1,
+                'rules' => 'required|integer|min:0|max:100000',
+            ],
+            'ai_tools_email_generation_credit_cost' => [
+                'type' => 'number',
+                'label' => 'Email Generation Cost',
+                'hint' => 'Credits charged each time a user generates a new email draft.',
+                'default' => 1,
+                'rules' => 'required|integer|min:0|max:100000',
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Feature Flags
     |--------------------------------------------------------------------------
     */

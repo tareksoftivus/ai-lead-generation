@@ -1,0 +1,18 @@
+{
+    "name": "ApiIntegrations",
+    "alias": "api-integrations",
+    "description": "User API keys, REST API documentation, and third-party integration connections",
+    "version": "1.0.0",
+    "priority": 40,
+    "providers": [
+        "App\\Modules\\ApiIntegrations\\Providers\\ApiIntegrationsServiceProvider"
+    ],
+    "requires": [
+        "leads"
+    ],
+    "packages": {
+        "require": {},
+        "require-dev": {}
+    },
+    "active": true
+}

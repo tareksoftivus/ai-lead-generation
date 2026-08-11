@@ -3,7 +3,6 @@
 use App\Http\Controllers\Auth\PhoneVerificationController;
 use App\Http\Controllers\Auth\TwoFactorController;
 use App\Panels\User\Controllers\AnalysisController;
-use App\Panels\User\Controllers\ApiController;
 use App\Panels\User\Controllers\DashboardController;
 use App\Panels\User\Controllers\EmailController;
 use App\Panels\User\Controllers\ProfileController;
@@ -40,10 +39,6 @@ Route::post('scoring', [ScoringController::class, 'apply'])->name('scoring.apply
 Route::get('email', [EmailController::class, 'index'])->name('email.index');
 
 // Account
-Route::get('api', fn () => redirect()->route('user.api.keys'))->name('api.index');
-Route::get('api/keys', [ApiController::class, 'keys'])->name('api.keys');
-Route::get('api/docs', [ApiController::class, 'docs'])->name('api.docs');
-Route::get('integrations', [ApiController::class, 'integrations'])->name('api.integrations');
 Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
 
 // Profile

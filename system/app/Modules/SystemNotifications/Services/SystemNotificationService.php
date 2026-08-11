@@ -74,6 +74,17 @@ class SystemNotificationService
     }
 
     /**
+     * Mark a single notification as read for its owning notifiable.
+     */
+    public function markAsReadFor(Model $notifiable, string $id): SystemNotification
+    {
+        $notification = SystemNotification::forNotifiable($notifiable)->findOrFail($id);
+        $notification->markAsRead();
+
+        return $notification;
+    }
+
+    /**
      * Mark all notifications as read for a notifiable.
      */
     public function markAllAsRead(Model $notifiable): int

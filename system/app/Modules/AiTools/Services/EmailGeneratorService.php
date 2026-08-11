@@ -289,25 +289,25 @@ class EmailGeneratorService
 
         $opener = match ($opening) {
             'praise' => $reviewCount > 0
-                ? "I noticed {$businessName} has {$reviewCount} public reviews".($rating ? " averaging {$rating} stars" : '').", which is a strong trust signal."
+                ? "I noticed {$businessName} has {$reviewCount} public reviews".($rating ? " averaging {$rating} stars" : '').', which is a strong trust signal.'
                 : "I noticed {$businessName} has enough local presence to deserve a more specific opening than a generic sales email.",
             'question' => "Are you currently trying to turn more of the interest around {$businessName} into booked conversations?",
             default => "I was looking at {$businessName} and noticed a useful gap: {$gap}.",
         };
 
         $pitch = match ($tone) {
-            'warm' => "The opportunity is not to change how your team works overnight. It is to make the next step feel easier for someone who is already interested.",
-            'formal' => "A focused improvement here can reduce friction for prospective customers while keeping the existing front-desk or sales process intact.",
-            default => "That is usually the kind of friction worth fixing first, because it sits right between interest and action.",
+            'warm' => 'The opportunity is not to change how your team works overnight. It is to make the next step feel easier for someone who is already interested.',
+            'formal' => 'A focused improvement here can reduce friction for prospective customers while keeping the existing front-desk or sales process intact.',
+            default => 'That is usually the kind of friction worth fixing first, because it sits right between interest and action.',
         };
 
         $proof = $analysis?->read
             ?? "You are visible as a {$category}, so the outreach should be specific to what buyers can already see before they contact you.";
 
         $close = match ($tone) {
-            'formal' => "Would it be useful to compare what is visible now with a cleaner conversion path?",
-            'warm' => "Worth a quick look together to see whether this would help?",
-            default => "Worth a short call to see if it fits?",
+            'formal' => 'Would it be useful to compare what is visible now with a cleaner conversion path?',
+            'warm' => 'Worth a quick look together to see whether this would help?',
+            default => 'Worth a short call to see if it fits?',
         };
 
         $paragraphs = match ($length) {

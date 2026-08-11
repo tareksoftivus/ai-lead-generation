@@ -132,7 +132,7 @@ class LeadExportService
     protected function xlsxResponse(LeadExport $export, Collection $leads): BinaryFileResponse
     {
         $path = tempnam(sys_get_temp_dir(), 'lead-export-');
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
         $zip->open($path, ZipArchive::OVERWRITE);
         $zip->addFromString('[Content_Types].xml', $this->xlsxContentTypes());
         $zip->addFromString('_rels/.rels', $this->xlsxRels());

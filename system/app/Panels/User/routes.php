@@ -36,6 +36,10 @@ Route::post('scoring', [ScoringController::class, 'apply'])->name('scoring.apply
 
 // Account
 Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+Route::put('settings/general', [SettingsController::class, 'updateGeneral'])->name('settings.general.update');
+Route::put('settings/search-defaults', [SettingsController::class, 'updateSearchDefaults'])->name('settings.search-defaults.update');
+Route::put('settings/email-preferences', [SettingsController::class, 'updateEmailPreferences'])->name('settings.email-preferences.update');
+Route::delete('settings/workspace', [SettingsController::class, 'destroyWorkspace'])->name('settings.workspace.destroy');
 
 // Profile
 Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');

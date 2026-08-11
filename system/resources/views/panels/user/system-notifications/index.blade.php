@@ -186,7 +186,9 @@
         </div>
     @endif
 
-    <div class="panel mt-4 overflow-hidden">
+    <form method="POST" action="{{ route('user.settings.email-preferences.update') }}" class="panel mt-4 overflow-hidden">
+        @csrf
+        @method('PUT')
         <div class="panel__head">
             <h3 class="panel__title">{{ __('What appears here') }}</h3>
             <a href="{{ route('user.settings.index') }}" class="panel__link">
@@ -199,31 +201,45 @@
             <div class="setting-row">
                 <div class="setting-row__text">
                     <label for="n-search-done" class="setting-row__label">
-                        {{ __('When a search finishes') }}
+                        {{ __('Email when a search finishes') }}
                     </label>
                     <p class="setting-row__hint">
                         {{ __('Including searches that stop early, and what you were charged.') }}
                     </p>
                 </div>
-                <input type="checkbox" id="n-search-done" name="notify_search_done" class="switch" checked />
+                <input
+                    type="checkbox"
+                    id="n-search-done"
+                    name="search_done"
+                    value="1"
+                    class="switch"
+                    @checked($emailPreferences['search_done'] ?? true)
+                />
             </div>
 
             <div class="setting-row">
                 <div class="setting-row__text">
                     <label for="n-ai" class="setting-row__label">
-                        {{ __('When the AI finishes scoring or analysing') }}
+                        {{ __('Weekly digest email') }}
                     </label>
                     <p class="setting-row__hint">
-                        {{ __('Bulk runs only — a single lead\'s analysis is instant.') }}
+                        {{ __('A short summary of saved leads, exports, and usage trends.') }}
                     </p>
                 </div>
-                <input type="checkbox" id="n-ai" name="notify_ai_done" class="switch" checked />
+                <input
+                    type="checkbox"
+                    id="n-ai"
+                    name="weekly"
+                    value="1"
+                    class="switch"
+                    @checked($emailPreferences['weekly'] ?? false)
+                />
             </div>
 
             <div class="setting-row">
                 <div class="setting-row__text">
                     <label for="n-credits" class="setting-row__label">
-                        {{ __('When credits run low') }}
+                        {{ __('Email when credits run low') }}
                     </label>
                     <p class="setting-row__hint">
                         {{ __('At') }}
@@ -231,20 +247,44 @@
                         {{ __('of your monthly allowance, so a search does not stop halfway.') }}
                     </p>
                 </div>
-                <input type="checkbox" id="n-credits" name="notify_low_credits" class="switch" checked />
+                <input
+                    type="checkbox"
+                    id="n-credits"
+                    name="low_credits"
+                    value="1"
+                    class="switch"
+                    @checked($emailPreferences['low_credits'] ?? true)
+                />
             </div>
 
             <div class="setting-row">
                 <div class="setting-row__text">
                     <label for="n-replies" class="setting-row__label">
-                        {{ __('When a campaign gets a reply') }}
+                        {{ __('Product update email') }}
                     </label>
                     <p class="setting-row__hint">
-                        {{ __('You still read and approve every message before it goes out.') }}
+                        {{ __('Occasional release notes and feature improvements.') }}
                     </p>
                 </div>
-                <input type="checkbox" id="n-replies" name="notify_replies" class="switch" />
+                <input
+                    type="checkbox"
+                    id="n-replies"
+                    name="product"
+                    value="1"
+                    class="switch"
+                    @checked($emailPreferences['product'] ?? false)
+                />
             </div>
         </div>
-    </div>
+
+        <div class="border-t border-border px-4 py-3 text-right sm:px-5">
+            <button type="submit" class="btn btn-primary btn-sm">
+                <span class="btn__label">
+                    <span>{{ __('Save preferences') }}</span>
+                    <span aria-hidden="true">{{ __('Save preferences') }}</span>
+                </span>
+                <i class="ph ph-check"></i>
+            </button>
+        </div>
+    </form>
 </x-layouts.user>

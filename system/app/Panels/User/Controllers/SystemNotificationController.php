@@ -3,6 +3,7 @@
 namespace App\Panels\User\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\UserSetting;
 use App\Modules\SystemNotifications\Services\SystemNotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -33,6 +34,7 @@ class SystemNotificationController extends Controller
         return view('panels.user.system-notifications.index', [
             'notifications' => $notifications,
             'unreadCount' => $this->service->getUnreadCount($user),
+            'emailPreferences' => UserSetting::forUser($user)->mergedEmailPreferences(),
         ]);
     }
 
@@ -75,7 +77,7 @@ class SystemNotificationController extends Controller
      */
     public function markRead(string $notification): JsonResponse
     {
-        $this->service->markAsRead($notification);
+        $this->service->markAsReadFor(auth()->user(), $notification);
 
         return response()->json(['success' => true]);
     }

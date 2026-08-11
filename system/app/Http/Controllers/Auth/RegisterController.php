@@ -11,6 +11,7 @@ use App\Modules\AuditLog\Services\AuditLogService;
 use App\Modules\AuthApi\Services\OtpDeliveryService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
@@ -23,7 +24,7 @@ class RegisterController extends Controller
         protected OtpDeliveryService $otpDeliveryService,
     ) {}
 
-    public function showRegistrationForm(): View
+    public function showRegistrationForm(Request $request): View
     {
         return view('auth.register');
     }

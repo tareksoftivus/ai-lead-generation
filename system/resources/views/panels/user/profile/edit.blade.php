@@ -2,7 +2,7 @@
     <div class="mb-6">
         <h2 class="heading-3">{{ __('Profile') }}</h2>
         <p class="m-text mt-1">
-            {{ __('You, as opposed to your workspace. Team, timezone, and search defaults live in') }}
+            {{ __('Your identity details. Workspace display, timezone, and search defaults live in') }}
             <a href="{{ route('user.settings.index') }}" class="font-medium text-primary underline underline-offset-2 hover:no-underline">
                 {{ __('account settings') }}
             </a>.
@@ -18,7 +18,7 @@
 
                 <h3 class="form-card__title">{{ __('Your details') }}</h3>
                 <p class="form-card__hint">
-                    {{ __('The name your team sees on notes, activities, and shared lists.') }}
+                    {{ __('The name shown on your notes, activities, and saved lists.') }}
                 </p>
 
                 <div class="pro__grid">
@@ -120,7 +120,7 @@
             <div class="form-card">
                 <h3 class="form-card__title">{{ __('Photo') }}</h3>
                 <p class="form-card__hint">
-                    {{ __('Shown on your notes and beside your name in the team list.') }}
+                    {{ __('Shown on your notes and account menu.') }}
                 </p>
 
                 <div class="pro__photo">

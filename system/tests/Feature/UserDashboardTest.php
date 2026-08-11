@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Modules\Credits\Models\CreditTransaction;
 use App\Modules\Credits\Services\CreditLedger;
 use App\Modules\Leads\Models\Lead;
 use App\Modules\Leads\Models\LeadActivity;
@@ -49,6 +50,89 @@ it('renders the LeadAtlas user dashboard', function () {
     $response->assertSee(route('user.search.history'));
     $response->assertSee(route('user.leads.index'));
     $response->assertSee(route('user.search.new'));
+});
+
+it('renders dashboard cards from the signed-in users real activity', function () {
+    $user = User::factory()->create([
+        'name' => 'Amara',
+        'is_active' => true,
+        'email_verified_at' => now(),
+        'credits_balance' => 2480,
+    ]);
+
+    PricingPlan::query()->create([
+        'name' => 'Scale',
+        'slug' => 'scale',
+        'tagline' => 'For active prospecting',
+        'price_monthly' => 89,
+        'price_yearly' => 890,
+        'credits_monthly' => 5000,
+        'features' => [],
+        'cta_label' => 'Upgrade',
+        'is_active' => true,
+        'is_featured' => true,
+        'sort_order' => 1,
+    ]);
+
+    CreditTransaction::query()->create([
+        'user_id' => $user->id,
+        'type' => 'spend',
+        'amount' => -172,
+        'balance_after' => 2480,
+        'reason' => 'lead_search',
+        'metadata' => [],
+    ]);
+
+    $runningRun = SearchRun::query()->create([
+        'user_id' => $user->id,
+        'filters' => ['keyword' => ['orthodontists'], 'location' => ['Dallas, TX'], 'requested_count' => 480],
+        'status' => SearchRun::STATUS_RUNNING,
+        'results_count' => 312,
+        'credits_spent' => 172,
+        'started_at' => now()->subMinutes(6),
+    ]);
+
+    $doneRun = SearchRun::query()->create([
+        'user_id' => $user->id,
+        'filters' => ['keyword' => ['dentists'], 'location' => ['Austin, TX'], 'requested_count' => 184],
+        'status' => SearchRun::STATUS_DONE,
+        'results_count' => 184,
+        'credits_spent' => 172,
+        'started_at' => now()->subDays(2),
+        'finished_at' => now()->subDays(2)->addMinutes(5),
+    ]);
+
+    $place = Place::query()->create([
+        'google_place_id' => 'place-dashboard-1',
+        'name' => 'Barton Springs Dental',
+        'formatted_address' => 'Austin, TX',
+    ]);
+
+    $runningRun->places()->attach($place);
+    $doneRun->places()->attach($place);
+
+    Lead::query()->create([
+        'user_id' => $user->id,
+        'place_id' => $place->id,
+        'search_run_id' => $doneRun->id,
+        'score' => 92,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    $response = $this->actingAs($user)->get(route('user.dashboard'));
+
+    $response->assertSuccessful();
+    $response->assertSee('2,480');
+    $response->assertSee('5,000');
+    $response->assertSee('orthodontists in Dallas, TX');
+    $response->assertSee('312');
+    $response->assertSee('480');
+    $response->assertSee('Barton Springs Dental');
+    $response->assertSee('92');
+    $response->assertSee(route('user.search.results', $runningRun));
+    $response->assertSee(route('user.search.results', $doneRun));
+    $response->assertDontSee('med spas in Phoenix, AZ');
 });
 
 it('renders every account option in the topbar profile dropdown', function () {
@@ -987,7 +1071,7 @@ it('renders the Integrations screen with the connection grid and webhooks lock',
     $response->assertSee(route('user.api.docs'));
 });
 
-it('renders the Account settings screen with its five tabs', function () {
+it('renders the Account settings screen with its four tabs', function () {
     $user = User::factory()->create([
         'name' => 'Amara',
         'is_active' => true,
@@ -1002,10 +1086,10 @@ it('renders the Account settings screen with its five tabs', function () {
     $response->assertSee('app-sidebar', false);
     $response->assertSee('app-content', false);
 
-    // The settings tablist drives the five panels (tabs.js).
+    // The settings tablist drives the four panels (tabs.js).
     $response->assertSee('data-tabs', false);
     $response->assertSee('data-tab="general"', false);
-    $response->assertSee('data-tab="team"', false);
+    $response->assertDontSee('data-tab="team"', false);
     $response->assertSee('data-tab="defaults"', false);
     $response->assertSee('data-tab="email"', false);
     $response->assertSee('data-tab="danger"', false);
@@ -1014,32 +1098,38 @@ it('renders the Account settings screen with its five tabs', function () {
     // General tab — the workspace form.
     $response->assertSee('Workspace');
     $response->assertSee('name="workspace_name"', false);
-    $response->assertSee('Rivera Growth Studio');
+    $response->assertSee('Amara&#039;s workspace', false);
+    $response->assertSee(route('user.settings.general.update'));
 
-    // Team tab — member rows, role selects, and the roles legend.
-    $response->assertSee('Invite member');
-    $response->assertSee('data-modal-open="inviteModal"', false);
-    $response->assertSee('name="role[2]"', false);
-    $response->assertSee('set__roles', false);
-    $response->assertSee('That is you');
+    // Team collaboration is intentionally not present.
+    $response->assertDontSee('Invite member');
+    $response->assertDontSee('data-modal-open="inviteModal"', false);
+    $response->assertDontSee('set__roles', false);
+    $response->assertDontSee('That is you');
+    $response->assertDontSee('Luis Ferrer');
+    $response->assertDontSee('Priya Raman');
 
     // Search defaults tab — skip switches.
     $response->assertSee('name="default_radius"', false);
     $response->assertSee('name="skip_no_phone"', false);
     $response->assertSee('name="skip_seen"', false);
+    $response->assertSee(route('user.settings.search-defaults.update'));
 
     // Email tab — preference switches.
     $response->assertSee('name="email_search_done"', false);
     $response->assertSee('name="email_weekly"', false);
+    $response->assertSee(route('user.settings.email-preferences.update'));
 
     // Danger zone — the delete card links to the export center.
     $response->assertSee('Delete this workspace');
     $response->assertSee('data-confirm', false);
+    $response->assertSee('name="confirm_workspace"', false);
+    $response->assertSee('name="current_password"', false);
+    $response->assertSee(route('user.settings.workspace.destroy'));
     $response->assertSee(route('user.export.index'));
     $response->assertSee('Export leads first');
 
-    // The invite modal + confirm dialog.
-    $response->assertSee('id="inviteModal"', false);
+    // The confirm dialog powers destructive-action confirmation.
     $response->assertSee('id="confirmDialog"', false);
 
     // The sidebar carries the "Settings" item under Account.

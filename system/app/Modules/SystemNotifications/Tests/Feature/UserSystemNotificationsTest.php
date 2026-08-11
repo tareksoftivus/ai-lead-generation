@@ -1,8 +1,15 @@
 <?php
 
+use App\Enums\NotificationTemplateSlug;
+use App\Models\Admin;
 use App\Models\User;
+use App\Modules\NotificationTemplates\Models\NotificationLog;
+use App\Modules\NotificationTemplates\Models\NotificationTemplate;
+use App\Modules\NotificationTemplates\Notifications\SendAutoNotification;
 use App\Modules\SystemNotifications\Models\SystemNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 uses(TestCase::class, RefreshDatabase::class);
@@ -10,15 +17,26 @@ uses(TestCase::class, RefreshDatabase::class);
 /**
  * Create a verified, active user.
  */
-function notifUser(): User
+function notifUser(array $attributes = []): User
 {
-    return User::factory()->create([
+    return User::factory()->create(array_merge([
         'name' => 'Amara Rivera',
-        'email' => 'amara@riveragrowth.co',
+        'email' => 'amara-'.uniqid().'@riveragrowth.co',
         'password' => 'password',
         'is_active' => true,
         'email_verified_at' => now(),
-    ]);
+    ], $attributes));
+}
+
+function notifAdmin(array $attributes = []): Admin
+{
+    return Admin::query()->create(array_merge([
+        'name' => 'Notification Admin',
+        'email' => 'notification-admin-'.uniqid().'@example.com',
+        'password' => 'password',
+        'is_active' => true,
+        'email_verified_at' => now(),
+    ], $attributes));
 }
 
 it('renders the notifications index under the reference layout', function () {
@@ -122,4 +140,135 @@ it('keeps the mark-all-read endpoint JSON for the bell', function () {
             'Accept' => 'application/json',
         ])
         ->assertJson(['success' => true]);
+});
+
+it('marks only the signed-in user notification as read', function () {
+    $user = notifUser();
+    $otherUser = notifUser();
+
+    $ownedNotification = SystemNotification::create([
+        'type' => 'search',
+        'notifiable_type' => $user->getMorphClass(),
+        'notifiable_id' => $user->getKey(),
+        'data' => ['title' => 'Owned', 'body' => 'Body', 'icon' => 'ph-bell', 'type' => 'info'],
+    ]);
+
+    $otherNotification = SystemNotification::create([
+        'type' => 'search',
+        'notifiable_type' => $otherUser->getMorphClass(),
+        'notifiable_id' => $otherUser->getKey(),
+        'data' => ['title' => 'Other', 'body' => 'Body', 'icon' => 'ph-bell', 'type' => 'info'],
+    ]);
+
+    $this->actingAs($user)
+        ->post(route('user.system-notifications.mark-read', $ownedNotification), [], [
+            'Accept' => 'application/json',
+        ])
+        ->assertJson(['success' => true]);
+
+    $this->actingAs($user)
+        ->post(route('user.system-notifications.mark-read', $otherNotification), [], [
+            'Accept' => 'application/json',
+        ])
+        ->assertNotFound();
+
+    expect($ownedNotification->fresh()->read_at)->not->toBeNull()
+        ->and($otherNotification->fresh()->read_at)->toBeNull();
+});
+
+it('keeps admin notification read actions scoped to the signed-in admin', function () {
+    $admin = notifAdmin();
+    $otherAdmin = notifAdmin();
+
+    $ownedNotification = SystemNotification::create([
+        'type' => 'announcement',
+        'notifiable_type' => $admin->getMorphClass(),
+        'notifiable_id' => $admin->getKey(),
+        'data' => ['title' => 'Owned admin', 'body' => 'Body', 'icon' => 'ph-bell', 'type' => 'info'],
+    ]);
+
+    $otherNotification = SystemNotification::create([
+        'type' => 'announcement',
+        'notifiable_type' => $otherAdmin->getMorphClass(),
+        'notifiable_id' => $otherAdmin->getKey(),
+        'data' => ['title' => 'Other admin', 'body' => 'Body', 'icon' => 'ph-bell', 'type' => 'info'],
+    ]);
+
+    $this->actingAs($admin, 'admin')
+        ->post(route('admin.system-notifications.mark-read', $ownedNotification), [], [
+            'Accept' => 'application/json',
+        ])
+        ->assertJson(['success' => true]);
+
+    $this->actingAs($admin, 'admin')
+        ->post(route('admin.system-notifications.mark-read', $otherNotification), [], [
+            'Accept' => 'application/json',
+        ])
+        ->assertNotFound();
+
+    expect($ownedNotification->fresh()->read_at)->not->toBeNull()
+        ->and($otherNotification->fresh()->read_at)->toBeNull();
+});
+
+it('creates in-app system notifications from notification templates', function () {
+    $user = notifUser();
+
+    NotificationTemplate::query()->create([
+        'slug' => NotificationTemplateSlug::WELCOME->value,
+        'name' => 'Welcome',
+        'channels' => ['in_app'],
+        'variables' => ['user_name' => 'Name'],
+        'in_app_title' => 'Welcome {{user_name}}',
+        'in_app_body' => 'Your account is ready.',
+        'is_active' => true,
+    ]);
+
+    $user->notify(new SendAutoNotification(NotificationTemplateSlug::WELCOME));
+
+    $notification = SystemNotification::forNotifiable($user)->first();
+    $log = NotificationLog::query()
+        ->where('template_slug', NotificationTemplateSlug::WELCOME->value)
+        ->where('channel', 'in_app')
+        ->where('notifiable_type', $user->getMorphClass())
+        ->where('notifiable_id', $user->getKey())
+        ->first();
+
+    expect($notification)->not->toBeNull()
+        ->and($notification->type)->toBe(NotificationTemplateSlug::WELCOME->value)
+        ->and($notification->getTitle())->toBe('Welcome Amara Rivera')
+        ->and($log)->not->toBeNull()
+        ->and($log->status)->toBe('sent');
+});
+
+it('sends admin system announcements to active users in a selected role', function () {
+    Permission::findOrCreate('system-notifications.send', 'admin');
+
+    $admin = notifAdmin();
+    $admin->givePermissionTo('system-notifications.send');
+
+    $recipientRole = Role::findOrCreate('notification-recipient', 'web');
+    $recipient = notifUser();
+    $recipient->assignRole($recipientRole);
+
+    $inactiveRecipient = notifUser(['is_active' => false]);
+    $inactiveRecipient->assignRole($recipientRole);
+
+    notifUser();
+
+    $this->actingAs($admin, 'admin')
+        ->post(route('admin.system-notifications.send'), [
+            'title' => 'Role announcement',
+            'body' => 'Only active users in the selected role should receive this.',
+            'recipient_type' => 'role',
+            'role_id' => $recipientRole->id,
+        ], [
+            'Accept' => 'application/json',
+        ])
+        ->assertJson([
+            'success' => true,
+            'message' => 'Notification sent to 1 recipients.',
+        ]);
+
+    expect(SystemNotification::forNotifiable($recipient)->count())->toBe(1)
+        ->and(SystemNotification::forNotifiable($inactiveRecipient)->count())->toBe(0);
 });

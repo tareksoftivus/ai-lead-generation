@@ -38,9 +38,10 @@ class CreditsController extends Controller implements HasMiddleware
     public function index(Request $request): View
     {
         $user = $request->user();
+        $creditAccount = $this->ledger->accountFor($user);
 
         $transactions = CreditTransaction::query()
-            ->forUser($user->id)
+            ->forUser($creditAccount->id)
             ->latest()
             ->paginate(20);
 

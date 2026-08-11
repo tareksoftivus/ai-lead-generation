@@ -142,7 +142,7 @@ class LeadService
      */
     protected function enrichAndSave(User $user, Lead $lead, Place $place, ?SearchRun $searchRun): Lead
     {
-        return DB::transaction(function () use ($user, $lead, $place, $searchRun) {
+        return DB::transaction(function () use ($lead, $place, $searchRun) {
             $enrichment = $this->enrichmentService->enrich($place);
             $lead->refresh(); // enrich() may have updated $place; keep $lead's place relation fresh too.
             $place->refresh();

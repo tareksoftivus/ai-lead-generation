@@ -72,4 +72,9 @@ class CreditLedger
             ]);
         });
     }
+
+    public function accountFor(User $user): User
+    {
+        return $user;
+    }
 }

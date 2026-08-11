@@ -11,8 +11,8 @@
                 {{ __($greeting, ['name' => $user->name ?? '']) }}
             </h2>
             <p class="mt-1 text-[0.875rem] text-body">
-                <span class="numeric">2</span> {{ __('searches running') }} ·
-                <span class="numeric">312</span> {{ __('new leads since yesterday') }}
+                <span class="numeric">{{ number_format($runningSearchCount ?? 0) }}</span> {{ __('searches running') }} ·
+                <span class="numeric">{{ number_format($newLeadsSinceYesterday ?? 0) }}</span> {{ __('new leads since yesterday') }}
             </p>
         </div>
 
@@ -28,40 +28,40 @@
     <div class="kpis">
         <article class="kpi">
             <p class="kpi__label">{{ __('Credits remaining') }}</p>
-            <p class="kpi__value numeric">2,480</p>
+            <p class="kpi__value numeric">{{ number_format($creditsRemaining ?? 0) }}</p>
             <p class="kpi__foot">
                 <span class="kpi__note">
-                    {{ __('of') }} <span class="numeric">5,000</span> {{ __('this month') }}
+                    {{ __('of') }} <span class="numeric">{{ number_format($monthlyCredits ?? ($creditsRemaining ?? 0)) }}</span> {{ __('this month') }}
                 </span>
-                <a href="#" class="kpi__link">{{ __('Buy more') }}</a>
+                <a href="{{ route('user.credits.buy') }}" class="kpi__link">{{ __('Buy more') }}</a>
             </p>
         </article>
 
         <article class="kpi">
             <p class="kpi__label">{{ __('Searches this month') }}</p>
-            <p class="kpi__value numeric">18</p>
+            <p class="kpi__value numeric">{{ number_format($searchesThisMonth ?? 0) }}</p>
             <p class="kpi__foot">
-                <span class="kpi__delta kpi__delta--up">
-                    <i class="ph ph-trend-up" aria-hidden="true"></i>
-                    <span class="numeric">4</span> {{ __('vs last month') }}
+                <span class="kpi__delta {{ ($searchesDelta ?? 0) >= 0 ? 'kpi__delta--up' : 'kpi__delta--down' }}">
+                    <i class="ph {{ ($searchesDelta ?? 0) >= 0 ? 'ph-trend-up' : 'ph-trend-down' }}" aria-hidden="true"></i>
+                    <span class="numeric">{{ number_format(abs($searchesDelta ?? 0)) }}</span> {{ __('vs last month') }}
                 </span>
             </p>
         </article>
 
         <article class="kpi">
             <p class="kpi__label">{{ __('Leads found') }}</p>
-            <p class="kpi__value numeric">1,284</p>
+            <p class="kpi__value numeric">{{ number_format($leadsFound ?? 0) }}</p>
             <p class="kpi__foot">
-                <span class="kpi__delta kpi__delta--up">
-                    <i class="ph ph-trend-up" aria-hidden="true"></i>
-                    <span class="numeric">12%</span> {{ __('vs last month') }}
+                <span class="kpi__delta {{ ($leadsDeltaPercent ?? 0) >= 0 ? 'kpi__delta--up' : 'kpi__delta--down' }}">
+                    <i class="ph {{ ($leadsDeltaPercent ?? 0) >= 0 ? 'ph-trend-up' : 'ph-trend-down' }}" aria-hidden="true"></i>
+                    <span class="numeric">{{ abs($leadsDeltaPercent ?? 0) }}%</span> {{ __('vs last month') }}
                 </span>
             </p>
         </article>
 
         <article class="kpi kpi--ai">
             <p class="kpi__label">{{ __('Average lead score') }}</p>
-            <p class="kpi__value numeric">74</p>
+            <p class="kpi__value numeric">{{ number_format($averageLeadScore ?? 0) }}</p>
             <p class="kpi__foot">
                 <span class="kpi__note kpi__note--ai">
                     <i class="ph-fill ph-sparkle" aria-hidden="true"></i>
@@ -84,57 +84,41 @@
         </div>
 
         <div class="panel__body">
-            <article class="job">
-                <div class="job__head">
-                    <p class="job__what">
-                        <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-                        {{ __('orthodontists in Dallas, TX') }}
-                    </p>
-                    <p class="shrink-0 text-[0.8125rem] text-body">
-                        <span class="numeric">312</span> {{ __('of') }}
-                        <span class="numeric">480</span> {{ __('enriched') }}
-                    </p>
-                </div>
-                <div class="mt-2.5 h-1.5 overflow-hidden rounded-full bg-neutral-100"
-                     role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"
-                     aria-label="{{ __('Search progress') }}">
-                    <span class="job__fill job__fill--65"></span>
-                </div>
-                <div class="job__foot">
-                    <span class="text-body">
-                        {{ __('Started') }} <span class="numeric">6</span> {{ __('minutes ago') }}
+            @forelse ($runningSearches as $run)
+                <article class="job">
+                    <div class="job__head">
+                        <p class="job__what">
+                            <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+                            {{ $run['label'] }}
+                        </p>
+                        <p class="shrink-0 text-[0.8125rem] text-body">
+                            <span class="numeric">{{ number_format($run['found']) }}</span> {{ __('of') }}
+                            <span class="numeric">{{ number_format($run['target']) }}</span> {{ __('found') }}
+                        </p>
+                    </div>
+                    <div class="mt-2.5 h-1.5 overflow-hidden rounded-full bg-neutral-100"
+                         role="progressbar" aria-valuenow="{{ $run['progress'] }}" aria-valuemin="0" aria-valuemax="100"
+                         aria-label="{{ __('Search progress') }}">
+                        <span class="job__fill" style="--progress: {{ $run['progress'] }}%;"></span>
+                    </div>
+                    <div class="job__foot">
+                        <span class="text-body">
+                            {{ __('Started') }} {{ $run['started_at']?->diffForHumans() ?? __('recently') }}
+                        </span>
+                        <a href="{{ $run['url'] }}" class="font-medium text-primary transition-colors duration-200 hover:text-primary-dark">
+                            {{ __('Watch progress') }}
+                        </a>
+                    </div>
+                </article>
+            @empty
+                <div class="empty py-8">
+                    <span class="empty__icon" aria-hidden="true">
+                        <i class="ph ph-check-circle"></i>
                     </span>
-                    <a href="#" class="font-medium text-primary transition-colors duration-200 hover:text-primary-dark">
-                        {{ __('Watch progress') }}
-                    </a>
+                    <h2 class="empty__title">{{ __('No searches running') }}</h2>
+                    <p class="empty__body">{{ __('Start a new search when you are ready to find more businesses.') }}</p>
                 </div>
-            </article>
-
-            <article class="job">
-                <div class="job__head">
-                    <p class="job__what">
-                        <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-                        {{ __('med spas in Phoenix, AZ') }}
-                    </p>
-                    <p class="shrink-0 text-[0.8125rem] text-body">
-                        <span class="numeric">88</span> {{ __('of') }}
-                        <span class="numeric">240</span> {{ __('enriched') }}
-                    </p>
-                </div>
-                <div class="mt-2.5 h-1.5 overflow-hidden rounded-full bg-neutral-100"
-                     role="progressbar" aria-valuenow="37" aria-valuemin="0" aria-valuemax="100"
-                     aria-label="{{ __('Search progress') }}">
-                    <span class="job__fill job__fill--37"></span>
-                </div>
-                <div class="job__foot">
-                    <span class="text-body">
-                        {{ __('Started') }} <span class="numeric">2</span> {{ __('minutes ago') }}
-                    </span>
-                    <a href="#" class="font-medium text-primary transition-colors duration-200 hover:text-primary-dark">
-                        {{ __('Watch progress') }}
-                    </a>
-                </div>
-            </article>
+            @endforelse
         </div>
     </section>
 
@@ -148,8 +132,8 @@
             <div class="panel__body">
                 <div class="h-[240px] w-full @3xl:h-[280px]">
                     <canvas data-chart="line" data-chart-color="discover"
-                            data-chart-labels="1 Jul,4 Jul,7 Jul,10 Jul,13 Jul,16 Jul,19 Jul,22 Jul,25 Jul,28 Jul"
-                            data-chart-values="24,38,31,52,44,68,57,84,72,96"
+                            data-chart-labels="{{ $chartLabels }}"
+                            data-chart-values="{{ $chartValues }}"
                             aria-label="{{ __('Leads found per day over the last 30 days') }}"
                             role="img"></canvas>
                 </div>
@@ -167,51 +151,30 @@
 
             <div class="panel__body">
                 <ul class="tops">
-                    <li class="top">
-                        <span class="top__score top__score--hi numeric">92</span>
-                        <span class="top__who">
-                            <a href="#" class="truncate text-[0.875rem] font-medium text-title transition-colors duration-200 hover:text-primary">
-                                {{ __('Barton Springs Dental') }}
-                            </a>
-                            <span class="truncate text-[0.75rem] text-body">{{ __('Austin, TX') }}</span>
-                        </span>
-                    </li>
-                    <li class="top">
-                        <span class="top__score top__score--hi numeric">88</span>
-                        <span class="top__who">
-                            <a href="#" class="truncate text-[0.875rem] font-medium text-title transition-colors duration-200 hover:text-primary">
-                                {{ __('Lamar Family Dentistry') }}
-                            </a>
-                            <span class="truncate text-[0.75rem] text-body">{{ __('Austin, TX') }}</span>
-                        </span>
-                    </li>
-                    <li class="top">
-                        <span class="top__score top__score--hi numeric">84</span>
-                        <span class="top__who">
-                            <a href="#" class="truncate text-[0.875rem] font-medium text-title transition-colors duration-200 hover:text-primary">
-                                {{ __('Hill Country Orthodontics') }}
-                            </a>
-                            <span class="truncate text-[0.75rem] text-body">{{ __('Dallas, TX') }}</span>
-                        </span>
-                    </li>
-                    <li class="top">
-                        <span class="top__score top__score--mid numeric">79</span>
-                        <span class="top__who">
-                            <a href="#" class="truncate text-[0.875rem] font-medium text-title transition-colors duration-200 hover:text-primary">
-                                {{ __('Desert Bloom Med Spa') }}
-                            </a>
-                            <span class="truncate text-[0.75rem] text-body">{{ __('Phoenix, AZ') }}</span>
-                        </span>
-                    </li>
-                    <li class="top">
-                        <span class="top__score top__score--mid numeric">76</span>
-                        <span class="top__who">
-                            <a href="#" class="truncate text-[0.875rem] font-medium text-title transition-colors duration-200 hover:text-primary">
-                                {{ __('Zilker Smile Studio') }}
-                            </a>
-                            <span class="truncate text-[0.75rem] text-body">{{ __('Austin, TX') }}</span>
-                        </span>
-                    </li>
+                    @forelse ($topLeads as $lead)
+                        @php
+                            $bucket = \App\Modules\Leads\Models\Lead::scoreBucket($lead->score);
+                        @endphp
+                        <li class="top">
+                            <span class="top__score top__score--{{ $bucket === 'hi' ? 'hi' : 'mid' }} numeric">{{ $lead->score ?? 0 }}</span>
+                            <span class="top__who">
+                                <a href="{{ route('user.leads.show', $lead) }}" class="truncate text-[0.875rem] font-medium text-title transition-colors duration-200 hover:text-primary">
+                                    {{ $lead->place?->name ?? __('Untitled lead') }}
+                                </a>
+                                <span class="truncate text-[0.75rem] text-body">{{ $lead->place?->formatted_address ?? __('No address') }}</span>
+                            </span>
+                        </li>
+                    @empty
+                        <li class="top">
+                            <span class="top__score top__score--mid numeric">0</span>
+                            <span class="top__who">
+                                <a href="{{ route('user.search.new') }}" class="truncate text-[0.875rem] font-medium text-title transition-colors duration-200 hover:text-primary">
+                                    {{ __('Run a search to score leads') }}
+                                </a>
+                                <span class="truncate text-[0.75rem] text-body">{{ __('AI scores appear here automatically.') }}</span>
+                            </span>
+                        </li>
+                    @endforelse
                 </ul>
             </div>
         </section>
@@ -239,72 +202,32 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td class="tbl__key">{{ __('dentists') }}</td>
-                        <td>{{ __('Austin, TX') }}</td>
-                        <td class="tbl__num numeric">184</td>
-                        <td class="tbl__num numeric">172</td>
-                        <td class="text-neutral-500">
-                            <time datetime="2026-07-19">{{ __('19 Jul') }}</time>
-                        </td>
-                        <td class="tbl__act">
-                            <a href="{{ route('user.leads.index') }}" class="tbl__link">{{ __('Results') }}</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="tbl__key">{{ __('orthodontists') }}</td>
-                        <td>{{ __('Dallas, TX') }}</td>
-                        <td class="tbl__num numeric">480</td>
-                        <td class="tbl__num numeric">312</td>
-                        <td class="text-neutral-500">
-                            <time datetime="2026-07-19">{{ __('19 Jul') }}</time>
-                        </td>
-                        <td class="tbl__act">
-                            <a href="{{ route('user.leads.index') }}" class="tbl__link">{{ __('Results') }}</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="tbl__key">{{ __('med spas') }}</td>
-                        <td>{{ __('Phoenix, AZ') }}</td>
-                        <td class="tbl__num numeric">240</td>
-                        <td class="tbl__num numeric">88</td>
-                        <td class="text-neutral-500">
-                            <time datetime="2026-07-18">{{ __('18 Jul') }}</time>
-                        </td>
-                        <td class="tbl__act">
-                            <a href="{{ route('user.leads.index') }}" class="tbl__link">{{ __('Results') }}</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="tbl__key">{{ __('chiropractors') }}</td>
-                        <td>{{ __('Denver, CO') }}</td>
-                        <td class="tbl__num numeric">156</td>
-                        <td class="tbl__num numeric">141</td>
-                        <td class="text-neutral-500">
-                            <time datetime="2026-07-16">{{ __('16 Jul') }}</time>
-                        </td>
-                        <td class="tbl__act">
-                            <a href="{{ route('user.leads.index') }}" class="tbl__link">{{ __('Results') }}</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="tbl__key">{{ __('law firms') }}</td>
-                        <td>{{ __('Seattle, WA') }}</td>
-                        <td class="tbl__num numeric">312</td>
-                        <td class="tbl__num numeric">298</td>
-                        <td class="text-neutral-500">
-                            <time datetime="2026-07-14">{{ __('14 Jul') }}</time>
-                        </td>
-                        <td class="tbl__act">
-                            <a href="{{ route('user.leads.index') }}" class="tbl__link">{{ __('Results') }}</a>
-                        </td>
-                    </tr>
+                    @forelse ($recentSearches as $run)
+                        <tr>
+                            <td class="tbl__key">{{ $run['keyword'] }}</td>
+                            <td>{{ $run['location'] }}</td>
+                            <td class="tbl__num numeric">{{ number_format($run['found']) }}</td>
+                            <td class="tbl__num numeric">{{ number_format($run['credits']) }}</td>
+                            <td class="text-neutral-500">
+                                <time datetime="{{ $run['created_at']->toDateString() }}">{{ $run['created_at']->format('j M') }}</time>
+                            </td>
+                            <td class="tbl__act">
+                                <a href="{{ $run['url'] }}" class="tbl__link">{{ __('Results') }}</a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="py-8 text-center text-body">
+                                {{ __('No searches yet. Run your first search to build this history.') }}
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
     </section>
 
-    <section class="panel empty" hidden>
+    <section class="panel empty" @if ($hasDashboardActivity) hidden @endif>
         <span class="empty__icon" aria-hidden="true">
             <i class="ph ph-magnifying-glass"></i>
         </span>

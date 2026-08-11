@@ -20,17 +20,25 @@ class LogNotificationFailed
 
         $channel = $this->resolveChannelName($event->channel);
 
-        NotificationLog::where('template_slug', $event->notification->getTemplateSlug())
+        $log = NotificationLog::where('template_slug', $event->notification->getTemplateSlug()->value)
             ->where('channel', $channel)
             ->where('notifiable_type', $event->notifiable->getMorphClass())
             ->where('notifiable_id', $event->notifiable->getKey())
             ->where('status', 'queued')
             ->latest()
-            ->first()
-            ?->update([
-                'status' => 'failed',
-                'metadata' => ['error' => $event->data['message'] ?? 'Unknown error'],
-            ]);
+            ->first();
+
+        if (! $log) {
+            return;
+        }
+
+        $metadata = $log->metadata ?? [];
+        $metadata['error'] = $event->data['message'] ?? 'Unknown error';
+
+        $log->update([
+            'status' => 'failed',
+            'metadata' => $metadata,
+        ]);
     }
 
     /**

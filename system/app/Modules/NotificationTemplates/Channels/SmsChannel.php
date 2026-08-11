@@ -35,7 +35,7 @@ class SmsChannel
         try {
             $driver->send($phone, $message);
 
-            NotificationLog::where('template_slug', $notification->getTemplateSlug())
+            NotificationLog::where('template_slug', $notification->getTemplateSlug()->value)
                 ->where('channel', 'sms')
                 ->where('notifiable_type', $notifiable->getMorphClass())
                 ->where('notifiable_id', $notifiable->getKey())
@@ -44,7 +44,7 @@ class SmsChannel
                 ->first()
                 ?->update(['status' => 'sent', 'sent_at' => now()]);
         } catch (\Throwable $e) {
-            NotificationLog::where('template_slug', $notification->getTemplateSlug())
+            NotificationLog::where('template_slug', $notification->getTemplateSlug()->value)
                 ->where('channel', 'sms')
                 ->where('notifiable_type', $notifiable->getMorphClass())
                 ->where('notifiable_id', $notifiable->getKey())

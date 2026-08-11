@@ -19,8 +19,8 @@
             {{ __('No card required, and no trial that expires') }}
         </li>
         <li class="assure__item">
-            <i class="ph ph-users-three" aria-hidden="true"></i>
-            {{ __('Invite your whole team on any plan') }}
+            <i class="ph ph-sliders-horizontal" aria-hidden="true"></i>
+            {{ __('Tune searches before you spend credits') }}
         </li>
         <li class="assure__item">
             <i class="ph ph-download-simple" aria-hidden="true"></i>
@@ -37,7 +37,9 @@
 
     <div class="auth__head">
         <h1 class="auth__title">{{ __('Create your account') }}</h1>
-        <p class="auth__sub">{{ __(':credits free credits, no card. You are one form away from your first list.', ['credits' => '100']) }}</p>
+        <p class="auth__sub">
+            {{ __(':credits free credits, no card. You are one form away from your first list.', ['credits' => '100']) }}
+        </p>
     </div>
 
     <form class="auth__form" method="POST" action="{{ route('register') }}" novalidate>

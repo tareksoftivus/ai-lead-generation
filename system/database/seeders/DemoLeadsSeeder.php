@@ -298,11 +298,11 @@ class DemoLeadsSeeder extends Seeder
             $lead->save();
 
             $lead->lists()->syncWithoutDetaching(
-                collect($data['lists'])->map(fn(string $key) => $lists[$key]->id)->all()
+                collect($data['lists'])->map(fn (string $key) => $lists[$key]->id)->all()
             );
 
             $lead->tags()->syncWithoutDetaching(
-                collect($data['tags'])->map(fn(string $key) => $tags[$key]->id)->all()
+                collect($data['tags'])->map(fn (string $key) => $tags[$key]->id)->all()
             );
 
             LeadNote::query()->firstOrCreate([

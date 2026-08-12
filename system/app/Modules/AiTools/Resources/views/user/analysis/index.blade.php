@@ -7,9 +7,6 @@
 
     <div class="mb-4">
         <h2 class="heading-3">{{ __('Business analysis') }}</h2>
-        <p class="m-text mt-1">
-            {{ __('A written read of what each business does, what it is missing, and what that gives you to open with.') }}
-        </p>
     </div>
 
     <div class="@container">
@@ -26,9 +23,6 @@
 
             <section class="form-card">
                 <h3 class="form-card__title">{{ __('What to analyse') }}</h3>
-                <p class="form-card__hint">
-                    {{ __('Pick a list you have already built. Analysis reads the business, not the map, so it can run any time.') }}
-                </p>
 
                 <div class="mt-4">
                     <label for="anz-source" class="form-label">{{ __('List') }}</label>
@@ -66,9 +60,6 @@
                     <input type="checkbox" class="form-check" id="anz-skip" name="skip_analysed" value="1" @checked(old('skip_analysed', true)) />
                     <label for="anz-skip" class="cursor-pointer text-[0.9375rem] font-medium text-title">
                         {{ __('Skip businesses already analysed') }}
-                        <span class="mt-0.5 block text-[0.8125rem] font-normal text-body">
-                            {{ __('Skipped businesses are not analysed again and do not spend credits.') }}
-                        </span>
                     </label>
                 </div>
 
@@ -84,9 +75,6 @@
                     @error('focus')
                         <p class="form-hint text-red-600">{{ $message }}</p>
                     @enderror
-                    <p class="form-hint">
-                        {{ __('This steers what the analysis argues, not how much it costs.') }}
-                    </p>
                 </div>
             </section>
 
@@ -177,15 +165,11 @@
             @empty
                 <div class="px-4 py-8 text-center">
                     <p class="font-title text-[1rem] font-bold text-title">{{ __('No analysis runs yet') }}</p>
-                    <p class="m-text mt-1">{{ __('Choose one of your lead lists above and run the first read.') }}</p>
                 </div>
             @endforelse
         </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-3 border-t border-neutral-200 px-4 py-3">
-            <p class="m-text">
-                {{ trans_choice(':count credit is charged for each business analysed in a run.|:count credits are charged for each business analysed in a run.', $analysisCreditCost, ['count' => number_format($analysisCreditCost)]) }}
-            </p>
+        <div class="flex flex-wrap items-center justify-end gap-3 border-t border-neutral-200 px-4 py-3">
             <a href="{{ route('user.leads.index') }}" class="btn btn-outline btn-sm">
                 <span class="btn__label">
                     <span>{{ __('See them in the table') }}</span>

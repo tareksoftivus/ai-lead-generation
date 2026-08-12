@@ -4,9 +4,6 @@
     <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
             <h2 class="heading-3">{{ __('API keys') }}</h2>
-            <p class="m-text mt-1">
-                {{ __('Create bearer tokens for your own systems. A key is shown once when it is created.') }}
-            </p>
         </div>
 
         <button type="button" class="btn btn-primary btn-sm shrink-0" data-modal-open="keyModal">
@@ -101,15 +98,9 @@
                     <i class="ph ph-key"></i>
                 </span>
                 <h2 class="empty__title">{{ __('No keys yet') }}</h2>
-                <p class="empty__body">{{ __('Create a key to start pulling leads over the API.') }}</p>
             </div>
         @endif
     </div>
-
-    <p class="apik__note">
-        <i class="ph ph-info" aria-hidden="true"></i>
-        <span>{{ __('Read-only keys can fetch leads. Full-access keys are reserved for write endpoints as they are added.') }}</span>
-    </p>
 
     @push('modals')
         <div class="modal" id="keyModal" aria-hidden="true" role="dialog" aria-modal="true">

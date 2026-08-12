@@ -2,9 +2,6 @@
     <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
             <h2 class="heading-3">{{ __('Email campaigns') }}</h2>
-            <p class="m-text mt-1">
-                {{ __('Sequences built from your saved leads. Nothing goes out until you approve it.') }}
-            </p>
         </div>
 
         <button type="button" class="btn btn-primary btn-sm shrink-0" data-modal-open="campaignModal">
@@ -43,7 +40,6 @@
         <div class="panel" data-list>
             <div class="panel__head">
                 <h3 class="panel__title">{{ __('All campaigns') }}</h3>
-                <span class="panel__meta">{{ __('Built from leads with an email address') }}</span>
             </div>
 
             <nav class="app-tablist" aria-label="{{ __('Filter campaigns') }}">
@@ -190,11 +186,6 @@
         </div>
     @endif
 
-    <p class="camp__note">
-        <i class="ph ph-info" aria-hidden="true"></i>
-        <span>{{ __('Campaigns cost no credits. Credits are spent only when leads are generated and enriched.') }}</span>
-    </p>
-
     @push('modals')
         <div class="modal" id="campaignModal" aria-hidden="true">
             <div class="modal__backdrop" data-modal-close></div>
@@ -243,7 +234,6 @@
                                 <option value="{{ $run->id }}">{{ $run->search?->prompt ?? __('Search #:id', ['id' => $run->id]) }} ({{ $run->results_count }} {{ __('found') }})</option>
                             @endforeach
                         </select>
-                        <p class="form-hint">{{ __('Only used when you pick a list or a search above.') }}</p>
                     </div>
 
                     <div class="mt-4">

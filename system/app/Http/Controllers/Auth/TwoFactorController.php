@@ -125,11 +125,11 @@ class TwoFactorController extends Controller
         }
 
         if (! $user->hasTwoFactorEnabled() || ! $user->hasConfirmedTwoFactor()) {
-            return redirect()->route("{$panel['key']}.dashboard");
+            return redirect()->route($this->panelLandingRoute($panel));
         }
 
         if (session('2fa_verified')) {
-            return redirect()->route("{$panel['key']}.dashboard");
+            return redirect()->route($this->panelLandingRoute($panel));
         }
 
         $panelKey = $panel['key'];
@@ -161,7 +161,7 @@ class TwoFactorController extends Controller
 
         session(['2fa_verified' => true]);
 
-        return redirect()->intended(route("{$panel['key']}.dashboard"));
+        return redirect()->intended(route($this->panelLandingRoute($panel)));
     }
 
     public function verifyRecoveryCode(Request $request): RedirectResponse
@@ -192,7 +192,22 @@ class TwoFactorController extends Controller
 
         session(['2fa_verified' => true]);
 
-        return redirect()->intended(route("{$panel['key']}.dashboard"));
+        return redirect()->intended(route($this->panelLandingRoute($panel)));
+    }
+
+    protected function panelLandingRoute(array $panel): string
+    {
+        $dashboardRoute = "{$panel['key']}.dashboard";
+
+        if (\Illuminate\Support\Facades\Route::has($dashboardRoute)) {
+            return $dashboardRoute;
+        }
+
+        if (($panel['key'] ?? null) === 'user' && \Illuminate\Support\Facades\Route::has('user.search.new')) {
+            return 'user.search.new';
+        }
+
+        return $dashboardRoute;
     }
 
     /**

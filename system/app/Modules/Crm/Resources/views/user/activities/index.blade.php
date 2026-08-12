@@ -2,9 +2,6 @@
     <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
             <h2 class="heading-3">{{ __('Notes & activities') }}</h2>
-            <p class="m-text mt-1">
-                {{ __('Everything that has happened across your leads — what you did, and what the platform did for you.') }}
-            </p>
         </div>
 
         <button type="button" class="btn btn-primary btn-sm shrink-0" data-modal-open="activityModal" @disabled($leads->isEmpty())>

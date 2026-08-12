@@ -3,7 +3,6 @@
 namespace App\Modules\Leads\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\UserSetting;
 use App\Modules\Credits\Exceptions\InsufficientCreditsException;
 use App\Modules\Leads\Contracts\LeadScorer;
 use App\Modules\Leads\Http\Requests\RunSearchRequest;
@@ -43,6 +42,8 @@ class SearchController extends Controller implements HasMiddleware
      */
     public function new(Request $request): View
     {
+        $request->session()->forget('_old_input');
+
         return view('leads::user.search.new', $this->viewData($request));
     }
 
@@ -222,10 +223,8 @@ class SearchController extends Controller implements HasMiddleware
             ->limit(5)
             ->get();
 
-        $settings = UserSetting::forUser($request->user());
-
         return array_merge([
-            'activeFilters' => $searchRun?->filters ?? $settings->searchFilters(),
+            'activeFilters' => $searchRun?->filters ?? [],
             'savedSearches' => $savedSearches,
             'recentSearches' => $recentSearches,
             'filterOptions' => $this->filterOptions($savedSearches, $recentSearches),

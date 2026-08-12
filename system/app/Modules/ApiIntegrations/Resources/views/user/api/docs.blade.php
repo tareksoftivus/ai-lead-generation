@@ -3,16 +3,12 @@
 
     <div class="mb-4">
         <h2 class="heading-3">{{ __('API documentation') }}</h2>
-        <p class="m-text mt-1">
-            {{ __('Use bearer tokens from API keys to read the leads already in your account.') }}
-        </p>
     </div>
 
     <div class="doc">
         <div class="doc__main">
             <section class="form-card" id="start">
                 <h3 class="form-card__title">{{ __('Getting started') }}</h3>
-                <p class="form-card__hint">{{ __('Every request returns JSON and must include an Authorization header.') }}</p>
 
                 <dl class="doc__facts">
                     <div class="doc__fact">
@@ -54,7 +50,6 @@
                     <span class="shrink-0 rounded px-1.5 py-0.5 font-mono text-[0.625rem] font-bold tracking-wider uppercase doc__verb--get">GET</span>
                     <code class="font-mono text-[0.9375rem] font-semibold break-all text-title">/v1/leads</code>
                 </div>
-                <p class="form-card__hint mt-3">{{ __('Every lead in your account, newest first.') }}</p>
 
                 <h4 class="mt-5 font-title text-[0.875rem] font-bold text-title">{{ __('Query parameters') }}</h4>
                 <div class="table-scroll">
@@ -116,7 +111,6 @@
                     <span class="shrink-0 rounded px-1.5 py-0.5 font-mono text-[0.625rem] font-bold tracking-wider uppercase doc__verb--get">GET</span>
                     <code class="font-mono text-[0.9375rem] font-semibold break-all text-title">/v1/leads/{id}</code>
                 </div>
-                <p class="form-card__hint mt-3">{{ __('Fetch one lead owned by your account.') }}</p>
 
                 <div class="mt-3 overflow-hidden rounded-xl border border-neutral-200">
                     <div class="doc__block-head">
@@ -156,14 +150,5 @@
                 </div>
             </section>
         </div>
-
-        <aside class="doc__side">
-            <nav class="doc__toc" aria-label="{{ __('On this page') }}">
-                <a href="#start">{{ __('Getting started') }}</a>
-                <a href="#leads">{{ __('List leads') }}</a>
-                <a href="#lead">{{ __('Fetch one lead') }}</a>
-                <a href="#errors">{{ __('Errors') }}</a>
-            </nav>
-        </aside>
     </div>
 </x-layouts.user>

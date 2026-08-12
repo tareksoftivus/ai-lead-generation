@@ -46,7 +46,7 @@ class WelcomeMail extends Mailable implements ShouldQueue
         return new Content(
             view: 'emails.welcome',
             with: [
-                'dashboardUrl' => route('user.dashboard'),
+                'dashboardUrl' => route('user.search.new'),
             ],
         );
     }

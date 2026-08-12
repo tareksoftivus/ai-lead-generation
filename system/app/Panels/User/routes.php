@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Auth\PhoneVerificationController;
 use App\Http\Controllers\Auth\TwoFactorController;
-use App\Panels\User\Controllers\DashboardController;
 use App\Panels\User\Controllers\ProfileController;
 use App\Panels\User\Controllers\ScoringController;
 use App\Panels\User\Controllers\SettingsController;
@@ -27,8 +26,6 @@ Route::withoutMiddleware(['phone.verified', 'verified', '2fa', 'panel:user'])->g
         ->middleware('throttle:6,1')
         ->name('phone.verification.verify');
 });
-
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 // AI Tools
 Route::get('scoring', [ScoringController::class, 'index'])->name('scoring.index');

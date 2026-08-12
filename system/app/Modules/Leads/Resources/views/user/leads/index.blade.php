@@ -2,13 +2,6 @@
     <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
             <h2 class="heading-3">{{ $activeList?->name ?? __('All leads') }}</h2>
-            <p class="m-text mt-1">
-                @if ($activeList)
-                    {{ __('Leads saved under this list. You can still manage status, tags, and notes from here.') }}
-                @else
-                    {{ __('Every business you have saved. Exporting is free — a lead you already hold is yours to download as often as you like.') }}
-                @endif
-            </p>
         </div>
 
         <a href="{{ route('user.search.new') }}" class="btn btn-primary btn-sm shrink-0">
@@ -94,9 +87,6 @@
                 </div>
             </div>
 
-            <p class="list-count">
-                <span class="numeric" data-list-count>{{ $leads->total() }}</span> {{ __('leads') }}
-            </p>
         </div>
 
         <div class="bulk-bar is-hidden" data-bulk-bar>

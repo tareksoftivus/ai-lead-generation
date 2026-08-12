@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const form = results.closest("form") || document.querySelector("form");
   const hero = document.querySelector(".srch__hero");
+  const showWhenQueryExists = form?.dataset.showResultsOnQuery === "true";
+  let hasServerResults = results.dataset.hasServerResults === "true";
 
   // Live, like the reference: the moment the query names something to look
   // for, the workspace shows what comes back. There is no "run" step to
@@ -19,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function sync() {
-    const on = hasQuery();
+    const on = hasServerResults || (showWhenQueryExists && hasQuery());
     results.classList.toggle("is-hidden", !on);
     hero?.classList.toggle("is-hidden", on);
   }
@@ -36,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
       field.querySelectorAll(".ffield__chip").forEach((chip) => chip.remove());
       field.classList.remove("is-filled");
     });
+    hasServerResults = false;
     form?.dispatchEvent(new Event("change", { bubbles: true }));
     form?.dispatchEvent(new Event("input", { bubbles: true }));
   });

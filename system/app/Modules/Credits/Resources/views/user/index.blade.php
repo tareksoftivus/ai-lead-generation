@@ -6,9 +6,6 @@
     <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
             <h2 class="heading-3">{{ __('Credit usage') }}</h2>
-            <p class="m-text mt-1">
-                {{ __('Every credit this account has spent, and every one granted. Credits are spent when leads are generated.') }}
-            </p>
         </div>
 
         <a href="{{ route('user.credits.buy') }}" class="btn btn-accent btn-sm shrink-0">
@@ -133,11 +130,4 @@
             <p class="font-title text-[1.125rem] font-bold text-title numeric">{{ number_format($balance) }}</p>
         </div>
     </div>
-
-    <p class="ledger__note">
-        <i class="ph ph-info" aria-hidden="true"></i>
-        <span>
-            {{ __('Generating leads spends credits. Saving generated leads to your lists, re-opening a lead, and exporting are always free.') }}
-        </span>
-    </p>
 </x-layouts.user>

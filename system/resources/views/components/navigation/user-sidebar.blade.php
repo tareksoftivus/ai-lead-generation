@@ -15,14 +15,16 @@
     }
 
     $panelKey = $panel ?? 'user';
-    $dashboardUrl = \Illuminate\Support\Facades\Route::has("{$panelKey}.dashboard")
-        ? route("{$panelKey}.dashboard")
-        : url('/');
+    $homeUrl = $panelKey === 'user' && \Illuminate\Support\Facades\Route::has('user.search.new')
+        ? route('user.search.new')
+        : (\Illuminate\Support\Facades\Route::has("{$panelKey}.dashboard")
+            ? route("{$panelKey}.dashboard")
+            : url('/'));
 @endphp
 
 <aside class="app-sidebar" data-sidebar>
     <div class="f-between h-[72px] shrink-0 border-b border-r border-neutral-200 bg-neutral-0 px-5">
-        <a href="{{ $dashboardUrl }}" class="ml-1 flex min-w-0 items-center" aria-label="{{ __('Go to dashboard') }}">
+        <a href="{{ $homeUrl }}" class="ml-1 flex min-w-0 items-center" aria-label="{{ __('Go to new search') }}">
             <img src="{{ $brandLogo }}" alt="{{ $siteName }}" class="max-w-[150px]" data-live-logo="site_logo" data-default-src="{{ asset('assets/uploads/brand/leadatlas-logo.png') }}">
         </a>
         <button type="button"
@@ -33,7 +35,7 @@
         </button>
     </div>
 
-    <nav class="flex-1 overflow-y-auto px-3 pt-4 pb-6" aria-label="{{ __('Dashboard') }}">
+    <nav class="flex-1 overflow-y-auto px-3 pt-4 pb-6" aria-label="{{ __('User navigation') }}">
         @foreach($groups as $groupTitle => $items)
             @if($groupTitle)
                 <p class="sidebar-group">{{ __($groupTitle) }}</p>

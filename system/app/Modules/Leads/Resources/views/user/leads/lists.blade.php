@@ -1,9 +1,6 @@
 <x-layouts.user :title="__('Lists & tags')">
     <div class="mb-4">
         <h2 class="heading-3">{{ __('Lists & tags') }}</h2>
-        <p class="m-text mt-1">
-            {{ __('Your own way of grouping leads, kept apart from what the AI decided.') }}
-        </p>
     </div>
 
     <div class="panel" data-tabs>
@@ -20,10 +17,6 @@
 
         <div data-tab-panel="lists">
             <div class="list-toolbar">
-                <p class="m-text">
-                    {{ __('A list is a saved set of leads. Opening one shows it in the usual table.') }}
-                </p>
-
                 <button type="button" class="btn btn-primary btn-sm ml-auto" data-modal-open="listModal">
                     <span class="btn__label">
                         <span>{{ __('New list') }}</span>
@@ -235,9 +228,6 @@
                 <form action="{{ route('user.leads.lists.store') }}" method="post">
                     @csrf
                     <h2 class="heading-3" id="listModalTitle">{{ __('New list') }}</h2>
-                    <p class="m-text mt-2 mb-5">
-                        {{ __('A list holds a set of leads.') }}
-                    </p>
 
                     <div>
                         <label for="list-name" class="form-label">{{ __('Name') }}</label>

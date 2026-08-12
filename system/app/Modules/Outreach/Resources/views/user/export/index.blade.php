@@ -1,7 +1,6 @@
 <x-layouts.user :title="__('Export center')">
     <div class="mb-4">
         <h2 class="heading-3">{{ __('Export center') }}</h2>
-        <p class="m-text mt-1">{{ __('Your leads, in a file you own. Exporting is free and does not spend credits.') }}</p>
     </div>
 
     <form action="{{ route('user.export.store') }}" method="post">
@@ -12,7 +11,6 @@
             <div class="cnew__main">
                 <section class="form-card">
                     <h3 class="form-card__title">{{ __('What to export') }}</h3>
-                    <p class="form-card__hint">{{ __('Pick a lead source. The download is generated from your current saved leads.') }}</p>
 
                     <div class="mt-4 grid gap-2">
                         <label class="pickr">
@@ -55,13 +53,11 @@
                                 <option value="{{ $run->id }}">{{ $run->search?->prompt ?? __('Search #:id', ['id' => $run->id]) }} ({{ $run->results_count }} {{ __('found') }})</option>
                             @endforeach
                         </select>
-                        <p class="form-hint">{{ __('Only used when you pick a list or a search above.') }}</p>
                     </div>
                 </section>
 
                 <section class="form-card mt-4">
                     <h3 class="form-card__title">{{ __('Columns') }}</h3>
-                    <p class="form-card__hint">{{ __('Everything we hold on a lead. Untick what you do not need.') }}</p>
 
                     <div class="mt-4 grid gap-x-4 gap-y-1 @lg:grid-cols-2 @3xl:grid-cols-3">
                         @foreach ($columns as $key => $column)
@@ -84,16 +80,10 @@
                             </label>
                         @endforeach
                     </div>
-
-                    <p class="exp__note">
-                        <i class="ph ph-lightbulb" aria-hidden="true"></i>
-                        <span>{{ __('Keep') }} <strong class="text-title">{{ __('Why it scored that') }}</strong> {{ __('ticked if you are handing this file to someone else.') }}</span>
-                    </p>
                 </section>
 
                 <section class="form-card mt-4">
                     <h3 class="form-card__title">{{ __('File') }}</h3>
-                    <p class="form-card__hint">{{ __('CSV opens anywhere. XLSX is available when the PHP zip extension is installed.') }}</p>
 
                     <div class="mt-4 grid gap-2 @xl:grid-cols-2">
                         <label class="pickr">
@@ -115,7 +105,6 @@
                     <div class="setting-row mt-2">
                         <div class="setting-row__text">
                             <label for="x-noemail" class="setting-row__label">{{ __('Leave out leads with no email') }}</label>
-                            <p class="setting-row__hint">{{ __('Useful for an email import. Off by default because a phone number is still a lead.') }}</p>
                         </div>
                         <input type="checkbox" id="x-noemail" name="require_email" value="1" class="switch" />
                     </div>
@@ -161,7 +150,6 @@
     <section class="panel mt-4">
         <div class="panel__head">
             <h3 class="panel__title">{{ __('Past exports') }}</h3>
-            <span class="panel__meta">{{ __('Kept for') }} <span class="numeric">90</span> {{ __('days') }}</span>
         </div>
 
         @if ($exports->isNotEmpty())
@@ -221,7 +209,6 @@
             <div class="empty">
                 <span class="empty__icon" aria-hidden="true"><i class="ph ph-download-simple"></i></span>
                 <h2 class="empty__title">{{ __('No exports yet') }}</h2>
-                <p class="empty__body">{{ __('Create your first download from the form above.') }}</p>
             </div>
         @endif
     </section>

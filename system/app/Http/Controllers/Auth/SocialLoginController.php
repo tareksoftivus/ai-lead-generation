@@ -82,7 +82,7 @@ class SocialLoginController extends Controller
             'provider' => $provider,
         ]);
 
-        return redirect()->intended(route('user.dashboard'));
+        return redirect()->intended(route('user.search.new'));
     }
 
     /**

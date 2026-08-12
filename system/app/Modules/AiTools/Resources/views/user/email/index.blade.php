@@ -15,9 +15,6 @@
 
     <div class="mb-4">
         <h2 class="heading-3">{{ __('Email generator') }}</h2>
-        <p class="m-text mt-1">
-            {{ __('Draft outreach from the lead data and business analysis you already have. Nothing is sent from this screen.') }}
-        </p>
     </div>
 
     <form id="email-generator-form" action="{{ route('user.email.generate') }}" method="post" class="@container">
@@ -46,9 +43,6 @@
                         @error('lead_id')
                             <p class="form-hint text-red-600">{{ $message }}</p>
                         @enderror
-                        <p class="form-hint">
-                            {{ __('Pick a saved lead. Analysed leads produce more specific copy.') }}
-                        </p>
                     </div>
 
                     <div class="mt-4">
@@ -76,17 +70,11 @@
                         @error('lead_list_id')
                             <p class="form-hint text-red-600">{{ $message }}</p>
                         @enderror
-                        <p class="form-hint">
-                            {{ __('Only used when you queue a list campaign.') }}
-                        </p>
                     </div>
                 </section>
 
                 <section class="form-card mt-4">
                     <h3 class="form-card__title">{{ __('How it should read') }}</h3>
-                    <p class="form-card__hint">
-                        {{ __('The business facts stay the same. These controls change the voice and shape.') }}
-                    </p>
 
                     <div class="mt-4">
                         <label for="gen-tone" class="form-label">{{ __('Tone') }}</label>
@@ -153,13 +141,6 @@
             <div class="min-w-0">
                 <section class="form-card">
                     <h3 class="form-card__title">{{ __('The draft') }}</h3>
-                    <p class="form-card__hint">
-                        @if ($analysis)
-                            {{ __('Written for :business around this gap: :gap', ['business' => $businessName, 'gap' => $analysis->gap]) }}
-                        @else
-                            {{ __('Written for :business from available lead data. Run business analysis for a sharper gap.', ['business' => $businessName]) }}
-                        @endif
-                    </p>
 
                     <div class="mt-4">
                         <label for="gen-subject" class="form-label">{{ __('Subject') }}</label>
@@ -216,9 +197,6 @@
 
                 <section class="form-card mt-4">
                     <h3 class="form-card__title">{{ __('What happens next') }}</h3>
-                    <p class="form-card__hint">
-                        {{ __('Nothing leaves LeadAtlas from this screen. Campaigns created here still wait for review.') }}
-                    </p>
 
                     <div class="gen__routes mt-4">
                         <button type="button" class="gen__route copy-btn" data-copy-target="#gen-body">
@@ -263,11 +241,6 @@
                             </span>
                         </button>
                     </div>
-
-                    <p class="gen__rule">
-                        <i class="ph-fill ph-shield-check" aria-hidden="true"></i>
-                        <span>{{ __('LeadAtlas never sends on your behalf. Copying, saving templates, and campaign review do not spend generation credits.') }}</span>
-                    </p>
                 </section>
 
                 @if ($templates->isNotEmpty() || $recentDrafts->isNotEmpty())

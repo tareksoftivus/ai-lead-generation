@@ -11,9 +11,6 @@
 
     <div class="mb-6">
         <h2 class="heading-3">{{ __('Account settings') }}</h2>
-        <p class="m-text mt-1">
-            {{ __('Your workspace display, search defaults, and what LeadAtlas emails you about.') }}
-        </p>
     </div>
 
     <div class="panel" data-tabs>
@@ -39,9 +36,6 @@
                 @method('PUT')
                 <div class="form-card">
                     <h3 class="form-card__title">{{ __('Workspace') }}</h3>
-                    <p class="form-card__hint">
-                        {{ __('The name shown around your dashboard, and the timezone dates should use.') }}
-                    </p>
 
                     <div class="set__grid">
                         <div>
@@ -68,9 +62,6 @@
                                     </option>
                                 @endforeach
                             </select>
-                            <p class="form-hint">
-                                {{ __('Search timestamps and credit entries use this.') }}
-                            </p>
                             @error('timezone')
                                 <p class="form-error">{{ $message }}</p>
                             @enderror
@@ -96,9 +87,6 @@
                 @method('PUT')
                 <div class="form-card">
                     <h3 class="form-card__title">{{ __('New search defaults') }}</h3>
-                    <p class="form-card__hint">
-                        {{ __('What a new search starts with. You can change any of it before running — and the credit cost is always shown first.') }}
-                    </p>
 
                     <div class="set__grid">
                         <div>
@@ -163,14 +151,10 @@
 
                 <div class="form-card mt-4">
                     <h3 class="form-card__title">{{ __('What to skip') }}</h3>
-                    <p class="form-card__hint">
-                        {{ __('Businesses matching these are left out of results, so you never spend a credit enriching them.') }}
-                    </p>
 
                     <div class="setting-row">
                         <div class="setting-row__text">
                             <label for="sk-nophone" class="setting-row__label">{{ __('Skip businesses with no phone number') }}</label>
-                            <p class="setting-row__hint">{{ __('A listing with no phone rarely has a reachable contact.') }}</p>
                         </div>
                         <input type="checkbox" id="sk-nophone" name="skip_no_phone" class="switch" value="1" @checked(old('skip_no_phone', $searchDefaults['skip_no_phone'] ?? true)) />
                     </div>
@@ -178,7 +162,6 @@
                     <div class="setting-row">
                         <div class="setting-row__text">
                             <label for="sk-closed" class="setting-row__label">{{ __('Skip permanently closed') }}</label>
-                            <p class="setting-row__hint">{{ __('Google still lists them; they are never worth calling.') }}</p>
                         </div>
                         <input type="checkbox" id="sk-closed" name="skip_closed" class="switch" value="1" @checked(old('skip_closed', $searchDefaults['skip_closed'] ?? true)) />
                     </div>
@@ -186,9 +169,7 @@
                     <div class="setting-row">
                         <div class="setting-row__text">
                             <label for="sk-seen" class="setting-row__label">{{ __('Skip businesses already in my leads') }}</label>
-                            <p class="setting-row__hint">
-                                {{ __('You are never charged twice for the same business, but this keeps them out of the results too.') }}
-                            </p>
+
                         </div>
                         <input type="checkbox" id="sk-seen" name="skip_seen" class="switch" value="1" @checked(old('skip_seen', $searchDefaults['skip_seen'] ?? true)) />
                     </div>
@@ -220,9 +201,6 @@
                     <div class="setting-row">
                         <div class="setting-row__text">
                             <label for="e-done" class="setting-row__label">{{ __('When a search finishes') }}</label>
-                            <p class="setting-row__hint">
-                                {{ __('Large searches run in the background — this tells you the results are ready.') }}
-                            </p>
                         </div>
                         <input type="checkbox" id="e-done" name="email_search_done" class="switch" value="1" @checked(old('email_search_done', $emailPreferences['email_search_done'] ?? true)) />
                     </div>
@@ -230,9 +208,6 @@
                     <div class="setting-row">
                         <div class="setting-row__text">
                             <label for="e-low" class="setting-row__label">{{ __('When credits run low') }}</label>
-                            <p class="setting-row__hint">
-                                {{ __('At 10% of your monthly allowance, so a search does not stop halfway.') }}
-                            </p>
                         </div>
                         <input type="checkbox" id="e-low" name="email_low_credits" class="switch" value="1" @checked(old('email_low_credits', $emailPreferences['email_low_credits'] ?? true)) />
                     </div>
@@ -240,9 +215,6 @@
                     <div class="setting-row">
                         <div class="setting-row__text">
                             <label for="e-weekly" class="setting-row__label">{{ __('Weekly summary') }}</label>
-                            <p class="setting-row__hint">
-                                {{ __('Searches run, leads found, and credits spent over the past seven days.') }}
-                            </p>
                         </div>
                         <input type="checkbox" id="e-weekly" name="email_weekly" class="switch" value="1" @checked(old('email_weekly', $emailPreferences['email_weekly'] ?? false)) />
                     </div>
@@ -250,9 +222,6 @@
                     <div class="setting-row">
                         <div class="setting-row__text">
                             <label for="e-product" class="setting-row__label">{{ __('Product news') }}</label>
-                            <p class="setting-row__hint">
-                                {{ __('New features and changes. Rarely — a few times a year.') }}
-                            </p>
                         </div>
                         <input type="checkbox" id="e-product" name="email_product" class="switch" value="1" @checked(old('email_product', $emailPreferences['email_product'] ?? false)) />
                     </div>

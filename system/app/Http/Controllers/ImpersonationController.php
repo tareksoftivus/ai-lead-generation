@@ -15,7 +15,7 @@ class ImpersonationController extends Controller
     ) {}
 
     /**
-     * Start impersonating a website user and return the user dashboard URL.
+     * Start impersonating a website user and return the user panel landing URL.
      *
      * The admin panel opens this URL in a new tab, where the request is now
      * authenticated as the impersonated user on the web guard.
@@ -25,7 +25,7 @@ class ImpersonationController extends Controller
         $this->impersonationService->startForUser($request->user(), $user, $request);
 
         return response()->json([
-            'url' => route('user.dashboard'),
+            'url' => route('user.search.new'),
         ]);
     }
 

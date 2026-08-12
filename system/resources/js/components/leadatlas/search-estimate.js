@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const balance = Number(form.dataset.balance || 0);
   const costPerItem = Math.max(0, Number(form.dataset.costPerItem || 1));
   const defaultSearchCount = 5;
+  let serverEstimateLocked = form.dataset.serverEstimateLocked === "true";
 
   const fmt = (n) => n.toLocaleString("en-US");
 
@@ -114,7 +115,15 @@ document.addEventListener("DOMContentLoaded", () => {
     submit.disabled = count === 0 || tooExpensive;
   }
 
-  form.addEventListener("input", render);
-  form.addEventListener("change", render);
-  render();
+  function unlockAndRender() {
+    serverEstimateLocked = false;
+    render();
+  }
+
+  form.addEventListener("input", unlockAndRender);
+  form.addEventListener("change", unlockAndRender);
+
+  if (!serverEstimateLocked) {
+    render();
+  }
 });

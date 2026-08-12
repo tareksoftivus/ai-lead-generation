@@ -22,7 +22,7 @@ class PhoneVerificationController extends Controller
     public function notice(Request $request): View|RedirectResponse
     {
         if ($request->user()->phone_verified_at !== null) {
-            return redirect()->route('user.dashboard');
+            return redirect()->route('user.search.new');
         }
 
         return view('auth.verify-phone');
@@ -74,7 +74,7 @@ class PhoneVerificationController extends Controller
 
         $user->forceFill(['phone_verified_at' => now()])->save();
 
-        return redirect()->route('user.dashboard')
+        return redirect()->route('user.search.new')
             ->with('success', __('Phone number verified.'));
     }
 }

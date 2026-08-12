@@ -2,9 +2,6 @@
     <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
             <h2 class="heading-3">{{ __('Support') }}</h2>
-            <p class="m-text mt-1">
-                {{ __('Ask us anything about your account, a search that went wrong, or a charge you did not expect.') }}
-            </p>
         </div>
 
         <button
@@ -45,9 +42,6 @@
         <div class="panel" data-list>
             <div class="panel__head">
                 <h3 class="panel__title">{{ __('Your tickets') }}</h3>
-                <span class="panel__meta">
-                    {{ __('Replies usually within') }} <span class="numeric">1</span> {{ __('business day') }}
-                </span>
             </div>
 
             <nav class="app-tablist" aria-label="{{ __('Filter tickets') }}">

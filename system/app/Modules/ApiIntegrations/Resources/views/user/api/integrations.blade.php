@@ -3,7 +3,6 @@
 
     <div class="mb-4">
         <h2 class="heading-3">{{ __('Integrations') }}</h2>
-        <p class="m-text mt-1">{{ __('Connect lead destinations and control their sync settings.') }}</p>
     </div>
 
     <section class="panel">
@@ -119,11 +118,6 @@
                     </div>
                 @endforelse
             </div>
-
-            <p class="integ__note">
-                <i class="ph ph-coins" aria-hidden="true"></i>
-                <span>{{ __('Saving integration settings is free. Provider delivery starts when a configured integration driver is enabled for that provider.') }}</span>
-            </p>
         </div>
     </section>
 </x-layouts.user>

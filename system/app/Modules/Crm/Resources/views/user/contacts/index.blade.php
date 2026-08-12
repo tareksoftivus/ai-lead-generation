@@ -2,9 +2,6 @@
     <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
             <h2 class="heading-3">{{ __('Contacts') }}</h2>
-            <p class="m-text mt-1">
-                {{ __('The people behind your leads. One business can have several — mark the one you actually reach as primary.') }}
-            </p>
         </div>
 
         <button type="button" class="btn btn-primary btn-sm shrink-0" data-modal-open="contactModal">

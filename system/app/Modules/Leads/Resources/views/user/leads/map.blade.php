@@ -1,9 +1,6 @@
 <x-layouts.user :title="__('Map view')">
     <div class="mb-4">
         <h2 class="heading-3">{{ __('Map view') }}</h2>
-        <p class="m-text mt-1">
-            {{ __('Your leads by location. Pick a pin to see who is worth a visit while you are in the area.') }}
-        </p>
     </div>
 
     <div class="mapview" data-map-view data-list>
@@ -108,10 +105,6 @@
                         </div>
                     </div>
                 @endif
-
-                <p class="list-count">
-                    <span class="numeric" data-map-count>{{ $mapLeads->count() }}</span> {{ __('on the map') }}
-                </p>
             </div>
         </div>
 

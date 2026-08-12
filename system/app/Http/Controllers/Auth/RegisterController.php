@@ -82,7 +82,7 @@ class RegisterController extends Controller
             return redirect()->route('user.phone.verification.notice')->with('status', $status);
         }
 
-        return redirect()->route('user.dashboard')
+        return redirect()->route('user.search.new')
             ->with('success', $requireEmailVerification
                 ? __('Registration successful! Please check your email to verify your account.')
                 : __('Registration successful! Welcome aboard.'));

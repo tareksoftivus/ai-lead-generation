@@ -2,9 +2,6 @@
     <div class="mb-4 flex flex-wrap items-end justify-between gap-4">
         <div>
             <h2 class="heading-3">{{ __('Sales pipeline') }}</h2>
-            <p class="m-text mt-1">
-                {{ __('The leads you are actually working. Move a card as the conversation moves.') }}
-            </p>
         </div>
 
         <a href="{{ route('user.leads.index') }}" class="btn btn-outline btn-sm shrink-0">
@@ -58,9 +55,6 @@
                     </div>
                 </div>
 
-                <p class="list-count">
-                    <span class="numeric" data-list-count>{{ $leads->count() }}</span> {{ __('in the pipeline') }}
-                </p>
             </div>
         </div>
 

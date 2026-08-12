@@ -13,9 +13,6 @@
 <x-layouts.user :title="__('Lead scoring')">
     <div class="mb-4">
         <h2 class="heading-3">{{ __('Lead scoring') }}</h2>
-        <p class="m-text mt-1">
-            {{ __('What makes a lead good depends on what you sell. Tell us that, and the ordering changes to match.') }}
-        </p>
     </div>
 
     <form action="{{ route('user.scoring.apply') }}" method="post" class="scr" data-scoring>
@@ -25,14 +22,8 @@
             <div class="scr__main">
                 <section class="form-card">
                     <h3 class="form-card__title">{{ __('What you sell') }}</h3>
-                    <p class="form-card__hint">
-                        {{ __('In your own words. A web agency and a supplier want opposite leads — this is what the weighting keys off.') }}
-                    </p>
 
                     <div class="mt-4">
-                        <label for="scr-sell" class="form-label">
-                            {{ __('Describe it in a sentence or two') }}
-                        </label>
                         <textarea
                             id="scr-sell"
                             name="offer"
@@ -40,18 +31,11 @@
                             rows="3"
                             placeholder="{{ __('We build booking systems for dental practices — they usually come to us when the phone is the only way to book.') }}"
                         >{{ old('offer', __('We build booking systems for dental practices — they usually come to us when the phone is the only way to book.')) }}</textarea>
-                        <p class="form-hint">
-                            {{ __('The clearer the gap you close, the better the ordering.') }}
-                        </p>
                     </div>
                 </section>
 
                 <section class="form-card mt-4">
                     <h3 class="form-card__title">{{ __('What counts, and how much') }}</h3>
-                    <p class="form-card__hint">
-                        {{ __('Drag a signal up and the sample re-scores as you go. Shares matter, not the total — these do not need to add up to') }}
-                        <span class="numeric">100</span>.
-                    </p>
 
                     <div class="mt-5">
                         <div class="wrow">
@@ -61,9 +45,6 @@
                                     <span class="numeric" data-weight-out="reviews">{{ old('w_reviews', $weights['reviews']) }}</span>
                                 </span>
                             </label>
-                            <p class="mt-0.5 text-[0.8125rem] text-body">
-                                {{ __('How much demand the business already has.') }}
-                            </p>
                             <input
                                 type="range"
                                 id="w-reviews"
@@ -84,9 +65,6 @@
                                     <span class="numeric" data-weight-out="booking">{{ old('w_booking', $weights['booking']) }}</span>
                                 </span>
                             </label>
-                            <p class="mt-0.5 text-[0.8125rem] text-body">
-                                {{ __('Whether the gap you sell into is actually there.') }}
-                            </p>
                             <input
                                 type="range"
                                 id="w-booking"
@@ -107,9 +85,6 @@
                                     <span class="numeric" data-weight-out="age">{{ old('w_age', $weights['age']) }}</span>
                                 </span>
                             </label>
-                            <p class="mt-0.5 text-[0.8125rem] text-body">
-                                {{ __('How long since anyone invested in the site.') }}
-                            </p>
                             <input
                                 type="range"
                                 id="w-age"
@@ -130,9 +105,6 @@
                                     <span class="numeric" data-weight-out="competition">{{ old('w_competition', $weights['competition']) }}</span>
                                 </span>
                             </label>
-                            <p class="mt-0.5 text-[0.8125rem] text-body">
-                                {{ __('How crowded their market already is.') }}
-                            </p>
                             <input
                                 type="range"
                                 id="w-competition"
@@ -166,9 +138,6 @@
                         <i class="ph-fill ph-sparkle" aria-hidden="true"></i>
                         {{ __('What it does to your leads') }}
                     </h3>
-                    <p class="form-card__hint">
-                        {{ __('A sample of businesses you already have, scored both ways. Nothing is saved until you apply it.') }}
-                    </p>
 
                     <div class="tbl-wrap mt-4">
                         <table class="d-table prev d-table--cards">
@@ -245,11 +214,6 @@
                             @endforeach
                         </select>
                     </div>
-
-                    <p class="est__note mt-4">
-                        <i class="ph ph-info" aria-hidden="true"></i>
-                        {{ __('Re-scoring is free. It re-reads analysis you have already paid for — no credits are spent here.') }}
-                    </p>
 
                     <div class="form-actions mt-5">
                         <button

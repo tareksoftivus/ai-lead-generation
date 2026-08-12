@@ -13,7 +13,7 @@ class EmailVerificationController extends Controller
     public function notice(Request $request): RedirectResponse|View
     {
         if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->intended(route('user.dashboard'));
+            return redirect()->intended(route('user.search.new'));
         }
 
         return view('auth.verify-email');
@@ -23,14 +23,14 @@ class EmailVerificationController extends Controller
     {
         $request->fulfill();
 
-        return redirect()->route('user.dashboard')
+        return redirect()->route('user.search.new')
             ->with('success', __('Your email has been verified successfully.'));
     }
 
     public function resend(Request $request): RedirectResponse
     {
         if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->intended(route('user.dashboard'));
+            return redirect()->intended(route('user.search.new'));
         }
 
         $request->user()->sendEmailVerificationNotification();

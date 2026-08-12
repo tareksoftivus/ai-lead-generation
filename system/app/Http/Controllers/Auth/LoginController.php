@@ -86,7 +86,7 @@ class LoginController extends Controller
             'email' => $user->email,
         ]);
 
-        return redirect()->intended(route('user.dashboard'));
+        return redirect()->intended(route('user.search.new'));
     }
 
     protected function throttleKey(LoginRequest $request): string

@@ -61,12 +61,6 @@ return [
 
         'navigation' => [
             [
-                'label' => 'Dashboard',
-                'icon' => 'ph-squares-four',
-                'route' => 'user.dashboard',
-                'order' => 0,
-            ],
-            [
                 'label' => 'Lead scoring',
                 'icon' => 'ph-gauge',
                 'route' => 'user.scoring.index',

@@ -35,14 +35,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const chip = document.createElement("span");
     chip.className = "ffield__chip";
     chip.dataset.value = value;
-    chip.innerHTML =
-      `<span></span>` +
-      `<input type="hidden" name="${name}" />` +
-      `<button type="button" class="ffield__x" aria-label="Remove">` +
-      `<i class="ph ph-x" aria-hidden="true"></i></button>`;
-    // textContent, not innerHTML, so a typed value can never inject markup.
-    chip.querySelector("span").textContent = value;
-    chip.querySelector("input").value = value;
+
+    const label = document.createElement("span");
+    label.textContent = value;
+    chip.appendChild(label);
+
+    const hidden = document.createElement("input");
+    hidden.type = "hidden";
+    hidden.name = name;
+    hidden.value = value;
+    chip.appendChild(hidden);
+
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "ffield__x";
+    remove.setAttribute("aria-label", "Remove");
+
+    const icon = document.createElement("i");
+    icon.className = "ph ph-x";
+    icon.setAttribute("aria-hidden", "true");
+    remove.appendChild(icon);
+
+    chip.appendChild(remove);
+
     holder.appendChild(chip);
     field.classList.add("is-filled");
   }
@@ -172,6 +187,6 @@ document.addEventListener("DOMContentLoaded", () => {
   input.addEventListener("keydown", (e) => {
     if (e.key !== "Enter") return;
     e.preventDefault();
-    btn.click();
+    form.requestSubmit(btn);
   });
 });

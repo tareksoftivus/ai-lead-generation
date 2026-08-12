@@ -7,8 +7,9 @@
 @if($flashes->isNotEmpty())
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    'use strict';
     @foreach($flashes as $flash)
-    window.showToast(@js(ucfirst($flash['type'])), @js($flash['message']), @js($flash['type']));
+    window.showToast(<?php echo json_encode(ucfirst($flash['type']), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>, <?php echo json_encode($flash['message'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>, <?php echo json_encode($flash['type'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>);
     @endforeach
 });
 </script>

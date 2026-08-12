@@ -108,12 +108,16 @@
         {{-- Account menu --}}
         <div class="menu" data-dropdown>
             <button type="button"
-                    class="f-center h-10 w-10 shrink-0 rounded-full bg-primary text-[0.8125rem] font-semibold text-neutral-0"
+                    class="f-center h-10 w-10 shrink-0 overflow-hidden rounded-full bg-primary text-[0.8125rem] font-semibold text-neutral-0"
                     aria-label="{{ __('Account menu') }}"
                     data-dropdown-toggle
                     aria-haspopup="true"
                     aria-expanded="false">
-                {{ $initials }}
+                @if($currentUser?->avatar_url)
+                    <img src="{{ $currentUser->avatar_url }}" alt="{{ $currentUser->name ?? __('User') }}" class="h-full w-full object-cover" />
+                @else
+                    {{ $initials }}
+                @endif
             </button>
             <div class="menu__panel" data-dropdown-panel>
                 @if(Route::has($panelKey . '.profile.edit'))

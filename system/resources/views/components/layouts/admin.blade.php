@@ -11,16 +11,17 @@
 
     <title>{{ $title }} - {{ config('app.name', 'Admin Panel') }}</title>
 
-    {{-- Google Fonts --}}
+    {{-- Google Fonts (loaded non-blocking so a slow/roundtrip request can't delay first paint) --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet"></noscript>
 
     {{-- Phosphor Icons --}}
     <link rel="stylesheet" href="{{ asset('assets/global/fonts/phosphor/regular/style.css') }}">
 
     {{-- Vite Assets --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <x-vite :entrypoints="['resources/css/app.css', 'resources/js/app.js']"></x-vite>
 
     {{-- Additional Styles --}}
     @stack('styles')

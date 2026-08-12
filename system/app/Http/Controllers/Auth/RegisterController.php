@@ -9,6 +9,7 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
 use App\Modules\AuditLog\Services\AuditLogService;
 use App\Modules\AuthApi\Services\OtpDeliveryService;
+use App\Services\UserDeletionService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,6 +23,7 @@ class RegisterController extends Controller
     public function __construct(
         protected AuditLogService $auditLogService,
         protected OtpDeliveryService $otpDeliveryService,
+        protected UserDeletionService $userDeletionService,
     ) {}
 
     public function showRegistrationForm(Request $request): View
@@ -35,6 +37,8 @@ class RegisterController extends Controller
 
         $requireEmailVerification = (bool) setting('require_email_verification', true);
         $requireSmsVerification = (bool) setting('require_sms_verification', false);
+
+        $this->userDeletionService->permanentlyDeleteTrashedByEmail($request->email);
 
         $user = User::create([
             'name' => $request->name,

@@ -47,7 +47,7 @@
         <article class="relative mt-8 grid gap-6 rounded-2xl border border-neutral-200 bg-neutral-0 p-6 transition-colors duration-200 hover:border-neutral-300 md:mt-10 md:grid-cols-12 md:items-center md:p-9" data-anim-item>
             <a href="{{ $data['lead_link'] ?: '#' }}" class="post__media relative block overflow-hidden rounded-xl aspect-[16/10] md:col-span-5" tabindex="-1" aria-hidden="true">
                 @if($leadImage)
-                    <img src="{{ $leadImage }}" alt="{{ $data['lead_title'] ?? '' }}" class="post__img transition-transform duration-300 hover:scale-105" />
+                    <img src="{{ $leadImage }}" alt="{{ $data['lead_title'] ?? '' }}" class="post__img transition-transform duration-300 hover:scale-105">
                 @else
                     <div class="flex h-full w-full items-center justify-center bg-neutral-100 text-neutral-300">
                         <i class="ph ph-image text-4xl" aria-hidden="true"></i>
@@ -74,7 +74,7 @@
                 </p>
 
                 <p class="post__by">
-                    <img src="{{ $leadAuthorAvatar }}" alt="{{ $data['lead_author_name'] ?? '' }}" class="post__avatar" width="80" height="80" />
+                    <img src="{{ $leadAuthorAvatar }}" alt="{{ $data['lead_author_name'] ?? '' }}" class="post__avatar" width="80" height="80">
                     {{ $data['lead_author_name'] ?? '' }}
                 </p>
             </div>
@@ -85,7 +85,7 @@
                 <article class="post">
                     <a href="{{ $post['link'] ?: '#' }}" class="post__media" tabindex="-1" aria-hidden="true">
                         @if($post['image_url'])
-                            <img src="{{ $post['image_url'] }}" alt="{{ $post['title'] ?? '' }}" class="post__img" />
+                            <img src="{{ $post['image_url'] }}" alt="{{ $post['title'] ?? '' }}" class="post__img">
                         @else
                             <div class="flex h-full w-full items-center justify-center bg-neutral-100 text-neutral-300">
                                 <i class="ph ph-image text-4xl" aria-hidden="true"></i>
@@ -115,7 +115,7 @@
                         <p class="post__foot">
                             <span class="post__by">
                                 @if($post['author_avatar_url'])
-                                    <img src="{{ $post['author_avatar_url'] }}" alt="{{ $post['author_name'] ?? '' }}" class="post__avatar" width="80" height="80" />
+                                    <img src="{{ $post['author_avatar_url'] }}" alt="{{ $post['author_name'] ?? '' }}" class="post__avatar" width="80" height="80">
                                 @endif
                                 {{ $post['author_name'] ?? '' }}
                             </span>

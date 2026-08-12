@@ -2,7 +2,7 @@
 
 namespace App\Modules\Contacts\Http\Requests;
 
-use App\Rules\TurnstileValid;
+use App\Rules\RecaptchaV2Valid;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreContactRequest extends FormRequest
@@ -21,7 +21,7 @@ class StoreContactRequest extends FormRequest
             'subject' => 'nullable|string|max:255',
             'message' => 'required|string|max:5000',
             'terms_accepted' => 'accepted',
-            'cf-turnstile-response' => [new TurnstileValid],
+            'g-recaptcha-response' => [new RecaptchaV2Valid],
         ];
     }
 }

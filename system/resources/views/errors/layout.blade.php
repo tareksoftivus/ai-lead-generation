@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="{{ asset('assets/global/fonts/phosphor/regular/style.css') }}">
 
     {{-- Vite Assets --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <x-vite :entrypoints="['resources/css/app.css', 'resources/js/app.js']"></x-vite>
 </head>
 <body class="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-neutral-0 p-4 antialiased">
 

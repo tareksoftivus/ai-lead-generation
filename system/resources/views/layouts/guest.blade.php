@@ -7,13 +7,13 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Welcome') - {{ setting('site_name', config('app.name', 'LeadAtlas')) }}</title>
     <link rel="stylesheet" href="{{ asset('assets/global/fonts/phosphor/regular/style.css') }}">
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/leadatlas.js'])
+    <x-vite :entrypoints="['resources/css/app.css', 'resources/css/leadatlas.css', 'resources/js/app.js', 'resources/js/leadatlas.js']"></x-vite>
     @include('components.layouts.partials.branding')
     <x-plugins.head-scripts />
 </head>
 @hasSection('aside')
 
-    <body class="overflow-x-hidden bg-neutral-0">
+    <body class="auth-shell overflow-x-hidden bg-neutral-0">
         @php
             $siteName = setting('site_name', config('app.name', 'LeadAtlas'));
             $settingLogo = setting('site_logo') && media_url(setting('site_logo')) ? media_url(setting('site_logo')) : null;
@@ -21,11 +21,11 @@
         @endphp
 
         <main class="auth">
-            <aside class="relative isolate hidden flex-col overflow-hidden bg-[#f6f5ff] p-10 lg:flex xl:p-12">
+            <aside class="auth__aside relative isolate hidden flex-col overflow-hidden bg-[#f6f5ff] p-10 lg:flex xl:p-12">
                 <div class="auth__brand-field" aria-hidden="true"></div>
 
                 <a href="{{ route('home') }}" class="auth__logo" aria-label="{{ $siteName }} home">
-                    <img src="{{ $brandLogo }}" alt="{{ $siteName }}" width="482" height="140" class="h-9 w-auto" />
+                    <img src="{{ $brandLogo }}" alt="{{ $siteName }}" width="482" height="140" class="h-9 w-auto">
                 </a>
 
                 <div class="my-auto max-w-[26rem] py-10">
@@ -40,7 +40,7 @@
             <div class="auth__main">
                 <div class="auth__panel">
                     <a href="{{ route('home') }}" class="auth__logo auth__logo--mobile" aria-label="{{ $siteName }} home">
-                        <img src="{{ $brandLogo }}" alt="{{ $siteName }}" width="482" height="140" class="h-9 w-auto" />
+                        <img src="{{ $brandLogo }}" alt="{{ $siteName }}" width="482" height="140" class="h-9 w-auto">
                     </a>
 
                     @include('components.layouts.partials.session-flash')

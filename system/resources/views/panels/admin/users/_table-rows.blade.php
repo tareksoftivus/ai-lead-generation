@@ -2,8 +2,8 @@
     <tr>
         <td data-th="{{ __('Name') }}">
             <div class="flex items-center justify-end gap-3 lg:justify-start rtl:justify-start">
-                @if($user->avatar)
-                    <img src="{{ Storage::disk('public')->url($user->avatar) }}" alt="{{ $user->name }}" class="h-10 w-10 rounded-full object-cover" />
+                @if($user->avatar_url)
+                    <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="h-10 w-10 rounded-full object-cover" />
                 @else
                     <div class="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-full font-bold">
                         {{ strtoupper(substr($user->name, 0, 1)) }}

@@ -166,7 +166,7 @@
         </div>
 
         <label class="consent">
-            <input type="checkbox" name="terms" class="form-check" required />
+            <input type="checkbox" name="terms" class="form-check" required>
             <span class="text-[0.875rem] leading-[1.55]">
                 {{ __('I agree to the') }}
                 <a href="{{ route('frontend.page', 'terms') }}" class="consent__link" target="_blank" rel="noopener">{{ __('terms') }}</a>
@@ -175,7 +175,7 @@
             </span>
         </label>
 
-        <x-plugins.turnstile />
+        <x-plugins.recaptcha />
 
         <button type="submit" class="btn btn-accent auth__submit">
             <span class="btn__label">
@@ -186,7 +186,7 @@
         </button>
     </form>
 
-    <x-auth.social-buttons />
+    <x-auth.social-buttons :providers="['google']" />
 
     <p class="auth__alt">
         {{ __('Already have an account?') }}

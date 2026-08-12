@@ -41,7 +41,7 @@
                 <article class="post">
                     <a href="{{ $post['link'] ?: '#' }}" class="post__media" tabindex="-1" aria-hidden="true">
                         @if($post['image_url'])
-                            <img src="{{ $post['image_url'] }}" alt="{{ $post['title'] ?? '' }}" class="post__img" />
+                            <img src="{{ $post['image_url'] }}" alt="{{ $post['title'] ?? '' }}" class="post__img">
                         @endif
                         <span class="post__date">
                             <span class="post__date-day numeric">{{ $post['date_day'] ?? '' }}</span>
@@ -71,7 +71,7 @@
                             <span class="post__by">
                                 @if($post['author_avatar_url'])
                                     <img src="{{ $post['author_avatar_url'] }}" alt="{{ $post['author_name'] ?? '' }}"
-                                        class="post__avatar" width="80" height="80" />
+                                        class="post__avatar" width="80" height="80">
                                 @endif
                                 {{ $post['author_name'] ?? '' }}
                             </span>

@@ -153,9 +153,13 @@
                     aria-haspopup="true">
                 {{-- User Avatar --}}
                 @php $currentUser = $authUser ?? auth()->user(); @endphp
-                <div class="from-primary to-secondary flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-linear-to-br text-xs font-bold text-white">
-                    {{ strtoupper(substr($currentUser->name ?? 'U', 0, 2)) }}
-                </div>
+                @if($currentUser?->avatar_url)
+                    <img src="{{ $currentUser->avatar_url }}" alt="{{ $currentUser->name ?? __('User') }}" class="h-8 w-8 shrink-0 rounded-full object-cover" />
+                @else
+                    <div class="from-primary to-secondary flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-linear-to-br text-xs font-bold text-white">
+                        {{ strtoupper(substr($currentUser->name ?? 'U', 0, 2)) }}
+                    </div>
+                @endif
                 <span class="s-body hidden font-medium text-neutral-700 lg:block">{{ $currentUser->name ?? 'User' }}</span>
                 <i class="ph ph-caret-down hidden text-xs text-neutral-400 lg:block"></i>
             </button>

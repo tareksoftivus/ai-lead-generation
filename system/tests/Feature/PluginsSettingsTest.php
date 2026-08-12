@@ -2,7 +2,7 @@
 
 use App\Modules\Settings\Database\Seeders\SettingSeeder;
 use App\Modules\Settings\Services\SettingsService;
-use App\Rules\TurnstileValid;
+use App\Rules\RecaptchaV2Valid;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
@@ -14,11 +14,11 @@ function setPlugin(string $key, mixed $value): void
     app(SettingsService::class)->set($key, $value);
 }
 
-function turnstilePasses(mixed $value): bool
+function recaptchaPasses(mixed $value): bool
 {
     $validator = Validator::make(
-        ['cf-turnstile-response' => $value],
-        ['cf-turnstile-response' => [new TurnstileValid]]
+        ['g-recaptcha-response' => $value],
+        ['g-recaptcha-response' => [new RecaptchaV2Valid]]
     );
 
     return $validator->passes();
@@ -44,53 +44,57 @@ it('seeds plugin settings disabled by default', function () {
         ->and((bool) setting('plugin_turnstile_enabled'))->toBeFalse();
 });
 
-it('passes turnstile validation when the plugin is disabled', function () {
+it('passes recaptcha validation when the plugin is disabled', function () {
     setPlugin('plugin_turnstile_enabled', false);
 
-    expect(turnstilePasses(''))->toBeTrue()
-        ->and(turnstilePasses(null))->toBeTrue();
+    expect(recaptchaPasses(''))->toBeTrue()
+        ->and(recaptchaPasses(null))->toBeTrue();
 
     Http::assertNothingSent();
 });
 
-it('passes turnstile validation when enabled but no secret configured', function () {
+it('passes recaptcha validation when enabled but no secret configured', function () {
     setPlugin('plugin_turnstile_enabled', true);
+    setPlugin('plugin_turnstile_site_key', '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI');
     setPlugin('plugin_turnstile_secret_key', '');
 
-    expect(turnstilePasses('any-token'))->toBeTrue();
+    expect(recaptchaPasses('any-token'))->toBeTrue();
 
     Http::assertNothingSent();
 });
 
-it('fails turnstile validation when enabled with an empty response', function () {
+it('fails recaptcha validation when enabled with an empty response', function () {
     setPlugin('plugin_turnstile_enabled', true);
-    setPlugin('plugin_turnstile_secret_key', 'secret-123');
+    setPlugin('plugin_turnstile_site_key', '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI');
+    setPlugin('plugin_turnstile_secret_key', '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe');
 
-    expect(turnstilePasses(''))->toBeFalse();
+    expect(recaptchaPasses(''))->toBeFalse();
 });
 
-it('verifies a valid turnstile token against the siteverify api', function () {
+it('verifies a valid recaptcha token against the siteverify api', function () {
     setPlugin('plugin_turnstile_enabled', true);
-    setPlugin('plugin_turnstile_secret_key', 'secret-123');
+    setPlugin('plugin_turnstile_site_key', '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI');
+    setPlugin('plugin_turnstile_secret_key', '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe');
 
     Http::fake([
-        'challenges.cloudflare.com/*' => Http::response(['success' => true]),
+        'www.google.com/recaptcha/api/siteverify' => Http::response(['success' => true]),
     ]);
 
-    expect(turnstilePasses('good-token'))->toBeTrue();
+    expect(recaptchaPasses('good-token'))->toBeTrue();
 
-    Http::assertSent(fn ($request) => $request['secret'] === 'secret-123' && $request['response'] === 'good-token');
+    Http::assertSent(fn ($request) => $request['secret'] === '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe' && $request['response'] === 'good-token');
 });
 
-it('rejects an invalid turnstile token', function () {
+it('rejects an invalid recaptcha token', function () {
     setPlugin('plugin_turnstile_enabled', true);
-    setPlugin('plugin_turnstile_secret_key', 'secret-123');
+    setPlugin('plugin_turnstile_site_key', '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI');
+    setPlugin('plugin_turnstile_secret_key', '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe');
 
     Http::fake([
-        'challenges.cloudflare.com/*' => Http::response(['success' => false, 'error-codes' => ['invalid-input-response']]),
+        'www.google.com/recaptcha/api/siteverify' => Http::response(['success' => false, 'error-codes' => ['invalid-input-response']]),
     ]);
 
-    expect(turnstilePasses('bad-token'))->toBeFalse();
+    expect(recaptchaPasses('bad-token'))->toBeFalse();
 });
 
 it('renders GA4 script only when enabled and configured', function () {

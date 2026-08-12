@@ -45,7 +45,7 @@
                     <figcaption class="mt-6 flex items-center gap-3 border-t border-neutral-100 pt-4">
                         @if($voice['avatar_url'])
                             <img src="{{ $voice['avatar_url'] }}" alt="" width="80" height="80" loading="lazy" decoding="async"
-                                class="size-11 shrink-0 rounded-full bg-neutral-100 object-cover" />
+                                class="size-11 shrink-0 rounded-full bg-neutral-100 object-cover">
                         @endif
                         <span class="min-w-0">
                             <span class="block truncate text-[0.875rem] font-semibold text-title">{{ $voice['name'] ?? '' }}</span>

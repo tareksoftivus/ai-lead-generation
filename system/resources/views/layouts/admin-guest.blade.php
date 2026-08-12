@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', __('Admin Login')) - {{ config('app.name', 'Admin Panel') }}</title>
     <link rel="stylesheet" href="{{ asset('assets/global/fonts/phosphor/regular/style.css') }}">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <x-vite :entrypoints="['resources/css/app.css', 'resources/js/app.js']"></x-vite>
     @include('components.layouts.partials.branding')
 </head>
 <body class="min-h-screen bg-slate-100 text-neutral-950 antialiased">

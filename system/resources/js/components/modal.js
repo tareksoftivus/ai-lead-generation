@@ -32,8 +32,9 @@ export function openModal(modalId) {
 function buildAndSubmitDynamicForm(action, method = "POST") {
   if (!action) return;
 
+  const normalizedMethod = (method || "POST").toUpperCase();
   const form = document.createElement("form");
-  form.method = "POST";
+  form.method = normalizedMethod === "GET" ? "GET" : "POST";
   form.action = action;
   form.style.display = "none";
 
@@ -46,19 +47,21 @@ function buildAndSubmitDynamicForm(action, method = "POST") {
     form.appendChild(tokenInput);
   }
 
-  const normalizedMethod = (method || "POST").toUpperCase();
   if (!["GET", "POST"].includes(normalizedMethod)) {
     const methodInput = document.createElement("input");
     methodInput.type = "hidden";
     methodInput.name = "_method";
     methodInput.value = normalizedMethod;
     form.appendChild(methodInput);
-  } else if (normalizedMethod === "GET") {
-    form.method = "GET";
   }
 
   document.body.appendChild(form);
-  form.submit();
+  if (typeof form.requestSubmit === "function") {
+    form.requestSubmit();
+    return;
+  }
+
+  HTMLFormElement.prototype.submit.call(form);
 }
 
 function configureGlobalConfirm(trigger) {
@@ -166,10 +169,16 @@ document.addEventListener("click", (e) => {
   // 4. Confirm Button — submit the linked form
   const confirmBtn = e.target.closest("[data-confirm-btn]");
   if (confirmBtn) {
+    e.preventDefault();
+
     const formId = confirmBtn.dataset.confirmForm;
     if (formId) {
       const form = document.getElementById(formId);
-      if (form) form.submit();
+      if (form && typeof form.requestSubmit === "function") {
+        form.requestSubmit();
+      } else if (form) {
+        HTMLFormElement.prototype.submit.call(form);
+      }
       return;
     }
 

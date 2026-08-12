@@ -2,6 +2,7 @@
 
 namespace App\Modules\AuditLog\Services;
 
+use App\Models\User;
 use App\Modules\AuditLog\Models\AuditLog;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +34,7 @@ class AuditLogService
         }
 
         AuditLog::create([
-            'user_id' => Auth::id(),
+            'user_id' => $this->currentUserId(),
             'action' => $action,
             'auditable_type' => get_class($model),
             'auditable_id' => $model->getKey(),
@@ -48,7 +49,7 @@ class AuditLogService
     public function logCustom(string $action, ?array $metadata = null): void
     {
         AuditLog::create([
-            'user_id' => Auth::id(),
+            'user_id' => $this->currentUserId(),
             'action' => $action,
             'auditable_type' => 'system',
             'auditable_id' => null,
@@ -57,5 +58,16 @@ class AuditLogService
             'user_agent' => request()?->userAgent(),
             'url' => request()?->fullUrl(),
         ]);
+    }
+
+    protected function currentUserId(): ?int
+    {
+        $user = Auth::guard('web')->user();
+
+        if (! $user instanceof User || ! $user->exists || $user->trashed()) {
+            return null;
+        }
+
+        return $user->id;
     }
 }

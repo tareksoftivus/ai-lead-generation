@@ -20,7 +20,7 @@
                 @foreach($posts as $post)
                     <article class="post">
                         <a href="{{ $post['url'] ?? '#' }}" class="post__media" tabindex="-1" aria-hidden="true">
-                            <img src="{{ $post['image_url'] }}" alt="{{ $post['title'] ?? '' }}" class="post__img" />
+                            <img src="{{ $post['image_url'] }}" alt="{{ $post['title'] ?? '' }}" class="post__img">
                             @if(!empty($post['date_day']) || !empty($post['date_month']))
                                 <span class="post__date">
                                     <span class="post__date-day numeric">{{ $post['date_day'] ?? '' }}</span>
@@ -55,7 +55,7 @@
                                         class="post__avatar"
                                         width="80"
                                         height="80"
-                                    />
+                                    >
                                     {{ $post['author_name'] ?? '' }}
                                 </span>
                                 <a href="{{ $post['url'] ?? '#' }}" class="btn btn-primary btn-sm post__more" tabindex="-1" aria-hidden="true">

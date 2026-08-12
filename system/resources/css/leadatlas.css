@@ -1310,6 +1310,37 @@ select.form-input {
   @apply min-h-screen lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)] xl:grid-cols-2;
 }
 
+@media (min-width: 992px) {
+  .auth-shell {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .auth {
+    display: block;
+    height: 100dvh;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  .auth__aside {
+    position: fixed;
+    inset-block: 0;
+    left: 0;
+    top: 0;
+    width: 47.368421%;
+    height: 100dvh;
+    min-height: 100vh;
+  }
+}
+
+@media (min-width: 1200px) {
+  .auth__aside {
+    width: 50%;
+  }
+}
+
 .auth__brand-field {
   @apply pointer-events-none absolute inset-0 -z-10;
   background:
@@ -1336,6 +1367,29 @@ select.form-input {
 /* --- Form column ------------------------------------------------------ */
 .auth__main {
   @apply relative flex items-center justify-center px-5 py-12 md:px-8 lg:py-16;
+}
+
+@media (min-width: 992px) {
+  .auth__main {
+    margin-left: 47.368421%;
+    width: 52.631579%;
+    height: 100dvh;
+    min-height: 100vh;
+    align-items: flex-start;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .auth__panel {
+    margin-block: auto;
+  }
+}
+
+@media (min-width: 1200px) {
+  .auth__main {
+    margin-left: 50%;
+    width: 50%;
+  }
 }
 
 .auth__main::before {
@@ -1419,6 +1473,18 @@ select.form-input {
 
 .auth__oauth i {
   @apply text-[1.125rem];
+}
+
+.social-provider-icon--google {
+  color: #ea4335;
+}
+
+.social-provider-icon--facebook {
+  color: #1877f2;
+}
+
+.social-provider-icon--github {
+  color: #181717;
 }
 
 .auth__alt {
@@ -4792,6 +4858,11 @@ form > .form-actions {
 }
 
 /* Generic section-driven page layout (themes/leadatlas/layouts/page.blade.php) */
+:root {
+  --primary: var(--color-primary);
+  --accent: var(--color-title);
+}
+
 .shell { max-width: 1160px; margin: 0 auto; padding: 0 20px; }
 .section { padding: 72px 0; }
 .eyebrow { letter-spacing: .18em; text-transform: uppercase; font-size: 12px; color: var(--primary); font-weight: 700; }
@@ -4821,6 +4892,13 @@ form > .form-actions {
 .site-menu-footer .site-submenu { position: static; display: grid; margin-top: 10px; padding: 0; min-width: 0; background: transparent; border: 0; box-shadow: none; gap: 8px; }
 .footer { background: var(--accent); color: white; }
 .footer a { color: white; opacity: .9; text-decoration: none; }
+.unsupported-section {
+  @apply rounded-2xl border border-neutral-200 bg-neutral-0 p-6;
+  border-color: rgba(220, 38, 38, 0.15);
+}
+.unsupported-section__eyebrow {
+  color: #dc2626;
+}
 @media (max-width: 860px) {
     .site-nav { display: none; }
     .site-mobile-nav { display: block; }

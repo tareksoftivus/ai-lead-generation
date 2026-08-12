@@ -26,7 +26,6 @@ class TableActionTest extends TestCase
         $record = (object) ['name' => 'Demo'];
 
         $action = TableAction::delete(href: fn () => '/records/5')
-            ->method('DELETE')
             ->confirmTitle(fn ($item) => "Delete {$item->name}?")
             ->confirmMessage(fn ($item) => "{$item->name} will be removed.");
 

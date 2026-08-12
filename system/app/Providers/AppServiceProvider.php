@@ -28,8 +28,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // App runs root-based: compiled assets and manifest live in /assets/build
-        // (relative to the public path, which is the repo root).
+        // (relative to the public path, which is the repo root). The dev-server
+        // hot file is written to the same directory by vite.config.js.
         Vite::useBuildDirectory('assets/build');
+        Vite::useHotFile('assets/build/hot');
 
         // Super admin bypasses all permission checks
         Gate::before(function ($user, $ability) {

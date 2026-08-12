@@ -13,10 +13,13 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    {{-- Loaded non-blocking (media="print" swapped to "all" on load) so a slow/roundtrip
+         request to Google Fonts can't delay first paint of the page's own CSS. --}}
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"></noscript>
 
     {{-- Vite Assets (LeadAtlas design system + app shell JS) --}}
-    @vite(['resources/js/panel-user.js', 'resources/js/app.js'])
+    <x-vite :entrypoints="['resources/js/panel-user.js', 'resources/js/app.js']"></x-vite>
 
     {{-- Additional Styles --}}
     @stack('styles')

@@ -78,6 +78,8 @@ document.addEventListener("click", (e) => {
 
 // ===== Global Init =====
 document.addEventListener("DOMContentLoaded", () => {
+  'use strict';
+
   if (localStorage.getItem("theme") === "light") {
     document.documentElement.classList.remove("dark");
   }

@@ -4,6 +4,7 @@ use App\Models\User;
 use App\Modules\Settings\Providers\SettingsServiceProvider;
 use App\Modules\Settings\Services\SettingsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Blade;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 
@@ -60,6 +61,23 @@ it('does not configure a provider that is disabled', function () {
     rebootSocial();
 
     expect(config('services.google.client_id'))->not->toBe('should-not-apply');
+});
+
+it('renders the google button from saved settings even before services config is applied', function () {
+    setSetting('social_google_enabled', true);
+    setSetting('social_google_client_id', 'client-123');
+    setSetting('social_google_client_secret', 'secret-123');
+
+    config([
+        'services.google.client_id' => '',
+        'services.google.client_secret' => '',
+    ]);
+
+    $html = Blade::render('<x-auth.social-buttons :providers="[\'google\']" />');
+
+    expect($html)
+        ->toContain('Continue with Google')
+        ->toContain(route('social.redirect', 'google'));
 });
 
 it('redirects the redirect route back to login when the provider is disabled', function () {

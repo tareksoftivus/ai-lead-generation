@@ -27,7 +27,7 @@
                     class="post__avatar"
                     width="80"
                     height="80"
-                />
+                >
                 <div class="mr-auto">
                     <p class="text-base font-semibold text-title">{{ $data['author_name'] ?? '' }}</p>
                     <p class="mt-1 flex flex-wrap items-center gap-x-2 text-[0.875rem]">
@@ -50,11 +50,11 @@
                     src="{{ $coverImage }}"
                     alt="{{ $data['title'] ?? '' }}"
                     class="block aspect-video h-auto w-full object-cover"
-                />
+                >
             </div>
 
             <div class="prose" data-anim-item>
-                {!! $data['body'] ?? '' !!}
+                <?php echo \App\Support\SafeHtml::clean($data['body'] ?? ''); ?>
             </div>
 
             <aside class="post-cta" data-anim-item>

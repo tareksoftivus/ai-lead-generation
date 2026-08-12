@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\AuditLog\Services\AuditLogService;
 use App\Modules\AuthApi\Services\SocialAccountService;
 use App\Modules\LoginActivity\Services\LoginActivityService;
+use App\Support\SocialLoginConfig;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,8 +19,6 @@ class SocialLoginController extends Controller
      * OAuth providers this app can drive on the web. A provider is only usable
      * once it is enabled and its credentials are set in Settings → Social Login.
      */
-    private const PROVIDERS = ['google', 'facebook', 'github'];
-
     public function __construct(
         protected SocialAccountService $socialAccountService,
         protected AuditLogService $auditLogService,
@@ -36,6 +35,8 @@ class SocialLoginController extends Controller
                 ->withErrors(['email' => __('That sign-in method is unavailable.')]);
         }
 
+        SocialLoginConfig::apply($provider);
+
         return Socialite::driver($provider)->redirect();
     }
 
@@ -48,6 +49,8 @@ class SocialLoginController extends Controller
             return redirect()->route('login')
                 ->withErrors(['email' => __('That sign-in method is unavailable.')]);
         }
+
+        SocialLoginConfig::apply($provider);
 
         try {
             $providerUser = Socialite::driver($provider)->user();
@@ -88,12 +91,6 @@ class SocialLoginController extends Controller
      */
     private function isEnabled(string $provider): bool
     {
-        if (! in_array($provider, self::PROVIDERS, true)) {
-            return false;
-        }
-
-        return (bool) setting("social_{$provider}_enabled", false)
-            && (string) config("services.{$provider}.client_id") !== ''
-            && (string) config("services.{$provider}.client_secret") !== '';
+        return SocialLoginConfig::configured($provider);
     }
 }

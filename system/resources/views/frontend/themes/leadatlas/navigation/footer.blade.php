@@ -11,7 +11,7 @@
                     alt="{{ $logoText }}"
                     width="482"
                     height="140"
-                />
+                >
             </a>
 
             <dl class="grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-3 lg:shrink-0 lg:gap-x-12">

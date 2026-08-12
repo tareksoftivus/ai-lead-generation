@@ -7,6 +7,7 @@ use App\Events\UserAutoNotification;
 use App\Models\User;
 use App\Modules\AuditLog\Services\AuditLogService;
 use App\Modules\AuthApi\Models\SocialAccount;
+use App\Services\UserDeletionService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Contracts\User as ProviderUser;
@@ -16,6 +17,7 @@ class SocialAccountService
 {
     public function __construct(
         protected AuditLogService $auditLogService,
+        protected UserDeletionService $userDeletionService,
     ) {}
 
     public function resolveOrCreate(string $provider, ProviderUser $providerUser): User
@@ -33,6 +35,8 @@ class SocialAccountService
         }
 
         $email = $providerUser->getEmail();
+
+        $this->userDeletionService->permanentlyDeleteTrashedByEmail($email);
 
         $user = $email
             ? User::query()->where('email', $email)->first()

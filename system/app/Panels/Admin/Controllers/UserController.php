@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Panels\Admin\Requests\StoreUserRequest;
 use App\Panels\Admin\Requests\UpdateUserRequest;
 use App\Panels\Admin\Tables\UsersTable;
+use App\Services\UserDeletionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -156,13 +157,13 @@ class UserController extends Controller implements HasMiddleware
             ->with('success', 'User updated successfully.');
     }
 
-    public function destroy(User $user): RedirectResponse
+    public function destroy(User $user, UserDeletionService $userDeletionService): RedirectResponse
     {
-        $user->delete();
+        $userDeletionService->permanentlyDelete($user);
 
         return redirect()
             ->route('admin.users.index')
-            ->with('success', 'User deleted successfully.');
+            ->with('success', 'User permanently deleted successfully.');
     }
 
     public function toggleStatus(User $user): RedirectResponse

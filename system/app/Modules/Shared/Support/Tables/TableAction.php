@@ -86,7 +86,8 @@ class TableAction
             ->type('delete')
             ->href($href)
             ->label($label ?? 'Delete')
-            ->variant('danger');
+            ->variant('danger')
+            ->method('DELETE');
     }
 
     public static function toggleStatus(string|Closure $href, string $stateField = 'is_active'): self

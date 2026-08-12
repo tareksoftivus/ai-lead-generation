@@ -70,7 +70,7 @@
 
         <div class="auth__row">
             <label class="consent">
-                <input type="checkbox" name="remember" class="form-check" @checked(old('remember', true)) />
+                <input type="checkbox" name="remember" class="form-check" @checked(old('remember', true))>
                 <span class="text-[0.875rem] leading-[1.55]">{{ __('Keep me signed in') }}</span>
             </label>
 
@@ -82,7 +82,7 @@
             @endif
         </div>
 
-        <x-plugins.turnstile />
+        <x-plugins.recaptcha />
 
         <button type="submit" class="btn btn-primary auth__submit">
             <span class="btn__label">
@@ -93,7 +93,7 @@
         </button>
     </form>
 
-    <x-auth.social-buttons />
+    <x-auth.social-buttons :providers="['google']" />
 
     @if (Route::has('register'))
         <p class="auth__alt">

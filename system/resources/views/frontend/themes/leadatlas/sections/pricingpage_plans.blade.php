@@ -13,7 +13,7 @@
                                 {{ $plan['badge'] }}
                             </p>
                         @endif
-                        <p class="plan__name">{{ $plan['name'] ?? '' }}</p>
+                        <h3 class="plan__name">{{ $plan['name'] ?? '' }}</h3>
                         <p class="plan__price">
                             <span class="plan__amount numeric">{{ $plan['price'] ?? '' }}</span>
                             <span class="plan__per">{{ $plan['period'] ?? '' }}</span>

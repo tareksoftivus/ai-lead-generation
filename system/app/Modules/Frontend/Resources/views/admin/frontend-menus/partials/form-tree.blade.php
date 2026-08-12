@@ -158,7 +158,7 @@
 </form>
 
 <script type="application/json" id="frontendMenuBuilderConfig">
-    {!! json_encode([
+    <?php echo json_encode([
         'bootItems' => $bootItems,
         'pageOptions' => $pageOptions,
         'pageLinkableType' => \App\Modules\Frontend\Models\Page::class,
@@ -181,7 +181,7 @@
             'chooseParentOrRoot' => __('Choose a parent root item to turn this into a submenu item, or keep it at the root level.'),
             'addAtRootLevel' => __('Add at root level'),
         ],
-    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>
 </script>
 
 @push('modals')
@@ -232,5 +232,5 @@
 @endpush
 
 @push('scripts')
-    @vite('resources/js/components/frontend-menu-builder.js')
+    <x-vite entrypoints="resources/js/components/frontend-menu-builder.js"></x-vite>
 @endpush

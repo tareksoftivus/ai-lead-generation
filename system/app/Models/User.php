@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Modules\AuthApi\Models\SocialAccount;
+use App\Modules\Media\Models\Media;
 use App\Modules\NotificationTemplates\Traits\HasDeviceTokens;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 use NotificationChannels\WebPush\HasPushSubscriptions;
 use Spatie\Permission\Traits\HasRoles;
@@ -58,6 +60,25 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasVerifiedPhone(): bool
     {
         return ! is_null($this->phone_verified_at);
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        $avatar = trim((string) $this->avatar);
+
+        if ($avatar === '') {
+            return null;
+        }
+
+        if (filter_var($avatar, FILTER_VALIDATE_URL) || str_starts_with($avatar, '/')) {
+            return $avatar;
+        }
+
+        if (is_numeric($avatar)) {
+            return Media::find($avatar)?->url;
+        }
+
+        return Storage::disk('public')->url($avatar);
     }
 
     public function hasTwoFactorEnabled(): bool

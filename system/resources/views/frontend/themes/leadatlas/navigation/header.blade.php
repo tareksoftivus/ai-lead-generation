@@ -12,7 +12,7 @@
                     width="482"
                     height="140"
                     class="site-header__logo h-10 w-auto sm:h-11"
-                />
+                >
             </a>
 
             <nav class="hidden items-center gap-1 lg:flex" aria-label="{{ __('Main') }}">

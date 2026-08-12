@@ -52,7 +52,7 @@
                         @enderror
                     </div>
 
-                    <x-plugins.turnstile />
+                    <x-plugins.recaptcha />
 
                     <label class="flex items-start gap-2 text-[0.8125rem] leading-[1.6]">
                         <input type="checkbox" id="c-terms" name="terms_accepted" value="1" class="mt-0.5" required>
@@ -89,11 +89,20 @@
                     @endif
                     <ul class="mt-4 flex flex-col">
                         @foreach($responseTimes as $item)
+                            @php
+                                $responseUnit = (string) ($item['unit'] ?? '');
+                                $responseValue = (string) ($item['value'] ?? '');
+                                $responseUnitParts = explode(':n', $responseUnit, 2);
+                            @endphp
                             <li
                                 class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-neutral-100 py-2.5 text-[0.875rem] last:border-b-0 last:pb-0">
                                 <span class="text-title">{{ $item['label'] ?? '' }}</span>
                                 <span class="text-[0.8125rem] @if(!empty($item['fast'])) contact__time-when--fast @endif">
-                                    {!! str_replace(':n', '<span class="numeric">' . ($item['value'] ?? '') . '</span>', e($item['unit'] ?? '')) !!}
+                                    @if(count($responseUnitParts) === 2)
+                                        {{ $responseUnitParts[0] }}<span class="numeric">{{ $responseValue }}</span>{{ $responseUnitParts[1] }}
+                                    @else
+                                        {{ $responseUnit }}
+                                    @endif
                                 </span>
                             </li>
                         @endforeach

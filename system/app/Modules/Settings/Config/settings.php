@@ -721,25 +721,25 @@ return [
                 'visible_if' => ['plugin_tawk_enabled' => [true, '1', 1]],
             ],
 
-            // ── reCAPTCHA (Cloudflare Turnstile) ──
+            // ── Google reCAPTCHA v2 ──
             'plugin_turnstile_enabled' => [
                 'type' => 'feature',
-                'label' => 'reCAPTCHA (Turnstile)',
-                'hint' => 'Protect auth forms with Cloudflare Turnstile',
+                'label' => 'Google reCAPTCHA v2',
+                'hint' => 'Protect auth forms with the visible Google reCAPTCHA v2 checkbox.',
                 'default' => false,
                 'card_group' => [
                     'label' => 'reCAPTCHA',
                     'icon' => 'ph ph-shield-check',
-                    'color' => '#F38020',
-                    'description' => 'Cloudflare Turnstile bot protection on login and registration',
+                    'color' => '#4285F4',
+                    'description' => 'Google reCAPTCHA v2 bot protection on login and registration',
                 ],
             ],
             'plugin_turnstile_site_key' => [
                 'type' => 'text',
                 'label' => 'Site Key',
-                'hint' => 'Your Turnstile site key (public)',
+                'hint' => 'Your Google reCAPTCHA v2 site key (public)',
                 'default' => '',
-                'rules' => 'nullable|string|max:255',
+                'rules' => 'nullable|string|regex:/^[A-Za-z0-9_-]{20,80}$/',
                 'public' => true,
                 'card_group' => ['label' => 'reCAPTCHA'],
                 'visible_if' => ['plugin_turnstile_enabled' => [true, '1', 1]],
@@ -747,7 +747,7 @@ return [
             'plugin_turnstile_secret_key' => [
                 'type' => 'password',
                 'label' => 'Secret Key',
-                'hint' => 'Your Turnstile secret key (used for server-side verification)',
+                'hint' => 'Your Google reCAPTCHA v2 secret key (used for server-side verification)',
                 'default' => '',
                 'rules' => 'nullable|string|max:255',
                 'card_group' => ['label' => 'reCAPTCHA'],

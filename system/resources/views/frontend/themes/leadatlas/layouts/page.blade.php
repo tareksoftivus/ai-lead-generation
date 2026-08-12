@@ -54,21 +54,18 @@
         <meta name="twitter:image" content="{{ $ogImage }}">
     @endif
     @if($jsonLd)
-        <script type="application/ld+json">{!! json_encode($jsonLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+        <script type="application/ld+json"><?php echo json_encode($jsonLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?></script>
     @endif
     @if(setting('site_favicon') && media_url(setting('site_favicon')))
-        <link rel="icon" href="{{ media_url(setting('site_favicon')) }}" />
+        <link rel="icon" href="{{ media_url(setting('site_favicon')) }}">
     @else
-        <link rel="icon" href="{{ asset('assets/frontend/leadatlas/images/logo-32.png') }}" type="image/png" sizes="32x32" />
+        <link rel="icon" href="{{ asset('assets/frontend/leadatlas/images/logo-32.png') }}" type="image/png" sizes="32x32">
     @endif
-    <link rel="apple-touch-icon" href="{{ asset('assets/frontend/leadatlas/images/logo-180.png') }}" />
-    <style>
-        :root { --primary: {{ $themeVars['primary_color'] ?? '#4F39F6' }}; --accent: {{ $themeVars['accent_color'] ?? '#0F172A' }}; }
-    </style>
+    <link rel="apple-touch-icon" href="{{ asset('assets/frontend/leadatlas/images/logo-180.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-    @vite(['resources/js/leadatlas.js'])
+    <x-vite :entrypoints="['resources/js/leadatlas.js']"></x-vite>
     <x-plugins.head-scripts />
 </head>
 <body class="overflow-x-hidden">

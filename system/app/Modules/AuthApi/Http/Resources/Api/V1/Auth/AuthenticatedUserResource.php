@@ -15,6 +15,7 @@ class AuthenticatedUserResource extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone,
             'avatar' => $this->avatar,
+            'avatar_url' => $this->avatar_url,
             'is_active' => (bool) $this->is_active,
             'email_verified_at' => $this->email_verified_at?->toIso8601String(),
             'phone_verified_at' => $this->phone_verified_at?->toIso8601String(),

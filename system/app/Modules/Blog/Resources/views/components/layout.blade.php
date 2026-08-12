@@ -70,7 +70,7 @@
     {{ $head ?? '' }}
 
     <link rel="stylesheet" href="{{ asset('assets/global/fonts/phosphor/regular/style.css') }}">
-    @vite(['resources/css/app.css'])
+    <x-vite :entrypoints="['resources/css/app.css']"></x-vite>
     <x-plugins.head-scripts />
 </head>
 <body class="min-h-screen bg-neutral-10 text-neutral-900 antialiased">

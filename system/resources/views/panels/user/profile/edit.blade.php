@@ -67,7 +67,7 @@
                 <div class="mt-4">
                     <label for="p-current" class="form-label">{{ __('Current password') }}</label>
                     <div class="password-field">
-                        <input type="password" id="p-current" name="current_password" class="form-input" autocomplete="current-password" required />
+                        <input type="password" id="p-current" name="current_password" class="form-input" autocomplete="current-password" required>
                         <button type="button" class="password-field__toggle" data-password-toggle aria-label="{{ __('Show password') }}">
                             <i class="ph ph-eye" aria-hidden="true"></i>
                             <i class="ph ph-eye-slash" aria-hidden="true"></i>
@@ -79,7 +79,7 @@
                     <div>
                         <label for="p-new" class="form-label">{{ __('New password') }}</label>
                         <div class="password-field">
-                            <input type="password" id="p-new" name="password" class="form-input" autocomplete="new-password" minlength="8" required />
+                            <input type="password" id="p-new" name="password" class="form-input" autocomplete="new-password" minlength="8" required>
                             <button type="button" class="password-field__toggle" data-password-toggle aria-label="{{ __('Show password') }}">
                                 <i class="ph ph-eye" aria-hidden="true"></i>
                                 <i class="ph ph-eye-slash" aria-hidden="true"></i>
@@ -93,7 +93,7 @@
                     <div>
                         <label for="p-confirm" class="form-label">{{ __('Confirm new password') }}</label>
                         <div class="password-field">
-                            <input type="password" id="p-confirm" name="password_confirmation" class="form-input" autocomplete="new-password" minlength="8" required />
+                            <input type="password" id="p-confirm" name="password_confirmation" class="form-input" autocomplete="new-password" minlength="8" required>
                             <button type="button" class="password-field__toggle" data-password-toggle aria-label="{{ __('Show password') }}">
                                 <i class="ph ph-eye" aria-hidden="true"></i>
                                 <i class="ph ph-eye-slash" aria-hidden="true"></i>
@@ -127,7 +127,7 @@
                     <span class="pro__avatar">
                         <img
                             id="p-avatar-img"
-                            src="{{ $user->avatar ? Storage::disk('public')->url($user->avatar) : asset('assets/images/avatars/avatar-1.jpg') }}"
+                            src="{{ $user->avatar_url ?: asset('assets/images/avatars/avatar-1.jpg') }}"
                             alt="{{ __('Your profile photo') }}"
                             width="80"
                             height="80"

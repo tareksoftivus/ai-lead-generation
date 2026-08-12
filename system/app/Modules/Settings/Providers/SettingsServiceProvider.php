@@ -4,6 +4,7 @@ namespace App\Modules\Settings\Providers;
 
 use App\Modules\Settings\Services\SettingsService;
 use App\Modules\Shared\Support\BasePanelModuleProvider;
+use App\Support\SocialLoginConfig;
 use Illuminate\Support\Facades\Schema;
 use Throwable;
 
@@ -34,19 +35,8 @@ class SettingsServiceProvider extends BasePanelModuleProvider
                 return;
             }
 
-            /** @var SettingsService $settings */
-            $settings = $this->app->make(SettingsService::class);
-
-            foreach (['google', 'facebook', 'github'] as $provider) {
-                if (! (bool) $settings->get("social_{$provider}_enabled", false)) {
-                    continue;
-                }
-
-                config([
-                    "services.{$provider}.client_id" => (string) $settings->get("social_{$provider}_client_id", ''),
-                    "services.{$provider}.client_secret" => (string) $settings->get("social_{$provider}_client_secret", ''),
-                    "services.{$provider}.redirect" => route('social.callback', $provider),
-                ]);
+            foreach (SocialLoginConfig::PROVIDERS as $provider) {
+                SocialLoginConfig::apply($provider);
             }
         } catch (Throwable) {
             // Ignore runtime social overrides if the database or routes are not ready yet.

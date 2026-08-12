@@ -11,7 +11,7 @@
         @endif
 
         <div class="legal" data-anim-item>
-            {!! $data['content'] ?? '' !!}
+            <?php echo \App\Support\SafeHtml::clean($data['content'] ?? ''); ?>
         </div>
     </div>
 </section>

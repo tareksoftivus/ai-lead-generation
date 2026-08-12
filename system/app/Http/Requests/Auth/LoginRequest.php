@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Rules\TurnstileValid;
+use App\Rules\RecaptchaV2Valid;
 use Illuminate\Foundation\Http\FormRequest;
 
 class LoginRequest extends FormRequest
@@ -18,7 +18,7 @@ class LoginRequest extends FormRequest
             'email' => 'required|email',
             'password' => 'required|string',
             'remember' => 'nullable|in:on,1,true',
-            'cf-turnstile-response' => [new TurnstileValid],
+            'g-recaptcha-response' => [new RecaptchaV2Valid],
         ];
     }
 

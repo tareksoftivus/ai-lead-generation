@@ -23,7 +23,7 @@
         "league/flysystem-aws-s3-v3": "^3.0",
         "pragmarx/google2fa-laravel": "^3.0",
         "razorpay/razorpay": "^2.9",
-        "spatie/laravel-permission": "*",
+        "spatie/laravel-permission": "^8.3",
         "stripe/stripe-php": "^20.0",
         "twilio/sdk": "^8.11",
         "vonage/client-core": "^4.12"

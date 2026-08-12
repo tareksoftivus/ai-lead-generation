@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Rules\TurnstileValid;
+use App\Rules\RecaptchaV2Valid;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class RegisterRequest extends FormRequest
@@ -17,13 +18,19 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->whereNull('deleted_at'),
+            ],
             // Phone is collected at sign-up only while SMS verification is on.
             'phone' => setting('require_sms_verification', false)
-                ? 'required|string|max:20|unique:users,phone'
-                : 'nullable|string|max:20',
+                ? ['required', 'string', 'max:20', Rule::unique('users', 'phone')->whereNull('deleted_at')]
+                : ['nullable', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Password::min(8)],
-            'cf-turnstile-response' => [new TurnstileValid],
+            'g-recaptcha-response' => [new RecaptchaV2Valid],
         ];
     }
 

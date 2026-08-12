@@ -73,7 +73,7 @@
 
                 <img src="{{ $screenshotUrl }}"
                     alt="{{ $screenshotAlt }}"
-                    width="1913" height="955" fetchpriority="high" decoding="async" class="shot__img" />
+                    width="1913" height="955" fetchpriority="high" decoding="async" class="shot__img">
 
                 <div class="lead-card">
                     <p

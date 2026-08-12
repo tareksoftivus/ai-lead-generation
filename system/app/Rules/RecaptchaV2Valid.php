@@ -2,6 +2,7 @@
 
 namespace App\Rules;
 
+use App\Support\RecaptchaConfig;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Http;
@@ -9,20 +10,17 @@ use Illuminate\Translation\PotentiallyTranslatedString;
 use Throwable;
 
 /**
- * Validates a Cloudflare Turnstile challenge response against the siteverify API.
- *
- * The rule is a no-op when the Turnstile plugin is disabled or unconfigured,
- * so forms keep working when bot protection is turned off.
+ * Validates a Google reCAPTCHA v2 challenge response against siteverify.
  */
-class TurnstileValid implements ValidationRule
+class RecaptchaV2Valid implements ValidationRule
 {
     /**
      * Run even when the field is empty, so a missing challenge response is
-     * rejected while Turnstile is enabled.
+     * rejected while reCAPTCHA is enabled and configured.
      */
     public bool $implicit = true;
 
-    protected string $verifyUrl = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+    protected string $verifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
 
     /**
      * Run the validation rule.
@@ -31,13 +29,7 @@ class TurnstileValid implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (! (bool) setting('plugin_turnstile_enabled', false)) {
-            return;
-        }
-
-        $secret = trim((string) setting('plugin_turnstile_secret_key', ''));
-
-        if ($secret === '') {
+        if (! RecaptchaConfig::verifiable()) {
             return;
         }
 
@@ -49,7 +41,7 @@ class TurnstileValid implements ValidationRule
 
         try {
             $response = Http::asForm()->post($this->verifyUrl, [
-                'secret' => $secret,
+                'secret' => RecaptchaConfig::secretKey(),
                 'response' => $value,
                 'remoteip' => request()->ip(),
             ]);

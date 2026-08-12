@@ -2,20 +2,20 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{{ $page->meta_title ?: $page->title }}</title>
-    <meta name="description" content="{{ $page->meta_description ?: __('Find, enrich, and score local business leads from Google Maps with AI. Search by keyword and location, then export outreach-ready prospects.') }}" />
+    <meta name="description" content="{{ $page->meta_description ?: __('Find, enrich, and score local business leads from Google Maps with AI. Search by keyword and location, then export outreach-ready prospects.') }}">
     @if(setting('site_favicon') && media_url(setting('site_favicon')))
-        <link rel="icon" href="{{ media_url(setting('site_favicon')) }}" />
+        <link rel="icon" href="{{ media_url(setting('site_favicon')) }}">
     @else
-        <link rel="icon" href="{{ asset('assets/frontend/leadatlas/images/logo-32.png') }}" type="image/png" sizes="32x32" />
+        <link rel="icon" href="{{ asset('assets/frontend/leadatlas/images/logo-32.png') }}" type="image/png" sizes="32x32">
     @endif
-    <link rel="apple-touch-icon" href="{{ asset('assets/frontend/leadatlas/images/logo-180.png') }}" />
+    <link rel="apple-touch-icon" href="{{ asset('assets/frontend/leadatlas/images/logo-180.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-    @vite(['resources/js/leadatlas.js'])
+    <x-vite :entrypoints="['resources/js/leadatlas.js']"></x-vite>
 </head>
 
 <body class="overflow-x-hidden">

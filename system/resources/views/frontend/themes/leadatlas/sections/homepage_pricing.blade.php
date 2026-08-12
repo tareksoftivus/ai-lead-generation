@@ -23,7 +23,7 @@
                                 {{ $plan['badge'] }}
                             </p>
                         @endif
-                        <p class="plan__name">{{ $plan['name'] ?? '' }}</p>
+                        <h3 class="plan__name">{{ $plan['name'] ?? '' }}</h3>
                         <p class="plan__price">
                             <span class="plan__amount numeric">{{ $plan['price'] ?? '' }}</span>
                             <span class="plan__per">{{ $plan['period'] ?? '' }}</span>
@@ -36,7 +36,7 @@
                         @endif
                         <ul class="plan__list">
                             @foreach(array_filter(explode("\n", (string) ($plan['features'] ?? ''))) as $feature)
-                                <li class="plan__item"><i class="ph ph-check"></i>{{ trim($feature) }}</li>
+                                <li class="plan__item"><i class="ph ph-check" aria-hidden="true"></i>{{ trim($feature) }}</li>
                             @endforeach
                         </ul>
                         <a href="{{ $plan['button_link'] ?: '#' }}" class="btn @if(!empty($plan['featured'])) btn-accent @else btn-outline @endif plan__cta">
@@ -54,7 +54,7 @@
                     <a href="{{ $data['note_link'] ?: '#' }}"
                         class="inline-flex items-center gap-1.5 font-semibold text-primary underline decoration-neutral-300 decoration-2 underline-offset-[5px] transition-colors hover:decoration-primary">
                         {{ $data['note_link_text'] }}
-                        <i class="ph ph-arrow-right"></i>
+                        <i class="ph ph-arrow-right" aria-hidden="true"></i>
                     </a>
                 @endif
             </p>

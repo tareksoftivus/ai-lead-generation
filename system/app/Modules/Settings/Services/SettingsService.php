@@ -4,6 +4,7 @@ namespace App\Modules\Settings\Services;
 
 use App\Modules\Settings\Models\Setting;
 use Illuminate\Support\Facades\Cache;
+use Throwable;
 
 class SettingsService
 {
@@ -117,9 +118,13 @@ class SettingsService
      */
     protected function getAllFromDb(): array
     {
-        return Cache::remember($this->cacheKey, $this->cacheTtl, function () {
-            return Setting::pluck('value', 'key')->toArray();
-        });
+        try {
+            return Cache::remember($this->cacheKey, $this->cacheTtl, function () {
+                return Setting::pluck('value', 'key')->toArray();
+            });
+        } catch (Throwable) {
+            return [];
+        }
     }
 
     /**

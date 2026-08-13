@@ -12,8 +12,12 @@ if (! function_exists('media_url')) {
             return null;
         }
 
-        $media = Media::find($mediaId);
+        try {
+            $media = Media::find($mediaId);
 
-        return $media?->url;
+            return $media?->url;
+        } catch (\Throwable) {
+            return null;
+        }
     }
 }

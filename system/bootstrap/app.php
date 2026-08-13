@@ -77,7 +77,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
                 }
             }
 
-            return Route::has('user.dashboard') ? route('user.dashboard') : '/';
+            return Route::has('user.search.new') ? route('user.search.new') : '/';
         });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
